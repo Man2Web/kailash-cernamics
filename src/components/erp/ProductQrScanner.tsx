@@ -302,7 +302,7 @@ export default function ProductQrScanner({
                     <div className="w-56 h-56 border-2 border-dashed border-blue-400/80 rounded-lg relative overflow-hidden">
                       <div className="absolute inset-x-0 h-0.5 bg-blue-500 shadow-[0_0_8px_#3b82f6] animate-pulse top-1/2" />
                     </div>
-                    <span className="mt-3 text-[10px] text-blue-200 font-mono tracking-wider uppercase bg-slate-900/80 px-2 py-0.5 rounded">
+                    <span className="mt-3 text-[11px] text-blue-200 font-mono tracking-wider uppercase bg-slate-900/80 px-2 py-0.5 rounded">
                       Align QR code inside box
                     </span>
                   </div>
@@ -418,10 +418,10 @@ export default function ProductQrScanner({
                 )}
                 <div>
                   <div className="flex items-center space-x-2">
-                    <span className="font-mono text-[10px] font-bold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
+                    <span className="font-mono text-[11px] font-bold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
                       {scannedResult.product.code}
                     </span>
-                    <span className="font-mono text-[10px] text-slate-500">
+                    <span className="font-mono text-[11px] text-slate-500">
                       SKU: {scannedResult.product.sku}
                     </span>
                   </div>
@@ -441,7 +441,7 @@ export default function ProductQrScanner({
                   ₹{scannedResult.product.sellingPrice.toLocaleString("en-IN")}
                 </div>
                 {scannedResult.product.mrp > 0 && (
-                  <div className="text-[10px] text-slate-400">
+                  <div className="text-[11px] text-slate-400">
                     MRP: ₹{scannedResult.product.mrp.toLocaleString("en-IN")}
                   </div>
                 )}
@@ -455,7 +455,7 @@ export default function ProductQrScanner({
                   <Warehouse className="h-4 w-4 text-blue-600" />
                   <span>Current Inventory Across All Warehouses</span>
                 </h4>
-                <div className="text-[10px] text-slate-400">
+                <div className="text-[11px] text-slate-400">
                   Last updated: <strong>{scannedResult.lastUpdated}</strong>
                 </div>
               </div>
@@ -475,7 +475,7 @@ export default function ProductQrScanner({
                           <span>{w.warehouseName}</span>
                         </div>
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                             w.available > 0 ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-500"
                           }`}
                         >
@@ -484,11 +484,11 @@ export default function ProductQrScanner({
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2 rounded border border-slate-100 text-center">
                         <div>
-                          <div className="text-[10px] text-slate-400">On Hand</div>
+                          <div className="text-[11px] text-slate-400">On Hand</div>
                           <div className="font-medium text-slate-700">{w.onHand} {scannedResult.product.unit}</div>
                         </div>
                         <div>
-                          <div className="text-[10px] text-amber-700">Reserved</div>
+                          <div className="text-[11px] text-amber-700">Reserved</div>
                           <div className="font-medium text-amber-700">{w.reserved > 0 ? `${w.reserved} ${scannedResult.product.unit}` : "0"}</div>
                         </div>
                       </div>
@@ -499,7 +499,7 @@ export default function ProductQrScanner({
                 {/* Mobile Total Summary Card */}
                 <div className="bg-slate-900 text-white rounded-lg p-3.5 flex items-center justify-between">
                   <div>
-                    <div className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Total Available</div>
+                    <div className="text-[11px] text-slate-400 uppercase font-bold tracking-wider">Total Available</div>
                     <div className="text-xs text-slate-300">
                       On Hand: {scannedResult.totalOnHand} • Reserved: {scannedResult.totalReserved}
                     </div>

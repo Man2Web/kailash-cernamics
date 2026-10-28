@@ -62,6 +62,12 @@ export default async function MovementPage() {
   const deliveryIds = vehicleMovements.map((m: any) => m.id);
   const auditMap = await batchGetDocumentAuditInfo("SALES_DELIVERY", deliveryIds);
 
+  // Deliveries reference their sales order by internal id: show the order number instead.
+  const looksLikeId = (v?: string | null) => !!v && /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(v);
+  const refIds = Array.from(new Set(vehicleMovements.map((m: any) => m.invoiceNo).filter(looksLikeId)));
+  const refOrders = refIds.length ? await db.salesOrder.findMany({ where: { id: { in: refIds } }, select: { id: true, orderNo: true } }) : [];
+  const orderNoById = new Map<string, string>(refOrders.map((o: any) => [o.id, o.orderNo]));
+
   // Format SALES Deliveries ONLY (No purchase delivery records allowed)
   const deliveries: DeliveryItem[] = vehicleMovements.map((m: any) => {
     const rawDest = m.destOutlet || "Customer Site";
@@ -77,7 +83,7 @@ export default async function MovementPage() {
       id: m.id,
       type: "SALES_DELIVERY",
       deliveryNo: m.dispatchNo || `SD-${m.id.slice(0, 6).toUpperCase()}`,
-      refNo: m.invoiceNo || "SO-REF",
+      refNo: orderNoById.get(m.invoiceNo) || m.invoiceNo || "SO-REF",
       partyName: rawDest.startsWith("Customer / ") ? rawDest.replace("Customer / ", "") : rawDest,
       partyPhone: custPhone || m.driverPhone || "",
       warehouse: m.sourceWarehouse || "Main Warehouse",

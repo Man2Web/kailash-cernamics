@@ -292,7 +292,7 @@ export default function WarehouseClient({
       {/* Warehouse Active Heading Banner */}
       <div className="bg-slate-900 text-white p-3.5 sm:p-4 rounded-xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3 w-full max-w-full overflow-hidden box-border">
         <div className="min-w-0 flex-1">
-          <span className="text-[10px] uppercase tracking-wider font-bold text-blue-400 block">
+          <span className="text-[11px] uppercase tracking-wider font-bold text-blue-400 block">
             {isManager ? "Assigned Facility" : "Warehouse Overview"}
           </span>
           <h2 className="text-base sm:text-lg font-extrabold flex items-center gap-2 mt-0.5">
@@ -327,7 +327,7 @@ export default function WarehouseClient({
         {/* 1. Total Products */}
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Products</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Products</p>
             <p className="text-base sm:text-lg font-extrabold text-slate-900">{totalProducts}</p>
           </div>
           <div className="p-2 bg-slate-100 text-slate-600 rounded">
@@ -338,7 +338,7 @@ export default function WarehouseClient({
         {/* 2. Total On Hand */}
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total On Hand</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total On Hand</p>
             <p className="text-base sm:text-lg font-extrabold text-slate-900">{totalOnHand}</p>
           </div>
           <div className="p-2 bg-blue-50 text-blue-600 rounded">
@@ -349,7 +349,7 @@ export default function WarehouseClient({
         {/* 3. Reserved */}
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Reserved</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Reserved</p>
             <p className="text-base sm:text-lg font-extrabold text-amber-600">{totalReserved}</p>
           </div>
           <div className="p-2 bg-amber-50 text-amber-600 rounded">
@@ -360,7 +360,7 @@ export default function WarehouseClient({
         {/* 4. Available */}
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Available</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Available</p>
             <p className="text-base sm:text-lg font-extrabold text-emerald-600">{totalAvailable}</p>
           </div>
           <div className="p-2 bg-emerald-50 text-emerald-600 rounded">
@@ -371,7 +371,7 @@ export default function WarehouseClient({
         {/* 5. In Transit */}
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">In Transit</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">In Transit</p>
             <p className="text-base sm:text-lg font-extrabold text-indigo-600">{totalInTransit}</p>
           </div>
           <div className="p-2 bg-indigo-50 text-indigo-600 rounded">
@@ -382,7 +382,7 @@ export default function WarehouseClient({
         {/* 6. Low Stock */}
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Low Stock</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Low Stock</p>
             <p className="text-base sm:text-lg font-extrabold text-rose-600">{totalLowStock}</p>
           </div>
           <div className="p-2 bg-rose-50 text-rose-600 rounded">
@@ -392,7 +392,7 @@ export default function WarehouseClient({
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 bg-white px-2 pt-1 shadow-xs rounded-sm overflow-x-auto">
+      <div className="flex border-b border-slate-200 bg-white px-2 pt-1 shadow-xs rounded-sm overflow-x-auto overflow-y-hidden no-scrollbar">
         <button
           onClick={() => setActiveTab("stock")}
           className={`px-4 py-2 text-xs font-semibold border-b-2 -mb-px flex items-center space-x-2 transition-all whitespace-nowrap cursor-pointer ${
@@ -455,7 +455,7 @@ export default function WarehouseClient({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search product, SKU, barcode..."
-                className="pl-9 pr-4 py-2 sm:py-1.5 w-full border border-slate-200 rounded-sm text-xs bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 focus:bg-white min-h-[40px] sm:min-h-0"
+                className="pl-9 pr-4 py-2 sm:py-1.5 w-full border border-slate-200 rounded-sm text-xs bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 focus:bg-white min-h-[36px] sm:min-h-0"
               />
             </div>
 
@@ -465,7 +465,7 @@ export default function WarehouseClient({
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden md:block bg-white border border-slate-200 rounded shadow-xs overflow-x-auto">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded shadow-xs overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -507,7 +507,7 @@ export default function WarehouseClient({
           </div>
 
           {/* Mobile Cards View */}
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredStocks.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No stock items found in this warehouse.
@@ -527,19 +527,19 @@ export default function WarehouseClient({
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">On Hand</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">On Hand</span>
                       <span className="font-bold text-slate-900 text-sm">{s.onHand}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Reserved</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Reserved</span>
                       <span className="font-bold text-amber-600 text-sm">{s.reserved}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">In Transit</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">In Transit</span>
                       <span className="text-slate-600">{s.inTransit}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Damaged</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Damaged</span>
                       <span className="text-slate-600">{s.damaged}</span>
                     </div>
                   </div>
@@ -553,7 +553,7 @@ export default function WarehouseClient({
       {/* Tab 2: Relevant Sales Orders */}
       {activeTab === "orders" && (
         <div className="space-y-3">
-          <div className="hidden md:block bg-white border border-slate-200 rounded shadow-xs overflow-x-auto">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded shadow-xs overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -580,7 +580,7 @@ export default function WarehouseClient({
                       <td className="px-3.5 py-3 text-slate-600">{o.destination}</td>
                       <td className="px-3.5 py-3 text-right font-mono font-bold text-slate-900">₹{o.totalAmount.toLocaleString("en-IN")}</td>
                       <td className="px-3.5 py-3">
-                        <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                        <span className="inline-flex px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200">
                           {o.status}
                         </span>
                       </td>
@@ -592,7 +592,7 @@ export default function WarehouseClient({
             </table>
           </div>
 
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredOrders.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No sales orders found for this warehouse facility.
@@ -605,7 +605,7 @@ export default function WarehouseClient({
                       <span className="font-mono font-bold text-slate-900 text-xs block">{o.orderNo}</span>
                       <span className="font-semibold text-slate-800 text-sm">{o.customerName}</span>
                     </div>
-                    <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-800 border border-blue-200 shrink-0">
+                    <span className="inline-flex px-2 py-0.5 rounded text-[11px] font-bold bg-blue-50 text-blue-800 border border-blue-200 shrink-0">
                       {o.status}
                     </span>
                   </div>
@@ -624,7 +624,7 @@ export default function WarehouseClient({
       {/* Tab 3: Relevant Sales Deliveries */}
       {activeTab === "deliveries" && (
         <div className="space-y-3">
-          <div className="hidden md:block bg-white border border-slate-200 rounded shadow-xs overflow-x-auto">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded shadow-xs overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -653,7 +653,7 @@ export default function WarehouseClient({
                       <td className="px-3.5 py-3 font-semibold text-slate-900">{d.driverName}</td>
                       <td className="px-3.5 py-3 font-mono text-slate-600">{d.vehicleNo}</td>
                       <td className="px-3.5 py-3">
-                        <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
+                        <span className="inline-flex px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
                           {d.status}
                         </span>
                       </td>
@@ -665,7 +665,7 @@ export default function WarehouseClient({
             </table>
           </div>
 
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredDeliveries.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No sales dispatches found for this warehouse facility.
@@ -678,21 +678,21 @@ export default function WarehouseClient({
                       <span className="font-mono font-bold text-slate-900 text-xs block">{d.dispatchNo}</span>
                       <span className="text-slate-600 text-xs">Ref: {d.refNo}</span>
                     </div>
-                    <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 shrink-0">
+                    <span className="inline-flex px-2 py-0.5 rounded text-[11px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200 shrink-0">
                       {d.status}
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Driver</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Driver</span>
                       <span className="font-semibold text-slate-900">{d.driverName}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Vehicle</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Vehicle</span>
                       <span className="font-mono text-slate-700">{d.vehicleNo}</span>
                     </div>
                     <div className="col-span-2">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Destination</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Destination</span>
                       <span className="text-slate-700">{d.destination}</span>
                     </div>
                   </div>

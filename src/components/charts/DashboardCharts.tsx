@@ -100,7 +100,7 @@ export default function DashboardCharts({
                       className="h-2.5 w-2.5 rounded-full inline-block"
                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     ></span>
-                    <span className="text-[10px] text-slate-500 font-medium">
+                    <span className="text-[11px] text-slate-500 font-medium">
                       {entry.name}
                     </span>
                   </div>

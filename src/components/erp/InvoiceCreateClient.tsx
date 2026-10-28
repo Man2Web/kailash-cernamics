@@ -739,7 +739,7 @@ export default function InvoiceCreateClient({
                 setDPincode(bPincode);
                 setDAddr(bAddr);
               }}
-              className="text-[10px] text-blue-600 hover:underline font-semibold"
+              className="text-[11px] text-blue-600 hover:underline font-semibold"
             >
               Copy Billing Address
             </button>
@@ -915,7 +915,7 @@ export default function InvoiceCreateClient({
             type="button"
             onClick={handleAddItem}
             disabled={products.length === 0}
-            className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-[10px] font-bold transition disabled:opacity-50"
+            className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-[11px] font-bold transition disabled:opacity-50"
           >
             <Plus className="h-3 w-3" />
             <span>Add Item</span>
@@ -925,7 +925,7 @@ export default function InvoiceCreateClient({
         {/* Items Desktop Table (>= 768px) */}
         <div className="hidden md:block overflow-x-auto">
           <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
-            <thead className="bg-slate-50 text-slate-500 uppercase font-semibold text-[10px]">
+            <thead className="bg-slate-50 text-slate-500 uppercase font-semibold text-[11px]">
               <tr>
                 <th className="px-3 py-2 border-b w-64">Product *</th>
                 <th className="px-3 py-2 border-b w-32">SKU</th>
@@ -1089,7 +1089,7 @@ export default function InvoiceCreateClient({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase">Product *</label>
+                  <label className="text-[11px] font-bold text-slate-500 uppercase">Product *</label>
                   <select
                     value={item.productId}
                     onChange={(e) => handleItemProductChange(idx, e.target.value)}
@@ -1105,7 +1105,7 @@ export default function InvoiceCreateClient({
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase">Warehouse *</label>
+                    <label className="text-[11px] font-bold text-slate-500 uppercase">Warehouse *</label>
                     <select
                       value={item.warehouseId}
                       onChange={(e) => handleItemWarehouseChange(idx, e.target.value)}
@@ -1119,7 +1119,7 @@ export default function InvoiceCreateClient({
                     </select>
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase">Quantity ({item.unitCode}) *</label>
+                    <label className="text-[11px] font-bold text-slate-500 uppercase">Quantity ({item.unitCode}) *</label>
                     <input
                       type="number"
                       min="1"
@@ -1133,7 +1133,7 @@ export default function InvoiceCreateClient({
 
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase">Rate (₹) *</label>
+                    <label className="text-[11px] font-bold text-slate-500 uppercase">Rate (₹) *</label>
                     <input
                       type="number"
                       step="0.01"
@@ -1144,7 +1144,7 @@ export default function InvoiceCreateClient({
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-slate-500 uppercase">Discount (₹)</label>
+                    <label className="text-[11px] font-bold text-slate-500 uppercase">Discount (₹)</label>
                     <input
                       type="number"
                       step="0.01"
@@ -1157,11 +1157,11 @@ export default function InvoiceCreateClient({
 
                 <div className="p-2 bg-white rounded border border-slate-200 flex justify-between items-center text-xs">
                   <div>
-                    <span className="text-[10px] text-slate-400 block">GST: {item.gstRate}%</span>
+                    <span className="text-[11px] text-slate-400 block">GST: {item.gstRate}%</span>
                     <span className="text-slate-600 font-medium">Taxable: ₹{item.taxableAmt.toFixed(2)}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Row Total</span>
+                    <span className="text-[11px] text-slate-400 uppercase font-bold block">Row Total</span>
                     <span className="font-extrabold text-blue-600 text-sm">₹{item.totalAmt.toFixed(2)}</span>
                   </div>
                 </div>
@@ -1174,7 +1174,7 @@ export default function InvoiceCreateClient({
       {/* Summary Totals Footer Panel */}
       <div className="bg-slate-900 text-slate-300 p-4 border border-slate-800 rounded-sm shadow-md grid grid-cols-2 md:grid-cols-4 gap-4 items-center">
         <div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             Items / Total Qty
           </span>
           <span className="text-sm font-extrabold text-white">
@@ -1182,7 +1182,7 @@ export default function InvoiceCreateClient({
           </span>
         </div>
         <div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             Total Discount
           </span>
           <span className="text-sm font-bold text-rose-400">
@@ -1190,7 +1190,7 @@ export default function InvoiceCreateClient({
           </span>
         </div>
         <div>
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             GST Tax Amount
           </span>
           <span className="text-sm font-bold text-blue-400">
@@ -1198,7 +1198,7 @@ export default function InvoiceCreateClient({
           </span>
         </div>
         <div className="text-right">
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
             Total Payable Amount (Round Off {roundOff.toFixed(2)})
           </span>
           <span className="text-lg font-black text-white">

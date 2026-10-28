@@ -350,7 +350,7 @@ export default function OfficeClient({
           >
             <Calendar className="h-4 w-4 text-blue-500" />
             <span>Employee Attendance</span>
-            <span className="px-1.5 py-0.2 text-[10px] bg-blue-100 text-blue-700 font-bold rounded">
+            <span className="px-1.5 py-0.2 text-[11px] bg-blue-100 text-blue-700 font-bold rounded">
               New
             </span>
           </Link>
@@ -431,7 +431,7 @@ export default function OfficeClient({
       {activeTab === "users" && (
         <div>
           {/* Mobile Cards View */}
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredUsers.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded text-xs">
                 No users found matching your search.
@@ -446,7 +446,7 @@ export default function OfficeClient({
                     </div>
                     <div className="flex items-center space-x-1.5">
                       <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                        className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                           u.role === "SUPER_ADMIN"
                             ? "bg-purple-100 text-purple-700"
                             : u.role.includes("WAREHOUSE")
@@ -457,7 +457,7 @@ export default function OfficeClient({
                         {u.role.replace(/_/g, " ")}
                       </span>
                       <span
-                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                        className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold ${
                           u.status === "ACTIVE"
                             ? "bg-emerald-100 text-emerald-800"
                             : "bg-rose-100 text-rose-800"
@@ -528,7 +528,7 @@ export default function OfficeClient({
           </div>
 
           {/* Desktop Table View */}
-          <div className="hidden md:block bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -559,7 +559,7 @@ export default function OfficeClient({
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
                             u.role === "SUPER_ADMIN"
                               ? "bg-purple-100 text-purple-700"
                               : u.role.includes("WAREHOUSE")
@@ -596,7 +596,7 @@ export default function OfficeClient({
                       </td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold ${
+                          className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold ${
                             u.status === "ACTIVE"
                               ? "bg-emerald-100 text-emerald-800"
                               : "bg-rose-100 text-rose-800"
@@ -650,7 +650,7 @@ export default function OfficeClient({
       {activeTab === "customers" && (
         <div>
           {/* Mobile Card View */}
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredCustomers.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded text-xs">
                 No customers found matching your search.
@@ -664,25 +664,25 @@ export default function OfficeClient({
                       <div className="text-[11px] font-mono text-slate-500 font-bold">{c.code}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] text-slate-400 font-medium">Outstanding</div>
+                      <div className="text-[11px] text-slate-400 font-medium">Outstanding</div>
                       <div className="font-bold text-slate-900 text-xs">₹{c.outstandingAmt.toLocaleString("en-IN")}</div>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2 rounded border border-slate-100">
                     <div>
-                      <div className="text-[10px] text-slate-400">Phone</div>
+                      <div className="text-[11px] text-slate-400">Phone</div>
                       <div className="font-medium text-slate-700">{c.phone || "—"}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-400">GSTIN</div>
+                      <div className="text-[11px] text-slate-400">GSTIN</div>
                       <div className="font-mono text-slate-700 text-[11px]">{c.gstin || "—"}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-400">Group</div>
+                      <div className="text-[11px] text-slate-400">Group</div>
                       <div className="text-slate-700">{c.group || "—"}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-400">Credit Limit</div>
+                      <div className="text-[11px] text-slate-400">Credit Limit</div>
                       <div className="text-slate-700">₹{c.creditLimit.toLocaleString("en-IN")}</div>
                     </div>
                   </div>
@@ -692,7 +692,7 @@ export default function OfficeClient({
           </div>
 
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -729,7 +729,7 @@ export default function OfficeClient({
       {activeTab === "suppliers" && (
         <div>
           {/* Mobile Card View */}
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredSuppliers.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded text-xs">
                 No suppliers found matching your search.
@@ -743,21 +743,21 @@ export default function OfficeClient({
                       <div className="text-[11px] font-mono text-slate-500 font-bold">{s.code}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] text-slate-400 font-medium">Outstanding</div>
+                      <div className="text-[11px] text-slate-400 font-medium">Outstanding</div>
                       <div className="font-bold text-slate-900 text-xs">₹{s.outstandingAmt.toLocaleString("en-IN")}</div>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2 rounded border border-slate-100">
                     <div>
-                      <div className="text-[10px] text-slate-400">Phone</div>
+                      <div className="text-[11px] text-slate-400">Phone</div>
                       <div className="font-medium text-slate-700">{s.phone || "—"}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-400">GSTIN</div>
+                      <div className="text-[11px] text-slate-400">GSTIN</div>
                       <div className="font-mono text-slate-700 text-[11px]">{s.gstin || "—"}</div>
                     </div>
                     <div className="col-span-2">
-                      <div className="text-[10px] text-slate-400">Email</div>
+                      <div className="text-[11px] text-slate-400">Email</div>
                       <div className="text-slate-700 truncate">{s.email || "—"}</div>
                     </div>
                   </div>
@@ -767,7 +767,7 @@ export default function OfficeClient({
           </div>
 
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -802,7 +802,7 @@ export default function OfficeClient({
       {activeTab === "warehouses" && (
         <div>
           {/* Mobile Card View */}
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredWarehouses.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded text-xs">
                 No warehouses found matching your search.
@@ -820,7 +820,7 @@ export default function OfficeClient({
                     </span>
                   </div>
                   <div className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-100">
-                    <div className="text-[10px] text-slate-400 font-semibold mb-0.5">Address</div>
+                    <div className="text-[11px] text-slate-400 font-semibold mb-0.5">Address</div>
                     <div>{w.address || "—"}</div>
                   </div>
                 </div>
@@ -829,7 +829,7 @@ export default function OfficeClient({
           </div>
 
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded shadow-xs overflow-hidden">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>

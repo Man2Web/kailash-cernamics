@@ -197,17 +197,17 @@ export default function AttendanceAdminClient({
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "PRESENT":
-        return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">PRESENT</span>;
+        return <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">PRESENT</span>;
       case "LATE":
-        return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">LATE CHECK-IN</span>;
+        return <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-100 text-amber-800 border border-amber-200">LATE CHECK-IN</span>;
       case "HALF_DAY":
-        return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">HALF DAY</span>;
+        return <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-indigo-100 text-indigo-800 border border-indigo-200">HALF DAY</span>;
       case "LEAVE":
-        return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-800 border border-purple-200">ON LEAVE</span>;
+        return <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-100 text-purple-800 border border-purple-200">ON LEAVE</span>;
       case "ABSENT":
-        return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-rose-100 text-rose-800 border border-rose-200">ABSENT</span>;
+        return <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-rose-100 text-rose-800 border border-rose-200">ABSENT</span>;
       default:
-        return <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-700">{status}</span>;
+        return <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700">{status}</span>;
     }
   };
 
@@ -220,7 +220,7 @@ export default function AttendanceAdminClient({
             <h1 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 tracking-tight leading-snug">
               Employee Attendance Management
             </h1>
-            <span className="px-2 py-0.5 text-[10px] font-semibold bg-blue-50 text-blue-700 rounded border border-blue-200 shrink-0">
+            <span className="px-2 py-0.5 text-[11px] font-semibold bg-blue-50 text-blue-700 rounded border border-blue-200 shrink-0">
               Super Admin Control
             </span>
           </div>
@@ -240,14 +240,16 @@ export default function AttendanceAdminClient({
             }`}
           >
             <QrCode className="h-4 w-4" />
-            Attendance QR Code
+            <span className="sm:hidden">QR Code</span>
+            <span className="hidden sm:inline">Attendance QR Code</span>
           </button>
           <button
             onClick={() => openCorrectionModal()}
             className="px-3.5 py-2 text-xs font-semibold bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white rounded flex items-center gap-1.5 shadow-xs transition cursor-pointer"
           >
             <Plus className="h-4 w-4" />
-            Manual Attendance Entry
+            <span className="sm:hidden">Manual Entry</span>
+            <span className="hidden sm:inline">Manual Attendance Entry</span>
           </button>
         </div>
       </div>
@@ -264,7 +266,7 @@ export default function AttendanceAdminClient({
         >
           <Calendar className="h-4 w-4" />
           <span>Today's Live Attendance</span>
-          <span className="px-1.5 py-0.2 bg-blue-100 text-blue-800 rounded-full text-[10px]">
+          <span className="px-1.5 py-0.2 bg-blue-100 text-blue-800 rounded-full text-[11px]">
             {todaySummary.records.length}
           </span>
         </button>
@@ -300,34 +302,34 @@ export default function AttendanceAdminClient({
           {/* Summary KPI Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
             <div className="bg-white p-3.5 sm:p-4 border border-slate-200 rounded-lg shadow-xs">
-              <p className="text-[10px] font-bold uppercase text-slate-500">Total Staff</p>
+              <p className="text-[11px] font-bold uppercase text-slate-500">Total Staff</p>
               <p className="text-xl font-bold text-slate-900 mt-1">{todaySummary.totalEmployees}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Active profiles</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Active profiles</p>
             </div>
             <div className="bg-white p-3.5 sm:p-4 border border-emerald-200 rounded-lg shadow-xs bg-emerald-50/20">
-              <p className="text-[10px] font-bold uppercase text-emerald-700">Present Today</p>
+              <p className="text-[11px] font-bold uppercase text-emerald-700">Present Today</p>
               <p className="text-xl font-bold text-emerald-800 mt-1">{todaySummary.presentCount}</p>
-              <p className="text-[10px] text-emerald-600 mt-0.5">Attended work</p>
+              <p className="text-[11px] text-emerald-600 mt-0.5">Attended work</p>
             </div>
             <div className="bg-white p-3.5 sm:p-4 border border-blue-200 rounded-lg shadow-xs bg-blue-50/20">
-              <p className="text-[10px] font-bold uppercase text-blue-700">Checked In</p>
+              <p className="text-[11px] font-bold uppercase text-blue-700">Checked In</p>
               <p className="text-xl font-bold text-blue-800 mt-1">{todaySummary.checkedInCount}</p>
-              <p className="text-[10px] text-blue-600 mt-0.5">Currently on shift</p>
+              <p className="text-[11px] text-blue-600 mt-0.5">Currently on shift</p>
             </div>
             <div className="bg-white p-3.5 sm:p-4 border border-indigo-200 rounded-lg shadow-xs bg-indigo-50/20">
-              <p className="text-[10px] font-bold uppercase text-indigo-700">Checked Out</p>
+              <p className="text-[11px] font-bold uppercase text-indigo-700">Checked Out</p>
               <p className="text-xl font-bold text-indigo-800 mt-1">{todaySummary.checkedOutCount}</p>
-              <p className="text-[10px] text-indigo-600 mt-0.5">Shift completed</p>
+              <p className="text-[11px] text-indigo-600 mt-0.5">Shift completed</p>
             </div>
             <div className="bg-white p-3.5 sm:p-4 border border-amber-200 rounded-lg shadow-xs bg-amber-50/20">
-              <p className="text-[10px] font-bold uppercase text-amber-700">Late Arrivals</p>
+              <p className="text-[11px] font-bold uppercase text-amber-700">Late Arrivals</p>
               <p className="text-xl font-bold text-amber-800 mt-1">{todaySummary.lateCount}</p>
-              <p className="text-[10px] text-amber-600 mt-0.5">After 09:15 AM</p>
+              <p className="text-[11px] text-amber-600 mt-0.5">After 09:15 AM</p>
             </div>
             <div className="bg-white p-3.5 sm:p-4 border border-rose-200 rounded-lg shadow-xs bg-rose-50/20">
-              <p className="text-[10px] font-bold uppercase text-rose-700">Absent</p>
+              <p className="text-[11px] font-bold uppercase text-rose-700">Absent</p>
               <p className="text-xl font-bold text-rose-800 mt-1">{todaySummary.absentCount}</p>
-              <p className="text-[10px] text-rose-600 mt-0.5">Unrecorded</p>
+              <p className="text-[11px] text-rose-600 mt-0.5">Unrecorded</p>
             </div>
           </div>
 
@@ -378,19 +380,19 @@ export default function AttendanceAdminClient({
 
                     <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-2.5 rounded border border-slate-100">
                       <div>
-                        <div className="text-[10px] text-slate-400 font-medium">Check In</div>
+                        <div className="text-[11px] text-slate-400 font-medium">Check In</div>
                         <div className="font-mono font-semibold text-emerald-600">{rec.checkInTime}</div>
                       </div>
                       <div>
-                        <div className="text-[10px] text-slate-400 font-medium">Check Out</div>
+                        <div className="text-[11px] text-slate-400 font-medium">Check Out</div>
                         <div className="font-mono font-semibold text-blue-600">{rec.checkOutTime || "—"}</div>
                       </div>
                       <div>
-                        <div className="text-[10px] text-slate-400 font-medium">Working Hours</div>
+                        <div className="text-[11px] text-slate-400 font-medium">Working Hours</div>
                         <div className="font-semibold text-slate-700">{rec.workingHoursFormatted || "—"}</div>
                       </div>
                       <div>
-                        <div className="text-[10px] text-slate-400 font-medium">Method</div>
+                        <div className="text-[11px] text-slate-400 font-medium">Method</div>
                         <div className="font-mono text-slate-600 text-[11px]">{rec.method}</div>
                       </div>
                     </div>
@@ -454,7 +456,7 @@ export default function AttendanceAdminClient({
                           {rec.workingHoursFormatted || "-"}
                         </td>
                         <td className="py-3 px-4">
-                          <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-[10px] font-mono">
+                          <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-[11px] font-mono">
                             {rec.method}
                           </span>
                         </td>
@@ -623,19 +625,19 @@ export default function AttendanceAdminClient({
                     </div>
                     <div className="grid grid-cols-4 gap-1.5 text-center text-xs">
                       <div className="bg-emerald-50 border border-emerald-100 p-1.5 rounded">
-                        <div className="text-[9px] uppercase font-bold text-emerald-700">Present</div>
+                        <div className="text-[10px] uppercase font-bold text-emerald-700">Present</div>
                         <div className="font-bold text-emerald-800 text-sm">{emp.presentDays}</div>
                       </div>
                       <div className="bg-rose-50 border border-rose-100 p-1.5 rounded">
-                        <div className="text-[9px] uppercase font-bold text-rose-700">Absent</div>
+                        <div className="text-[10px] uppercase font-bold text-rose-700">Absent</div>
                         <div className="font-bold text-rose-800 text-sm">{emp.absentDays}</div>
                       </div>
                       <div className="bg-amber-50 border border-amber-100 p-1.5 rounded">
-                        <div className="text-[9px] uppercase font-bold text-amber-700">Late</div>
+                        <div className="text-[10px] uppercase font-bold text-amber-700">Late</div>
                         <div className="font-bold text-amber-800 text-sm">{emp.lateDays}</div>
                       </div>
                       <div className="bg-purple-50 border border-purple-100 p-1.5 rounded">
-                        <div className="text-[9px] uppercase font-bold text-purple-700">Leave</div>
+                        <div className="text-[10px] uppercase font-bold text-purple-700">Leave</div>
                         <div className="font-bold text-purple-800 text-sm">{emp.leaveDays}</div>
                       </div>
                     </div>
@@ -673,15 +675,15 @@ export default function AttendanceAdminClient({
                     </div>
                     <div className="grid grid-cols-3 gap-2 text-xs bg-slate-50 p-2 rounded border border-slate-100 text-center">
                       <div>
-                        <div className="text-[10px] text-slate-400">Check In</div>
+                        <div className="text-[11px] text-slate-400">Check In</div>
                         <div className="font-mono font-semibold text-emerald-600">{r.checkInTime}</div>
                       </div>
                       <div>
-                        <div className="text-[10px] text-slate-400">Check Out</div>
+                        <div className="text-[11px] text-slate-400">Check Out</div>
                         <div className="font-mono font-semibold text-blue-600">{r.checkOutTime || "—"}</div>
                       </div>
                       <div>
-                        <div className="text-[10px] text-slate-400">Hours</div>
+                        <div className="text-[11px] text-slate-400">Hours</div>
                         <div className="font-semibold text-slate-700">{r.workingHoursFormatted || "—"}</div>
                       </div>
                     </div>

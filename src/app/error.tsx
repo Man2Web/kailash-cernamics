@@ -26,7 +26,7 @@ export default function Error({ error, reset }: ErrorProps) {
           <p className="text-xs text-slate-500 max-w-xs mx-auto">
             An unexpected error occurred during client-side operations. This has been logged for system diagnostics.
           </p>
-          <div className="p-3.5 bg-slate-900 border border-slate-800 rounded text-left overflow-x-auto text-[10px] text-rose-300 font-mono max-h-32">
+          <div className="p-3.5 bg-slate-900 border border-slate-800 rounded text-left overflow-x-auto text-[11px] text-rose-300 font-mono max-h-32">
             {error.message || "Unknown error"}
           </div>
         </div>

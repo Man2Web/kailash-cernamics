@@ -737,7 +737,7 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
           {/* Table (Desktop >= 768px) */}
           <div className="hidden md:block overflow-x-auto custom-scrollbar border border-slate-800 rounded-lg">
             <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+              <thead className="bg-slate-950 text-slate-400 uppercase text-[11px] tracking-wider border-b border-slate-800">
                 <tr>
                   <th className="py-3 px-4">Entity Type</th>
                   <th className="py-3 px-4">Document / Master</th>
@@ -763,11 +763,11 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
                         <div className="font-medium text-slate-200">{item.entityCode || item.entityId}</div>
                         {item.entityName && <div className="text-[11px] text-slate-400">{item.entityName}</div>}
                         {item.lastError && (
-                          <div className="text-[10px] text-rose-400 mt-0.5 truncate max-w-xs">{item.lastError}</div>
+                          <div className="text-[11px] text-rose-400 mt-0.5 truncate max-w-xs">{item.lastError}</div>
                         )}
                       </td>
                       <td className="py-3 px-4">
-                        <span className="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded text-[10px] font-mono">
+                        <span className="px-1.5 py-0.5 bg-slate-800 text-slate-300 rounded text-[11px] font-mono">
                           {item.operation}
                         </span>
                       </td>
@@ -873,7 +873,7 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
           {/* Desktop Table View (>= 768px) */}
           <div className="hidden md:block overflow-x-auto custom-scrollbar border border-slate-800 rounded-lg">
             <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+              <thead className="bg-slate-950 text-slate-400 uppercase text-[11px] tracking-wider border-b border-slate-800">
                 <tr>
                   <th className="py-3 px-4">Timestamp</th>
                   <th className="py-3 px-4">Entity</th>
@@ -899,7 +899,7 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
                       <td className="py-3 px-4 font-semibold text-white">
                         {log.entityType} {log.entityCode ? `(${log.entityCode})` : ""}
                       </td>
-                      <td className="py-3 px-4 font-mono text-[10px]">{log.operation}</td>
+                      <td className="py-3 px-4 font-mono text-[11px]">{log.operation}</td>
                       <td className="py-3 px-4">{getStatusBadge(log.status)}</td>
                       <td className="py-3 px-4 font-mono text-slate-400">{log.durationMs || 0}ms</td>
                       <td className="py-3 px-4 text-slate-300 max-w-sm truncate">
@@ -930,7 +930,7 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
                       <span className="font-semibold text-white block">
                         {log.entityType} {log.entityCode ? `(${log.entityCode})` : ""}
                       </span>
-                      <span className="text-[10px] font-mono text-slate-400">{new Date(log.createdAt).toLocaleTimeString()} • {log.operation}</span>
+                      <span className="text-[11px] font-mono text-slate-400">{new Date(log.createdAt).toLocaleTimeString()} • {log.operation}</span>
                     </div>
                     <div>{getStatusBadge(log.status)}</div>
                   </div>
@@ -967,7 +967,7 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
           {/* Desktop Table View (>= 768px) */}
           <div className="hidden md:block overflow-x-auto custom-scrollbar border border-slate-800 rounded-lg">
             <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950 text-slate-400 uppercase text-[10px] tracking-wider border-b border-slate-800">
+              <thead className="bg-slate-950 text-slate-400 uppercase text-[11px] tracking-wider border-b border-slate-800">
                 <tr>
                   <th className="py-3 px-4">Entity Type</th>
                   <th className="py-3 px-4">ERP Code / Name</th>
@@ -992,7 +992,7 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
                         <span className="font-medium text-slate-200">{m.entityName || m.entityCode || m.entityId}</span>
                       </td>
                       <td className="py-3 px-4 font-mono text-emerald-400">{m.tallyName || m.tallyVoucherNo || "-"}</td>
-                      <td className="py-3 px-4 font-mono text-[10px] text-slate-400 truncate max-w-xs">{m.tallyGuid || "-"}</td>
+                      <td className="py-3 px-4 font-mono text-[11px] text-slate-400 truncate max-w-xs">{m.tallyGuid || "-"}</td>
                       <td className="py-3 px-4">{getStatusBadge(m.syncStatus)}</td>
                       <td className="py-3 px-4 text-slate-400">{new Date(m.lastSyncedAt).toLocaleString()}</td>
                     </tr>
@@ -1020,11 +1020,11 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-900/60 p-2 rounded">
                     <div>
-                      <span className="text-[10px] text-slate-500 uppercase block">Tally Name</span>
+                      <span className="text-[11px] text-slate-500 uppercase block">Tally Name</span>
                       <span className="font-mono text-emerald-400">{m.tallyName || m.tallyVoucherNo || "-"}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] text-slate-500 uppercase block">Last Synced</span>
+                      <span className="text-[11px] text-slate-500 uppercase block">Last Synced</span>
                       <span className="text-slate-400">{new Date(m.lastSyncedAt).toLocaleDateString()}</span>
                     </div>
                   </div>

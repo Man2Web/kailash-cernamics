@@ -176,6 +176,12 @@ export default async function WarehousePage() {
     take: 50,
   });
 
+  // Deliveries reference their sales order by internal id: show the order number instead.
+  const looksLikeId = (v?: string | null) => !!v && /^[0-9a-f]{8}-[0-9a-f]{4}-/i.test(v);
+  const refIds = Array.from(new Set(allVehicleMovements.map((m: any) => m.invoiceNo).filter(looksLikeId)));
+  const refOrders = refIds.length ? await db.salesOrder.findMany({ where: { id: { in: refIds } }, select: { id: true, orderNo: true } }) : [];
+  const orderNoById = new Map<string, string>(refOrders.map((o: any) => [o.id, o.orderNo]));
+
   const formattedDeliveries = allVehicleMovements
     .filter((m: any) => {
       if (!assignedWarehouseName && !assignedWarehouseId) return true;
@@ -186,7 +192,7 @@ export default async function WarehousePage() {
     .map((m: any) => ({
       id: m.id,
       dispatchNo: m.dispatchNo || `SD-${m.id.slice(0, 6).toUpperCase()}`,
-      refNo: m.invoiceNo || "SO-REF",
+      refNo: orderNoById.get(m.invoiceNo) || m.invoiceNo || "SO-REF",
       destination: m.destOutlet || "Customer Site",
       driverName: m.driverName || "Driver",
       vehicleNo: m.vehicleNo || "N/A",

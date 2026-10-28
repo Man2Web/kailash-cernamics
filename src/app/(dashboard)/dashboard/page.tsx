@@ -362,16 +362,16 @@ export default async function DashboardPage() {
       </div>
 
       {/* Metrics Grid */}
-      <div className={`grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ${isSalesPersonRole ? "lg:grid-cols-5" : isWarehouseMgrRole ? "lg:grid-cols-4" : "lg:grid-cols-5"} gap-3`}>
+      <div className={`grid grid-cols-2 md:grid-cols-3 ${isSalesPersonRole ? "lg:grid-cols-5" : isWarehouseMgrRole ? "lg:grid-cols-4" : "lg:grid-cols-5"} gap-3`}>
         {summaryCards.map((card) => {
           const Icon = card.icon;
           return (
             <div
               key={card.title}
-              className="bg-white p-4 border border-slate-200 rounded-lg shadow-xs flex flex-col justify-between hover:border-slate-300 transition"
+              className="bg-white p-3 sm:p-4 border border-slate-200 rounded-lg shadow-xs flex flex-col justify-between hover:border-slate-300 transition min-w-0"
             >
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                   {card.title}
                 </p>
                 <div className={`p-1.5 rounded ${card.bg} ${card.color}`}>

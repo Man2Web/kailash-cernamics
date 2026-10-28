@@ -213,12 +213,12 @@ export default function CustomerClient({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search customers name, code, GSTIN..."
-                className="pl-9 pr-4 py-2 sm:py-1.5 w-full border border-slate-200 rounded-sm text-xs bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white text-slate-900 min-h-[40px] sm:min-h-0"
+                className="pl-9 pr-4 py-2 sm:py-1.5 w-full border border-slate-200 rounded-sm text-xs bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white text-slate-900 min-h-[36px] sm:min-h-0"
               />
             </div>
             <button
               onClick={() => setShowForm(!showForm)}
-              className="flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold transition min-h-[40px] sm:min-h-0"
+              className="flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold transition min-h-[36px] sm:min-h-0"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>{showForm ? "Cancel" : "Add Customer"}</span>
@@ -246,7 +246,7 @@ export default function CustomerClient({
                     value={cName}
                     onChange={(e) => setCName(e.target.value)}
                     placeholder="e.g. Geetha Ceramic House"
-                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[40px] sm:min-h-0"
+                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -257,7 +257,7 @@ export default function CustomerClient({
                     value={cCode}
                     onChange={(e) => setCCode(e.target.value)}
                     placeholder="e.g. CUST0001"
-                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[40px] sm:min-h-0"
+                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -266,7 +266,7 @@ export default function CustomerClient({
                     required
                     value={cGroupId}
                     onChange={(e) => setCGroupId(e.target.value)}
-                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[40px] sm:min-h-0"
+                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   >
                     <option value="">Select Group</option>
                     {customerGroups.map((g) => (
@@ -281,7 +281,7 @@ export default function CustomerClient({
                   <select
                     value={cPriceListId}
                     onChange={(e) => setCPriceListId(e.target.value)}
-                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[40px] sm:min-h-0"
+                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   >
                     <option value="">Default Price List</option>
                     {priceLists.map((p) => (
@@ -299,7 +299,7 @@ export default function CustomerClient({
                     value={cGstin}
                     onChange={(e) => setCGstin(e.target.value)}
                     placeholder="33AAAAA0000A1Z"
-                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[40px] sm:min-h-0"
+                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -309,7 +309,7 @@ export default function CustomerClient({
                     value={cEmail}
                     onChange={(e) => setCEmail(e.target.value)}
                     placeholder="e.g. contact@geethaceramics.com"
-                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[40px] sm:min-h-0"
+                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -319,7 +319,7 @@ export default function CustomerClient({
                     value={cPhone}
                     onChange={(e) => setCPhone(e.target.value)}
                     placeholder="e.g. 9876543210"
-                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[40px] sm:min-h-0"
+                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -328,7 +328,7 @@ export default function CustomerClient({
                     type="number"
                     value={cLimit}
                     onChange={(e) => setCLimit(e.target.value)}
-                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[40px] sm:min-h-0"
+                    className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   />
                 </div>
               </div>
@@ -337,7 +337,7 @@ export default function CustomerClient({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 pt-4">
                 {/* Billing Address */}
                 <div className="space-y-3">
-                  <h4 className="font-bold text-slate-800 uppercase text-[10px]">
+                  <h4 className="font-bold text-slate-800 uppercase text-[11px]">
                     Primary Billing Address
                   </h4>
                   <div className="space-y-1.5">
@@ -387,7 +387,7 @@ export default function CustomerClient({
                 {/* Delivery Address */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
-                    <h4 className="font-bold text-slate-800 uppercase text-[10px]">
+                    <h4 className="font-bold text-slate-800 uppercase text-[11px]">
                       Primary Delivery Address
                     </h4>
                     <button
@@ -398,7 +398,7 @@ export default function CustomerClient({
                         setDState(bState);
                         setDPincode(bPincode);
                       }}
-                      className="text-[10px] text-blue-600 hover:underline"
+                      className="text-[11px] text-blue-600 hover:underline"
                     >
                       Copy Billing Address
                     </button>
@@ -524,19 +524,19 @@ export default function CustomerClient({
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Phone</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Phone</span>
                       <span className="text-slate-800 font-medium block">{c.phone || "—"}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">GSTIN</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">GSTIN</span>
                       <span className="font-mono text-slate-600 text-[11px] block">{c.gstin || "—"}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Outstanding</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Outstanding</span>
                       <span className="font-bold text-rose-600 block">₹{c.outstandingAmt.toFixed(2)}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Credit Limit</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Credit Limit</span>
                       <span className="text-slate-600 block">₹{c.creditLimit.toFixed(2)}</span>
                     </div>
                   </div>

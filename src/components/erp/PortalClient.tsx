@@ -123,7 +123,7 @@ export default function PortalClient({ announcements, users }: PortalClientProps
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Portal Directory
             </p>
             <p className="text-xl font-extrabold text-slate-800">{users.length}</p>
@@ -135,7 +135,7 @@ export default function PortalClient({ announcements, users }: PortalClientProps
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Active Notices
             </p>
             <p className="text-xl font-extrabold text-blue-600">
@@ -149,7 +149,7 @@ export default function PortalClient({ announcements, users }: PortalClientProps
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Authorized Logins
             </p>
             <p className="text-xl font-extrabold text-emerald-600">
@@ -163,7 +163,7 @@ export default function PortalClient({ announcements, users }: PortalClientProps
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Portal Status
             </p>
             <p className="text-xl font-extrabold text-slate-800">ONLINE</p>
@@ -236,13 +236,13 @@ export default function PortalClient({ announcements, users }: PortalClientProps
                   <div>
                     <div className="flex justify-between items-start mb-2">
                       <span
-                        className={`px-2 py-0.5 border text-[9px] font-bold rounded-sm uppercase ${getCategoryColor(
+                        className={`px-2 py-0.5 border text-[10px] font-bold rounded-sm uppercase ${getCategoryColor(
                           a.category
                         )}`}
                       >
                         {a.category}
                       </span>
-                      <span className="text-[10px] text-slate-400">{a.date}</span>
+                      <span className="text-[11px] text-slate-400">{a.date}</span>
                     </div>
                     <h3 className="text-xs font-bold text-slate-800 mb-1">{a.title}</h3>
                     <p className="text-xs text-slate-500 leading-relaxed whitespace-pre-line mb-4">
@@ -258,7 +258,7 @@ export default function PortalClient({ announcements, users }: PortalClientProps
                         onChange={(e) => handleToggleNotice(a.id, e.target.checked)}
                         className="rounded border-slate-300 text-blue-600 outline-none h-3.5 w-3.5"
                       />
-                      <span className="text-[10px] font-semibold text-slate-500 uppercase">
+                      <span className="text-[11px] font-semibold text-slate-500 uppercase">
                         Visible
                       </span>
                     </label>
@@ -320,7 +320,7 @@ export default function PortalClient({ announcements, users }: PortalClientProps
                     <td className="px-4 py-3 text-slate-500 uppercase">{u.role}</td>
                     <td className="px-4 py-3">
                       <span
-                        className={`px-1.5 py-0.5 border text-[10px] font-bold rounded-sm uppercase ${
+                        className={`px-1.5 py-0.5 border text-[11px] font-bold rounded-sm uppercase ${
                           u.status === "ACTIVE"
                             ? "bg-emerald-50 border-emerald-200 text-emerald-700"
                             : "bg-slate-50 border-slate-200 text-slate-400"
@@ -361,7 +361,7 @@ export default function PortalClient({ announcements, users }: PortalClientProps
                     <span className="font-mono text-slate-400 text-[11px]">{u.code}</span>
                   </div>
                   <span
-                    className={`px-2 py-0.5 border text-[10px] font-bold rounded uppercase ${
+                    className={`px-2 py-0.5 border text-[11px] font-bold rounded uppercase ${
                       u.status === "ACTIVE"
                         ? "bg-emerald-50 border-emerald-200 text-emerald-700"
                         : "bg-slate-50 border-slate-200 text-slate-400"

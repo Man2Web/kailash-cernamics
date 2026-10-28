@@ -476,7 +476,7 @@ export default function SalesClient({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={`Search ${activeTab}...`}
-            className="pl-9 pr-4 py-2 sm:py-1.5 w-full border border-slate-200 rounded-sm text-xs bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 focus:bg-white min-h-[40px] sm:min-h-0"
+            className="pl-9 pr-4 py-2 sm:py-1.5 w-full border border-slate-200 rounded-sm text-xs bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 focus:bg-white min-h-[36px] sm:min-h-0"
           />
         </div>
 
@@ -488,7 +488,7 @@ export default function SalesClient({
               setSuccessMsg("");
               setShowScannerModal(true);
             }}
-            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-3 py-2 sm:py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-sm text-xs font-semibold shadow-xs transition min-h-[40px] sm:min-h-0"
+            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-3 py-2 sm:py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-sm text-xs font-semibold shadow-xs transition min-h-[36px] sm:min-h-0"
             title="Scan product QR to check live inventory across all warehouses"
           >
             <QrCode className="h-3.5 w-3.5 text-blue-400" />
@@ -501,7 +501,7 @@ export default function SalesClient({
               setSuccessMsg("");
               setShowCreateCustomerModal(true);
             }}
-            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-3 py-2 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-sm text-xs font-semibold border border-slate-300 shadow-xs transition min-h-[40px] sm:min-h-0"
+            className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-3 py-2 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-sm text-xs font-semibold border border-slate-300 shadow-xs transition min-h-[36px] sm:min-h-0"
           >
             <User className="h-3.5 w-3.5" />
             <span>Add Customer</span>
@@ -514,7 +514,7 @@ export default function SalesClient({
                 setSuccessMsg("");
                 setShowCreateOrderModal(true);
               }}
-              className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition min-h-[40px] sm:min-h-0"
+              className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition min-h-[36px] sm:min-h-0"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Create Sales Order</span>
@@ -527,7 +527,7 @@ export default function SalesClient({
       {activeTab === "orders" && (
         <div className="space-y-3">
           {/* Desktop Table View (>= 768px) */}
-          <div className="hidden md:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -563,7 +563,7 @@ export default function SalesClient({
                       <td className="px-4 py-3 text-slate-500">{o.date}</td>
                       <td className="px-4 py-3 text-slate-700">
                         <div className="flex items-center space-x-1.5">
-                          <div className="h-5 w-5 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[10px] shrink-0">
+                          <div className="h-5 w-5 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[11px] shrink-0">
                             {(o.createdBy || "U").charAt(0).toUpperCase()}
                           </div>
                           <span className="font-medium text-slate-800">{o.createdBy || "Not recorded"}</span>
@@ -575,7 +575,7 @@ export default function SalesClient({
                       <td className="px-4 py-3">
                         {isSalesPerson || o.status === "COMPLETED" ? (
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold border ${
+                            className={`px-2 py-0.5 rounded text-[11px] font-bold border ${
                               o.status === "RESERVED"
                                 ? "bg-amber-50 text-amber-800 border-amber-200"
                                 : o.status === "COMPLETED"
@@ -592,7 +592,7 @@ export default function SalesClient({
                             value={o.status}
                             onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
                             disabled={o.status === "COMPLETED"}
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold border outline-none ${
+                            className={`px-2 py-0.5 rounded text-[11px] font-bold border outline-none ${
                               o.status === "RESERVED"
                                 ? "bg-amber-50 text-amber-800 border-amber-200"
                                 : o.status === "COMPLETED"
@@ -617,7 +617,7 @@ export default function SalesClient({
                       <td className="px-4 py-3 text-right space-x-2">
                         <button
                           onClick={() => setSelectedOrderForDetail(o)}
-                          className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[10px] font-semibold transition"
+                          className="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-[11px] font-semibold transition"
                         >
                           Audit Details
                         </button>
@@ -628,7 +628,7 @@ export default function SalesClient({
                               setDeliveryAddress("Default customer address");
                               setShowDispatchModal(true);
                             }}
-                            className="px-2 py-1 bg-slate-100 hover:bg-blue-50 text-blue-600 rounded text-[10px] font-semibold transition"
+                            className="px-2 py-1 bg-slate-100 hover:bg-blue-50 text-blue-600 rounded text-[11px] font-semibold transition"
                           >
                             Dispatch
                           </button>
@@ -642,7 +642,7 @@ export default function SalesClient({
           </div>
 
           {/* Mobile Card View (< 768px) */}
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredOrders.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No sales orders found.
@@ -654,7 +654,7 @@ export default function SalesClient({
                     <div>
                       <button
                         onClick={() => setSelectedOrderForDetail(o)}
-                        className="text-blue-600 hover:underline font-mono font-bold text-sm text-left block"
+                        className="text-blue-600 hover:underline font-mono font-bold text-sm text-left block py-1.5 -my-1.5 pr-3"
                       >
                         {o.orderNo}
                       </button>
@@ -704,17 +704,17 @@ export default function SalesClient({
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Customer</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Customer</span>
                       <span className="font-semibold text-slate-900 block truncate">{o.customer}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Branch / Outlet</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Branch / Outlet</span>
                       <span className="text-slate-600 block truncate">{o.branch} - {o.outlet}</span>
                     </div>
                     <div className="col-span-2">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Created By</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Created By</span>
                       <div className="flex items-center space-x-1.5 mt-0.5">
-                        <div className="h-4 w-4 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[9px] shrink-0">
+                        <div className="h-4 w-4 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[10px] shrink-0">
                           {(o.createdBy || "U").charAt(0).toUpperCase()}
                         </div>
                         <span className="font-medium text-slate-800 text-xs">{o.createdBy || "Not recorded"}</span>
@@ -725,7 +725,7 @@ export default function SalesClient({
                   <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
                     <button
                       onClick={() => setSelectedOrderForDetail(o)}
-                      className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold transition text-center min-h-[40px] flex items-center justify-center"
+                      className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold transition text-center min-h-[36px] flex items-center justify-center"
                     >
                       Audit Details
                     </button>
@@ -736,7 +736,7 @@ export default function SalesClient({
                           setDeliveryAddress("Default customer address");
                           setShowDispatchModal(true);
                         }}
-                        className="flex-1 py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded text-xs font-semibold transition text-center min-h-[40px] flex items-center justify-center"
+                        className="flex-1 py-2 px-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded text-xs font-semibold transition text-center min-h-[36px] flex items-center justify-center"
                       >
                         Dispatch
                       </button>
@@ -760,7 +760,7 @@ export default function SalesClient({
           </div>
 
           {/* Desktop Table */}
-          <div className="hidden md:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -796,7 +796,7 @@ export default function SalesClient({
                       <td className="px-4 py-3 font-semibold text-slate-800">{r.expiryDate}</td>
                       <td className="px-4 py-3">
                         <span
-                          className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold ${
+                          className={`inline-flex px-2 py-0.5 rounded text-[11px] font-bold ${
                             r.status === "ACTIVE"
                               ? "bg-amber-100 text-amber-800"
                               : r.status === "FULFILLED"
@@ -813,7 +813,7 @@ export default function SalesClient({
                         {r.status === "ACTIVE" && (
                           <button
                             onClick={() => handleReleaseReservation(r.id)}
-                            className="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded text-[10px] font-semibold transition"
+                            className="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-700 rounded text-[11px] font-semibold transition"
                           >
                             Release Hold
                           </button>
@@ -827,7 +827,7 @@ export default function SalesClient({
           </div>
 
           {/* Mobile Cards */}
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredReservations.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No stock reservations recorded.
@@ -857,19 +857,19 @@ export default function SalesClient({
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Customer</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Customer</span>
                       <span className="font-semibold text-slate-900 block truncate">{r.customerName}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Product / Qty</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Product / Qty</span>
                       <span className="font-bold text-slate-900 block truncate">{r.quantity} pcs</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Warehouse</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Warehouse</span>
                       <span className="text-slate-600 block truncate">{r.warehouseName || "Main Warehouse"}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Expiry Date</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Expiry Date</span>
                       <span className="font-semibold text-slate-800 block">{r.expiryDate}</span>
                     </div>
                   </div>
@@ -878,7 +878,7 @@ export default function SalesClient({
                     <div className="pt-2 border-t border-slate-100">
                       <button
                         onClick={() => handleReleaseReservation(r.id)}
-                        className="w-full py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded text-xs font-semibold transition min-h-[40px]"
+                        className="w-full py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded text-xs font-semibold transition min-h-[36px]"
                       >
                         Release Hold
                       </button>
@@ -1026,7 +1026,7 @@ export default function SalesClient({
                     <button
                       type="button"
                       onClick={() => setShowCreateCustomerModal(true)}
-                      className="text-blue-600 text-[10px] hover:underline"
+                      className="text-blue-600 text-[11px] hover:underline"
                     >
                       + New Customer
                     </button>
@@ -1035,7 +1035,7 @@ export default function SalesClient({
                     value={selectedCustomerId}
                     onChange={(e) => setSelectedCustomerId(e.target.value)}
                     required
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   >
                     <option value="">-- Choose Customer --</option>
                     {customerList.map((c) => (
@@ -1052,7 +1052,7 @@ export default function SalesClient({
                     value={selectedWarehouseId}
                     onChange={(e) => setSelectedWarehouseId(e.target.value)}
                     required
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   >
                     {warehouses.map((w) => (
                       <option key={w.id} value={w.id}>
@@ -1173,7 +1173,7 @@ export default function SalesClient({
                             value={item.variantId}
                             onChange={(e) => handleProductChange(index, e.target.value)}
                             required
-                            className="w-full p-2 border rounded text-xs bg-white min-h-[40px]"
+                            className="w-full p-2 border rounded text-xs bg-white min-h-[36px]"
                           >
                             <option value="">-- Select Product --</option>
                             {products.map((p) => (
@@ -1189,7 +1189,7 @@ export default function SalesClient({
                         </div>
                         <div className="grid grid-cols-3 gap-2 items-center pt-1">
                           <div>
-                            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Qty</label>
+                            <label className="text-[11px] uppercase font-bold text-slate-400 block mb-0.5">Qty</label>
                             <input
                               type="number"
                               min={1}
@@ -1199,11 +1199,11 @@ export default function SalesClient({
                                 newItems[index].quantity = Number(e.target.value);
                                 setOrderItems(newItems);
                               }}
-                              className="w-full p-2 border rounded text-xs text-center bg-white min-h-[40px]"
+                              className="w-full p-2 border rounded text-xs text-center bg-white min-h-[36px]"
                             />
                           </div>
                           <div>
-                            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Rate (₹)</label>
+                            <label className="text-[11px] uppercase font-bold text-slate-400 block mb-0.5">Rate (₹)</label>
                             <input
                               type="number"
                               value={item.rate}
@@ -1212,11 +1212,11 @@ export default function SalesClient({
                                 newItems[index].rate = Number(e.target.value);
                                 setOrderItems(newItems);
                               }}
-                              className="w-full p-2 border rounded text-xs text-right bg-white min-h-[40px]"
+                              className="w-full p-2 border rounded text-xs text-right bg-white min-h-[36px]"
                             />
                           </div>
                           <div className="text-right">
-                            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Total</label>
+                            <label className="text-[11px] uppercase font-bold text-slate-400 block mb-0.5">Total</label>
                             <div className="font-bold text-slate-900 text-xs py-2">
                               ₹{(item.quantity * item.rate).toLocaleString("en-IN")}
                             </div>
@@ -1251,7 +1251,7 @@ export default function SalesClient({
                         type="date"
                         value={expectedPickupDate}
                         onChange={(e) => setExpectedPickupDate(e.target.value)}
-                        className="w-full p-2 sm:p-1.5 border rounded text-xs bg-white min-h-[40px] sm:min-h-0"
+                        className="w-full p-2 sm:p-1.5 border rounded text-xs bg-white min-h-[36px] sm:min-h-0"
                       />
                     </div>
                     <div className="space-y-1">
@@ -1260,7 +1260,7 @@ export default function SalesClient({
                         type="date"
                         value={reservationExpiryDate}
                         onChange={(e) => setReservationExpiryDate(e.target.value)}
-                        className="w-full p-2 sm:p-1.5 border rounded text-xs bg-white min-h-[40px] sm:min-h-0"
+                        className="w-full p-2 sm:p-1.5 border rounded text-xs bg-white min-h-[36px] sm:min-h-0"
                       />
                     </div>
                   </div>
@@ -1325,7 +1325,7 @@ export default function SalesClient({
                   value={driverName}
                   onChange={(e) => setDriverName(e.target.value)}
                   placeholder="e.g. Senthil Kumar"
-                  className="w-full p-2 border rounded text-xs min-h-[40px] sm:min-h-0"
+                  className="w-full p-2 border rounded text-xs min-h-[36px] sm:min-h-0"
                 />
               </div>
 
@@ -1337,7 +1337,7 @@ export default function SalesClient({
                     value={driverPhone}
                     onChange={(e) => setDriverPhone(e.target.value)}
                     placeholder="9876543210"
-                    className="w-full p-2 border rounded text-xs min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -1348,7 +1348,7 @@ export default function SalesClient({
                     value={vehicleNo}
                     onChange={(e) => setVehicleNo(e.target.value)}
                     placeholder="TN-23-AX-1234"
-                    className="w-full p-2 border rounded text-xs uppercase min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs uppercase min-h-[36px] sm:min-h-0"
                   />
                 </div>
               </div>
@@ -1368,7 +1368,7 @@ export default function SalesClient({
                 <select
                   value={deliveryType}
                   onChange={(e) => setDeliveryType(e.target.value)}
-                  className="w-full p-2 border rounded text-xs min-h-[40px] sm:min-h-0"
+                  className="w-full p-2 border rounded text-xs min-h-[36px] sm:min-h-0"
                 >
                   <option value="Own Vehicle">Own Vehicle</option>
                   <option value="Customer Pickup">Customer Pickup</option>
@@ -1421,7 +1421,7 @@ export default function SalesClient({
               {/* Top Overview Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 bg-slate-50 rounded border border-slate-100">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Customer</span>
+                  <span className="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Customer</span>
                   <div className="text-xs font-semibold text-slate-900 mt-1">{selectedOrderForDetail.customer}</div>
                   {selectedOrderForDetail.phone && (
                     <div className="text-[11px] text-slate-500 mt-0.5">{selectedOrderForDetail.phone}</div>
@@ -1429,9 +1429,9 @@ export default function SalesClient({
                 </div>
 
                 <div className="p-3 bg-slate-50 rounded border border-slate-100">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Order Status</span>
+                  <span className="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Order Status</span>
                   <div className="mt-1">
-                    <span className="inline-flex px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800">
+                    <span className="inline-flex px-2 py-0.5 rounded text-[11px] font-bold bg-blue-100 text-blue-800">
                       {selectedOrderForDetail.status}
                     </span>
                   </div>
@@ -1439,7 +1439,7 @@ export default function SalesClient({
                 </div>
 
                 <div className="p-3 bg-slate-50 rounded border border-slate-100">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Branch / Outlet</span>
+                  <span className="text-[11px] uppercase font-bold text-slate-400 tracking-wider">Branch / Outlet</span>
                   <div className="text-xs font-semibold text-slate-800 mt-1">{selectedOrderForDetail.branch}</div>
                   <div className="text-[11px] text-slate-500 mt-0.5">{selectedOrderForDetail.outlet}</div>
                 </div>
@@ -1454,7 +1454,7 @@ export default function SalesClient({
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-500">Created By</span>
+                    <span className="text-[11px] uppercase font-bold text-slate-500">Created By</span>
                     <div className="flex items-center space-x-2 mt-1">
                       <div className="h-6 w-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
                         {(selectedOrderForDetail.createdBy || "U").charAt(0).toUpperCase()}
@@ -1466,7 +1466,7 @@ export default function SalesClient({
                   </div>
 
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-500">Created At</span>
+                    <span className="text-[11px] uppercase font-bold text-slate-500">Created At</span>
                     <div className="flex items-center space-x-1.5 mt-1 text-slate-700">
                       <Clock className="h-3.5 w-3.5 text-slate-400" />
                       <span className="font-medium">{selectedOrderForDetail.createdAtFormatted || selectedOrderForDetail.date}</span>
@@ -1476,11 +1476,11 @@ export default function SalesClient({
                   {selectedOrderForDetail.lastUpdatedBy && selectedOrderForDetail.lastUpdatedBy !== "Not recorded" && (
                     <>
                       <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-500">Last Updated By</span>
+                        <span className="text-[11px] uppercase font-bold text-slate-500">Last Updated By</span>
                         <div className="font-semibold text-slate-800 mt-1">{selectedOrderForDetail.lastUpdatedBy}</div>
                       </div>
                       <div>
-                        <span className="text-[10px] uppercase font-bold text-slate-500">Last Updated At</span>
+                        <span className="text-[11px] uppercase font-bold text-slate-500">Last Updated At</span>
                         <div className="font-medium text-slate-700 mt-1">{selectedOrderForDetail.lastUpdatedAtFormatted || "—"}</div>
                       </div>
                     </>
@@ -1507,13 +1507,13 @@ export default function SalesClient({
                           <div className="flex items-center space-x-2">
                             {h.oldStatus && (
                               <>
-                                <span className="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-bold">
+                                <span className="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px] font-bold">
                                   {h.oldStatus}
                                 </span>
                                 <span className="text-slate-400">→</span>
                               </>
                             )}
-                            <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-[10px] font-bold">
+                            <span className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded text-[11px] font-bold">
                               {h.newStatus || h.status}
                             </span>
                           </div>
@@ -1524,7 +1524,7 @@ export default function SalesClient({
                           <div className="font-semibold text-slate-800">
                             {h.changedByName || h.userName || h.performedBy || "System"}
                           </div>
-                          <div className="text-[10px] text-slate-400">
+                          <div className="text-[11px] text-slate-400">
                             {h.changedAt ? new Date(h.changedAt).toLocaleString("en-IN") : "—"}
                           </div>
                         </div>
@@ -1538,7 +1538,7 @@ export default function SalesClient({
                 <button
                   type="button"
                   onClick={() => setSelectedOrderForDetail(null)}
-                  className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold min-h-[40px] sm:min-h-0"
+                  className="w-full sm:w-auto px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-semibold min-h-[36px] sm:min-h-0"
                 >
                   Close
                 </button>

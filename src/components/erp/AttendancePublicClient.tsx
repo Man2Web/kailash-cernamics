@@ -486,7 +486,7 @@ export default function AttendancePublicClient({
           )}
 
           <div className="pt-2 border-t border-slate-800/80 text-center">
-            <p className="text-[10px] text-slate-500 flex items-center justify-center gap-1">
+            <p className="text-[11px] text-slate-500 flex items-center justify-center gap-1">
               <ShieldCheck className="h-3 w-3 text-emerald-500" />
               Secure 60-Second Rotating QR Code
             </p>
@@ -537,14 +537,14 @@ export default function AttendancePublicClient({
           {/* Target URL Info Banner for Wi-Fi / Phone Scanning */}
           <div className="bg-slate-950 p-3 rounded-xl border border-slate-800 text-left space-y-1.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                 <Wifi className="h-3 w-3 text-emerald-400" />
                 QR Encodes (Wi-Fi Access URL):
               </span>
               <button
                 type="button"
                 onClick={() => setShowNetworkConfig(!showNetworkConfig)}
-                className="text-[10px] text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-0.5 cursor-pointer"
+                className="text-[11px] text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-0.5 cursor-pointer"
               >
                 <Settings className="h-3 w-3" />
                 <span>{showNetworkConfig ? "Hide" : "Change URL"}</span>
@@ -581,7 +581,7 @@ export default function AttendancePublicClient({
                     Apply
                   </button>
                 </div>
-                <div className="flex gap-2 text-[10px]">
+                <div className="flex gap-2 text-[11px]">
                   <button
                     type="button"
                     onClick={() => setActiveBaseUrl("http://192.168.1.14:3000")}

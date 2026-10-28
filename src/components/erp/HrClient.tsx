@@ -139,7 +139,7 @@ export default function HrClient({ employees }: HrClientProps) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Total Personnel
             </p>
             <p className="text-xl font-extrabold text-slate-800">{total}</p>
@@ -151,7 +151,7 @@ export default function HrClient({ employees }: HrClientProps) {
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Active Staff
             </p>
             <p className="text-xl font-extrabold text-blue-600">{activeCount}</p>
@@ -163,7 +163,7 @@ export default function HrClient({ employees }: HrClientProps) {
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Monthly Payroll
             </p>
             <p className="text-xl font-extrabold text-emerald-600">
@@ -177,7 +177,7 @@ export default function HrClient({ employees }: HrClientProps) {
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Attendance Today
             </p>
             <p className="text-xl font-extrabold text-slate-800">100%</p>
@@ -299,7 +299,7 @@ export default function HrClient({ employees }: HrClientProps) {
                           value={e.status}
                           disabled={isPending}
                           onChange={(evt) => handleStatusChange(e.id, evt.target.value)}
-                          className={`px-1.5 py-0.5 border text-[10px] font-semibold rounded-sm outline-none ${getStatusColor(
+                          className={`px-1.5 py-0.5 border text-[11px] font-semibold rounded-sm outline-none ${getStatusColor(
                             e.status
                           )}`}
                         >
@@ -343,7 +343,7 @@ export default function HrClient({ employees }: HrClientProps) {
                       value={e.status}
                       disabled={isPending}
                       onChange={(evt) => handleStatusChange(e.id, evt.target.value)}
-                      className={`px-2 py-0.5 border text-[10px] font-semibold rounded outline-none ${getStatusColor(
+                      className={`px-2 py-0.5 border text-[11px] font-semibold rounded outline-none ${getStatusColor(
                         e.status
                       )}`}
                     >
@@ -354,15 +354,15 @@ export default function HrClient({ employees }: HrClientProps) {
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Job Title</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Job Title</span>
                       <span className="text-slate-700 font-medium">{e.jobTitle}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Joined</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Joined</span>
                       <span className="text-slate-600">{e.joiningDate}</span>
                     </div>
                     <div className="col-span-2">
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Email</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Email</span>
                       <span className="text-slate-600 font-mono text-[11px]">{e.email}</span>
                     </div>
                   </div>
@@ -390,7 +390,7 @@ export default function HrClient({ employees }: HrClientProps) {
             <h3 className="text-xs font-bold text-slate-800">
               Daily Attendance Check: {new Date().toLocaleDateString("en-IN")}
             </h3>
-            <span className="text-[10px] text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-semibold uppercase">
+            <span className="text-[11px] text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-semibold uppercase">
               Present: {activeCount}/{activeCount}
             </span>
           </div>
@@ -403,11 +403,11 @@ export default function HrClient({ employees }: HrClientProps) {
               >
                 <div>
                   <p className="text-xs font-bold text-slate-800">{emp.name}</p>
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">
+                  <p className="text-[11px] text-slate-400 uppercase tracking-wider">
                     {emp.department} • {emp.employeeNo}
                   </p>
                 </div>
-                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100/50 border border-emerald-200 px-2 py-1 rounded uppercase">
+                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100/50 border border-emerald-200 px-2 py-1 rounded uppercase">
                   Present
                 </span>
               </div>
@@ -485,7 +485,7 @@ export default function HrClient({ employees }: HrClientProps) {
                       <div className="text-[11px] font-mono text-slate-500">{e.employeeNo} • {e.department}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-[10px] text-slate-400 font-bold uppercase">Net Pay</div>
+                      <div className="text-[11px] text-slate-400 font-bold uppercase">Net Pay</div>
                       <div className="font-extrabold text-blue-600 text-sm">
                         ₹{netPay.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
                       </div>
@@ -493,15 +493,15 @@ export default function HrClient({ employees }: HrClientProps) {
                   </div>
                   <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2 rounded border border-slate-100 text-center">
                     <div>
-                      <div className="text-[10px] text-slate-400">Base</div>
+                      <div className="text-[11px] text-slate-400">Base</div>
                       <div className="font-semibold text-slate-700">₹{e.salary.toFixed(0)}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-emerald-600">+HRA</div>
+                      <div className="text-[11px] text-emerald-600">+HRA</div>
                       <div className="font-semibold text-emerald-700">₹{hra.toFixed(0)}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-red-500">-PF</div>
+                      <div className="text-[11px] text-red-500">-PF</div>
                       <div className="font-semibold text-red-600">₹{pf.toFixed(0)}</div>
                     </div>
                   </div>

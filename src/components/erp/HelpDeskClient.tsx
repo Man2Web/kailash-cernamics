@@ -176,14 +176,14 @@ export default function HelpDeskClient({ articles }: HelpDeskClientProps) {
                   <div className="flex items-center space-x-3 pr-4">
                     <BookOpen className="h-4 w-4 text-blue-600 flex-shrink-0" />
                     <div>
-                      <span className="text-[9px] font-bold text-slate-400 bg-slate-100 border px-1.5 py-0.5 rounded-xs mr-2 uppercase">
+                      <span className="text-[10px] font-bold text-slate-400 bg-slate-100 border px-1.5 py-0.5 rounded-xs mr-2 uppercase">
                         {a.category}
                       </span>
                       <span className="text-xs font-bold text-slate-800">{a.title}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-3 flex-shrink-0">
-                    <span className="text-[10px] text-slate-400 hidden sm:inline">{a.date}</span>
+                    <span className="text-[11px] text-slate-400 hidden sm:inline">{a.date}</span>
                     {isExpanded ? (
                       <ChevronUp className="h-4 w-4 text-slate-500" />
                     ) : (

@@ -138,7 +138,7 @@ export default function Sidebar({ user, isMobile = false, onClose }: SidebarProp
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-xs font-semibold text-white truncate">{user.name}</p>
-          <p className="text-[10px] text-slate-400 truncate capitalize font-medium">
+          <p className="text-[11px] text-slate-400 truncate capitalize font-medium">
             {isSuperAdmin
               ? "Super Admin"
               : isWarehouseManager

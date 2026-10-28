@@ -59,11 +59,11 @@ export default function TopHeader({ user, onMenuToggle }: TopHeaderProps) {
           <input
             type="text"
             suppressHydrationWarning
-            placeholder="Search what you want to do... [Ctrl + K]"
-            className="block w-full pl-9 pr-12 py-1.5 border border-slate-200 rounded-sm bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs focus:bg-white transition-all duration-150"
+            placeholder="Search..."
+            className="block w-full pl-9 pr-3 lg:pr-12 py-1.5 min-w-[120px] border border-slate-200 rounded-sm bg-slate-50 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-xs focus:bg-white transition-all duration-150"
           />
           <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-            <kbd className="hidden sm:inline-block px-1.5 py-0.5 border border-slate-200 rounded-sm text-[10px] font-sans font-medium text-slate-400 bg-white">
+            <kbd className="hidden lg:inline-block px-1.5 py-0.5 border border-slate-200 rounded-sm text-[11px] font-sans font-medium text-slate-400 bg-white">
               Ctrl+K
             </kbd>
           </div>
@@ -131,7 +131,7 @@ export default function TopHeader({ user, onMenuToggle }: TopHeaderProps) {
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}
             aria-label="User profile menu"
-            className="flex items-center space-x-1.5 p-1 rounded-md focus:outline-none hover:bg-slate-100 transition min-w-[40px] min-h-[40px] justify-center cursor-pointer"
+            className="flex items-center space-x-1.5 p-1 rounded-md focus:outline-none hover:bg-slate-100 transition min-w-[40px] min-h-[36px] justify-center cursor-pointer"
           >
             <div className="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-xs uppercase shadow-xs">
               {user.name.charAt(0)}
@@ -150,7 +150,7 @@ export default function TopHeader({ user, onMenuToggle }: TopHeaderProps) {
                   <p className="text-xs font-semibold text-slate-900 truncate">
                     {user.name}
                   </p>
-                  <p className="text-[10px] text-slate-400 truncate">
+                  <p className="text-[11px] text-slate-400 truncate">
                     {user.email}
                   </p>
                 </div>

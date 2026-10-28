@@ -220,10 +220,10 @@ export default function WorkflowClient({
                 >
                   <div className="space-y-1">
                     <div className="flex items-center space-x-2">
-                      <span className="font-bold text-blue-600 uppercase bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-sm text-[10px]">
+                      <span className="font-bold text-blue-600 uppercase bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-sm text-[11px]">
                         {req.docType}
                       </span>
-                      <span className="text-slate-400 font-mono text-[10px]">{req.date}</span>
+                      <span className="text-slate-400 font-mono text-[11px]">{req.date}</span>
                     </div>
                     <p className="font-semibold text-slate-800 text-sm">{req.docDetails}</p>
                     <div className="text-slate-500 font-medium">
@@ -252,7 +252,7 @@ export default function WorkflowClient({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Creator */}
           <div className="bg-white p-4 border border-slate-200 rounded-sm shadow-xs space-y-4 text-xs">
-            <h3 className="font-bold text-slate-500 uppercase tracking-wider text-[10px]">
+            <h3 className="font-bold text-slate-500 uppercase tracking-wider text-[11px]">
               Setup Custom Workflow
             </h3>
             <form onSubmit={handleCreateWorkflow} className="space-y-3">
@@ -281,7 +281,7 @@ export default function WorkflowClient({
 
               {/* Add Steps */}
               <div className="space-y-2 border-t border-slate-100 pt-3">
-                <label className="font-bold text-slate-800 block text-[10px] uppercase">
+                <label className="font-bold text-slate-800 block text-[11px] uppercase">
                   Sequential Steps Setup
                 </label>
                 <div className="flex space-x-1.5">
@@ -298,7 +298,7 @@ export default function WorkflowClient({
                   <button
                     type="button"
                     onClick={handleAddRoleStep}
-                    className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-sm text-[10px] uppercase"
+                    className="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-sm text-[11px] uppercase"
                   >
                     + Add
                   </button>
@@ -339,7 +339,7 @@ export default function WorkflowClient({
 
           {/* List existing Workflows */}
           <div className="bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden md:col-span-2 text-xs text-slate-700 p-4 space-y-4">
-            <h3 className="font-bold text-slate-500 uppercase tracking-wider text-[10px] border-b pb-2">
+            <h3 className="font-bold text-slate-500 uppercase tracking-wider text-[11px] border-b pb-2">
               Active Workflow Pipelines
             </h3>
             <div className="space-y-4">
@@ -351,7 +351,7 @@ export default function WorkflowClient({
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-slate-900">{wf.name}</span>
                       <span
-                        className={`px-1.5 py-0.5 rounded-sm text-[9px] font-bold ${
+                        className={`px-1.5 py-0.5 rounded-sm text-[10px] font-bold ${
                           wf.isActive
                             ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
                             : "bg-slate-50 text-slate-500 border border-slate-100"
@@ -361,7 +361,7 @@ export default function WorkflowClient({
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-2 pt-1.5 items-center">
-                      <span className="text-[10px] text-slate-400 uppercase font-semibold">Steps:</span>
+                      <span className="text-[11px] text-slate-400 uppercase font-semibold">Steps:</span>
                       {wf.steps.map((step) => (
                         <div key={step.id} className="flex items-center space-x-1">
                           <span className="bg-white border px-2 py-0.5 rounded font-medium">
@@ -408,7 +408,7 @@ export default function WorkflowClient({
                       <td className="px-4 py-2">{req.docDetails}</td>
                       <td className="px-4 py-2 text-center">
                         <span
-                          className={`px-1.5 py-0.5 rounded-sm text-[10px] uppercase font-bold border ${
+                          className={`px-1.5 py-0.5 rounded-sm text-[11px] uppercase font-bold border ${
                             req.status === "APPROVED"
                               ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                               : "bg-red-50 text-red-700 border-red-100"
@@ -439,7 +439,7 @@ export default function WorkflowClient({
                       <span className="text-[11px] text-slate-400">{req.date}</span>
                     </div>
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold border ${
+                      className={`px-2 py-0.5 rounded text-[11px] uppercase font-bold border ${
                         req.status === "APPROVED"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-100"
                           : "bg-red-50 text-red-700 border-red-100"
@@ -464,7 +464,7 @@ export default function WorkflowClient({
               Resolve Stage - Approval Step {actionReq.currentStep}
             </h3>
             <div className="space-y-1">
-              <p className="font-semibold text-slate-950 font-mono text-[10px] uppercase bg-blue-50 border px-1.5 py-0.5 inline-block rounded-sm">
+              <p className="font-semibold text-slate-950 font-mono text-[11px] uppercase bg-blue-50 border px-1.5 py-0.5 inline-block rounded-sm">
                 {actionReq.docType}
               </p>
               <p className="font-bold text-slate-800 text-sm mt-1">{actionReq.docDetails}</p>

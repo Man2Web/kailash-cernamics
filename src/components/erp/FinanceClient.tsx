@@ -243,7 +243,7 @@ export default function FinanceClient({
                       </td>
                       <td className="px-4 py-2 font-medium">{acc.name}</td>
                       <td className="px-4 py-2">
-                        <span className="px-1.5 py-0.5 rounded-sm bg-slate-50 text-slate-600 border border-slate-100 text-[10px]">
+                        <span className="px-1.5 py-0.5 rounded-sm bg-slate-50 text-slate-600 border border-slate-100 text-[11px]">
                           {acc.type}
                         </span>
                       </td>
@@ -277,21 +277,21 @@ export default function FinanceClient({
                       <div className="font-bold text-slate-900 text-sm">{acc.name}</div>
                       <div className="text-[11px] font-mono text-slate-500">{acc.code}</div>
                     </div>
-                    <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[10px] font-semibold">
+                    <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-700 text-[11px] font-semibold">
                       {acc.type}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2 rounded border border-slate-100 text-center">
                     <div>
-                      <div className="text-[10px] text-slate-400">Debit</div>
+                      <div className="text-[11px] text-slate-400">Debit</div>
                       <div className="font-medium text-slate-700">₹{acc.debitSum.toFixed(0)}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-slate-400">Credit</div>
+                      <div className="text-[11px] text-slate-400">Credit</div>
                       <div className="font-medium text-slate-700">₹{acc.creditSum.toFixed(0)}</div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-blue-600 font-bold">Balance</div>
+                      <div className="text-[11px] text-blue-600 font-bold">Balance</div>
                       <div className="font-bold text-blue-700">₹{acc.balance.toFixed(0)}</div>
                     </div>
                   </div>
@@ -339,7 +339,7 @@ export default function FinanceClient({
                     {/* Entry lines (Desktop >= 768px) */}
                     <div className="hidden md:block">
                       <table className="min-w-full divide-y divide-slate-100 text-left text-xs">
-                        <thead className="text-[10px] text-slate-400 uppercase font-semibold">
+                        <thead className="text-[11px] text-slate-400 uppercase font-semibold">
                           <tr>
                             <th className="px-4 py-1.5">Account Code / Name</th>
                             <th className="px-4 py-1.5 text-right">Debit (₹)</th>
@@ -365,7 +365,7 @@ export default function FinanceClient({
                           ))}
                           {/* Summary match line */}
                           <tr className="bg-slate-50/50 font-bold border-t border-slate-200">
-                            <td className="px-4 py-2 text-right text-slate-500 text-[10px] uppercase">
+                            <td className="px-4 py-2 text-right text-slate-500 text-[11px] uppercase">
                               Balances Match Verification
                             </td>
                             <td className="px-4 py-2 text-right text-emerald-600 font-mono">
@@ -416,7 +416,7 @@ export default function FinanceClient({
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
               Trial Balance Statement
             </h3>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[11px] text-slate-500">
               Balances mapped per double-entry checks. Debits must mathematically match Credits.
             </p>
           </div>
@@ -447,7 +447,7 @@ export default function FinanceClient({
                 ))}
                 {/* Grand Trial Total */}
                 <tr className="bg-slate-900 text-white font-extrabold border-t-2 border-slate-800">
-                  <td colSpan={2} className="px-4 py-2.5 text-right uppercase tracking-wider text-[10px] text-slate-400">
+                  <td colSpan={2} className="px-4 py-2.5 text-right uppercase tracking-wider text-[11px] text-slate-400">
                     Mathematical Equilibrium Verification
                   </td>
                   <td className="px-4 py-2.5 text-right font-mono">
@@ -490,7 +490,7 @@ export default function FinanceClient({
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
               Profit & Loss Statement (Income Statement)
             </h3>
-            <p className="text-[10px] text-slate-500">
+            <p className="text-[11px] text-slate-500">
               Calculates revenue and purchases details for the current financial cycle.
             </p>
           </div>
@@ -498,7 +498,7 @@ export default function FinanceClient({
           <div className="space-y-4 text-xs">
             {/* 1. Revenues */}
             <div className="space-y-2">
-              <h4 className="font-bold text-slate-900 uppercase border-b pb-1 text-[10px] tracking-wider text-blue-600">
+              <h4 className="font-bold text-slate-900 uppercase border-b pb-1 text-[11px] tracking-wider text-blue-600">
                 1. Operating Revenues
               </h4>
               {revenueAccounts.map((a) => (
@@ -515,7 +515,7 @@ export default function FinanceClient({
 
             {/* 2. Expenses */}
             <div className="space-y-2 pt-2">
-              <h4 className="font-bold text-slate-900 uppercase border-b pb-1 text-[10px] tracking-wider text-rose-600">
+              <h4 className="font-bold text-slate-900 uppercase border-b pb-1 text-[11px] tracking-wider text-rose-600">
                 2. Operating Expenses
               </h4>
               {expenseAccounts.map((a) => (
@@ -539,7 +539,7 @@ export default function FinanceClient({
               } flex justify-between items-center`}
             >
               <div>
-                <span className="text-[10px] uppercase font-bold tracking-wider block">
+                <span className="text-[11px] uppercase font-bold tracking-wider block">
                   Net Surplus (Net Profit / Loss)
                 </span>
                 <span className="text-xs text-slate-500">Revenue minus purchase expenses</span>
@@ -559,7 +559,7 @@ export default function FinanceClient({
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
               Balance Sheet Statement
             </h3>
-            <p className="text-[10px] text-slate-500 font-mono">
+            <p className="text-[11px] text-slate-500 font-mono">
               Assets = Liabilities + Equity (Equation Balance check)
             </p>
           </div>
@@ -568,7 +568,7 @@ export default function FinanceClient({
             {/* Left side: Assets */}
             <div className="space-y-4">
               <div className="border-b pb-2">
-                <h4 className="font-bold text-slate-900 uppercase text-[10px] tracking-wider text-blue-600">
+                <h4 className="font-bold text-slate-900 uppercase text-[11px] tracking-wider text-blue-600">
                   ASSETS (Debit Balances)
                 </h4>
               </div>
@@ -592,14 +592,14 @@ export default function FinanceClient({
             {/* Right side: Liabilities & Equity */}
             <div className="space-y-4">
               <div className="border-b pb-2">
-                <h4 className="font-bold text-slate-900 uppercase text-[10px] tracking-wider text-rose-600">
+                <h4 className="font-bold text-slate-900 uppercase text-[11px] tracking-wider text-rose-600">
                   LIABILITIES & EQUITIES
                 </h4>
               </div>
 
               {/* Liabilities */}
               <div className="space-y-2">
-                <h5 className="font-bold text-slate-800 uppercase text-[9px] tracking-wider">
+                <h5 className="font-bold text-slate-800 uppercase text-[10px] tracking-wider">
                   Liabilities (Credit Balances)
                 </h5>
                 {liabilityAccounts.map((a) => (
@@ -612,7 +612,7 @@ export default function FinanceClient({
 
               {/* Equities */}
               <div className="space-y-2 pt-2">
-                <h5 className="font-bold text-slate-800 uppercase text-[9px] tracking-wider">
+                <h5 className="font-bold text-slate-800 uppercase text-[10px] tracking-wider">
                   Equities & Reserves
                 </h5>
                 {equityAccounts.map((a) => (
@@ -644,7 +644,7 @@ export default function FinanceClient({
             } flex justify-between items-center`}
           >
             <div>
-              <span className="text-[10px] uppercase font-bold tracking-wider block">
+              <span className="text-[11px] uppercase font-bold tracking-wider block">
                 Accounting Equation Match Verification
               </span>
               <span className="text-xs text-slate-500">Assets balance matches Liabilities + Equity</span>

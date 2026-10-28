@@ -87,7 +87,7 @@ export default function BarcodeRenderer({ value, width = 1.5, height = 50 }: Bar
           })}
         </g>
       </svg>
-      <span className="font-mono text-[9px] text-slate-500 font-bold uppercase tracking-widest">
+      <span className="font-mono text-[10px] text-slate-500 font-bold uppercase tracking-widest">
         {value}
       </span>
     </div>

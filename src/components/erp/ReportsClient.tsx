@@ -334,11 +334,11 @@ export default function ReportsClient({
                 </div>
                 <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2 rounded border border-slate-100">
                   <div>
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Cost Price</span>
+                    <span className="text-[11px] text-slate-400 uppercase font-bold block">Cost Price</span>
                     <span className="text-slate-700 font-medium">₹{row.purchasePrice.toFixed(2)}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Valuation</span>
+                    <span className="text-[11px] text-slate-400 uppercase font-bold block">Valuation</span>
                     <span className="font-bold text-slate-900">₹{row.stockValue.toLocaleString("en-IN")}</span>
                   </div>
                 </div>
@@ -400,11 +400,11 @@ export default function ReportsClient({
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   <div>
-                    <span className="text-[10px] text-slate-400 block">Date & Outlet</span>
+                    <span className="text-[11px] text-slate-400 block">Date & Outlet</span>
                     <span className="text-slate-600">{row.date} • {row.outlet}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 block">Taxable / GST</span>
+                    <span className="text-[11px] text-slate-400 block">Taxable / GST</span>
                     <span className="text-slate-600">₹{row.taxable.toFixed(0)} + ₹{row.tax.toFixed(0)}</span>
                   </div>
                 </div>
@@ -462,11 +462,11 @@ export default function ReportsClient({
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[11px]">
                   <div>
-                    <span className="text-[10px] text-slate-400 block">Posting Date</span>
+                    <span className="text-[11px] text-slate-400 block">Posting Date</span>
                     <span className="text-slate-600">{row.date}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 block">Taxable / GST</span>
+                    <span className="text-[11px] text-slate-400 block">Taxable / GST</span>
                     <span className="text-slate-600">₹{row.taxable.toFixed(0)} + ₹{row.tax.toFixed(0)}</span>
                   </div>
                 </div>
@@ -524,11 +524,11 @@ export default function ReportsClient({
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-2 rounded border border-slate-100">
                   <div>
-                    <span className="text-[10px] text-slate-400 block">Total Debits</span>
+                    <span className="text-[11px] text-slate-400 block">Total Debits</span>
                     <span className="text-slate-700 font-medium">₹{row.debits.toFixed(2)}</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 block">Total Credits</span>
+                    <span className="text-[11px] text-slate-400 block">Total Credits</span>
                     <span className="text-slate-700 font-medium">₹{row.credits.toFixed(2)}</span>
                   </div>
                 </div>

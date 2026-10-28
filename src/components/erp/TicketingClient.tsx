@@ -155,7 +155,7 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Total Issues
             </p>
             <p className="text-xl font-extrabold text-slate-800">{total}</p>
@@ -167,7 +167,7 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Open Tickets
             </p>
             <p className="text-xl font-extrabold text-red-600">{open}</p>
@@ -179,7 +179,7 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               In Progress
             </p>
             <p className="text-xl font-extrabold text-amber-600">{inProgress}</p>
@@ -191,7 +191,7 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
 
         <div className="bg-white p-4 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Resolved Cases
             </p>
             <p className="text-xl font-extrabold text-emerald-600">{resolved}</p>
@@ -284,13 +284,13 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
                   <td className="px-4 py-3 font-medium">{t.customerName}</td>
                   <td className="px-4 py-3">
                     <p className="font-semibold text-slate-900">{t.subject}</p>
-                    <p className="text-[10px] text-slate-400 line-clamp-1">
+                    <p className="text-[11px] text-slate-400 line-clamp-1">
                       {t.description}
                     </p>
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`px-2 py-0.5 border text-[10px] font-semibold rounded-sm uppercase ${getPriorityColor(
+                      className={`px-2 py-0.5 border text-[11px] font-semibold rounded-sm uppercase ${getPriorityColor(
                         t.priority
                       )}`}
                     >
@@ -302,7 +302,7 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
                       value={t.status}
                       disabled={isPending}
                       onChange={(e) => handleStatusChange(t.id, e.target.value)}
-                      className={`px-1.5 py-0.5 border text-[10px] font-semibold rounded-sm outline-none ${getStatusColor(
+                      className={`px-1.5 py-0.5 border text-[11px] font-semibold rounded-sm outline-none ${getStatusColor(
                         t.status
                       )}`}
                     >
@@ -345,7 +345,7 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <span
-                    className={`px-2 py-0.5 border text-[10px] font-semibold rounded uppercase ${getPriorityColor(
+                    className={`px-2 py-0.5 border text-[11px] font-semibold rounded uppercase ${getPriorityColor(
                       t.priority
                     )}`}
                   >
@@ -355,7 +355,7 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
                     value={t.status}
                     disabled={isPending}
                     onChange={(e) => handleStatusChange(t.id, e.target.value)}
-                    className={`px-1.5 py-0.5 border text-[10px] font-semibold rounded outline-none ${getStatusColor(
+                    className={`px-1.5 py-0.5 border text-[11px] font-semibold rounded outline-none ${getStatusColor(
                       t.status
                     )}`}
                   >
@@ -373,11 +373,11 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
 
               <div className="grid grid-cols-2 gap-2 text-[11px] bg-slate-50 p-2 rounded border border-slate-100">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Assigned To</span>
+                  <span className="text-[11px] uppercase font-bold text-slate-400 block">Assigned To</span>
                   <span className="text-slate-700">{t.assignedToName || "Unassigned"}</span>
                 </div>
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Date</span>
+                  <span className="text-[11px] uppercase font-bold text-slate-400 block">Date</span>
                   <span className="text-slate-600">{t.date}</span>
                 </div>
               </div>

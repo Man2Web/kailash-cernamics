@@ -253,7 +253,7 @@ export default function StockClient({
 
       {/* 2. Tabs Selector (Hidden in View-Only mode) */}
       {!viewOnly && (
-        <div className="flex border-b border-slate-200 bg-white px-2 pt-1 shadow-xs rounded-lg overflow-x-auto">
+        <div className="flex border-b border-slate-200 bg-white px-2 pt-1 shadow-xs rounded-lg overflow-x-auto overflow-y-hidden no-scrollbar">
           <button
             onClick={() => setActiveTab("products")}
             className={`px-3 sm:px-4 py-2 text-xs font-semibold border-b-2 -mb-px flex items-center space-x-1.5 sm:space-x-2 transition-all whitespace-nowrap cursor-pointer ${
@@ -585,7 +585,7 @@ export default function StockClient({
           )}
 
           {/* Products Dense Data Table (Desktop >= 768px) */}
-          <div className="hidden md:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
+          <div className="hidden xl:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
             <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
               <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                 <tr>
@@ -627,7 +627,7 @@ export default function StockClient({
                       <td className="px-4 py-2 text-right text-slate-400">{p.minStock}</td>
                       <td className="px-4 py-2 text-right font-bold">
                         <span
-                          className={`px-1.5 py-0.5 rounded-sm text-[10px] ${
+                          className={`px-1.5 py-0.5 rounded-sm text-[11px] ${
                             p.currentStock <= p.reorderLevel
                               ? "bg-red-50 text-red-600 border border-red-200"
                               : "bg-emerald-50 text-emerald-600 border border-emerald-200"
@@ -655,7 +655,7 @@ export default function StockClient({
           </div>
 
           {/* Products Card View (Mobile < 768px) */}
-          <div className="md:hidden space-y-3">
+          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
             {filteredProducts.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No products found. Add a product to get started.
@@ -683,23 +683,23 @@ export default function StockClient({
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Category & Brand</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Category & Brand</span>
                       <span className="text-slate-800 font-medium block truncate">
                         {p.category} {p.brand ? `• ${p.brand}` : ""}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Selling Price</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Selling Price</span>
                       <span className="font-bold text-blue-600 text-sm block">
                         ₹{p.sellingPrice.toFixed(2)}
                       </span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Purchase Price</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Purchase Price</span>
                       <span className="text-slate-600 block">₹{p.purchasePrice.toFixed(2)}</span>
                     </div>
                     <div>
-                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Min / Reorder</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-400 block">Min / Reorder</span>
                       <span className="text-slate-600 block">
                         Min: {p.minStock} | Reorder: {p.reorderLevel}
                       </span>
@@ -767,7 +767,7 @@ export default function StockClient({
           {/* List Categories */}
           <div className="md:col-span-2 space-y-3">
             {/* Desktop Table View */}
-            <div className="hidden md:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
+            <div className="hidden xl:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
               <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
                 <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                   <tr>
@@ -797,7 +797,7 @@ export default function StockClient({
             </div>
 
             {/* Mobile Cards View */}
-            <div className="md:hidden space-y-2">
+            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-2">
               {categories.length === 0 ? (
                 <div className="bg-white p-4 text-center text-slate-400 border border-slate-200 rounded-sm text-xs">
                   No categories found
@@ -861,7 +861,7 @@ export default function StockClient({
           {/* List Brands */}
           <div className="md:col-span-2 space-y-3">
             {/* Desktop Table View */}
-            <div className="hidden md:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
+            <div className="hidden xl:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
               <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
                 <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                   <tr>
@@ -891,7 +891,7 @@ export default function StockClient({
             </div>
 
             {/* Mobile Cards View */}
-            <div className="md:hidden space-y-2">
+            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-2">
               {brands.length === 0 ? (
                 <div className="bg-white p-4 text-center text-slate-400 border border-slate-200 rounded-sm text-xs">
                   No brands found
@@ -955,7 +955,7 @@ export default function StockClient({
           {/* List Units */}
           <div className="md:col-span-2 space-y-3">
             {/* Desktop Table View */}
-            <div className="hidden md:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
+            <div className="hidden xl:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
               <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
                 <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
                   <tr>
@@ -985,7 +985,7 @@ export default function StockClient({
             </div>
 
             {/* Mobile Cards View */}
-            <div className="md:hidden space-y-2">
+            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-2">
               {units.length === 0 ? (
                 <div className="bg-white p-4 text-center text-slate-400 border border-slate-200 rounded-sm text-xs">
                   No units found
@@ -1058,13 +1058,13 @@ export default function StockClient({
                       No QR Generated
                     </div>
                   )}
-                  <span className="text-[10px] font-mono text-slate-700 mt-1 font-bold tracking-wider">
+                  <span className="text-[11px] font-mono text-slate-700 mt-1 font-bold tracking-wider">
                     {selectedProductDetails.product.qrCode}
                   </span>
                 </div>
 
                 <div className="flex-1 space-y-2 text-center sm:text-left">
-                  <div className="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[10px] font-bold uppercase tracking-wider">
+                  <div className="inline-block px-2 py-0.5 bg-blue-50 text-blue-700 border border-blue-200 rounded text-[11px] font-bold uppercase tracking-wider">
                     Permanent Product QR
                   </div>
                   <h4 className="font-bold text-slate-900 text-base">
@@ -1072,7 +1072,7 @@ export default function StockClient({
                   </h4>
                   <div className="grid grid-cols-2 gap-2 text-slate-600 pt-1">
                     <div>
-                      <span className="text-slate-400 block text-[10px]">Category</span>
+                      <span className="text-slate-400 block text-[11px]">Category</span>
                       <span className="font-semibold text-slate-800">
                         {typeof selectedProductDetails.product.category === "string"
                           ? selectedProductDetails.product.category
@@ -1080,7 +1080,7 @@ export default function StockClient({
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px]">Brand</span>
+                      <span className="text-slate-400 block text-[11px]">Brand</span>
                       <span className="font-semibold text-slate-800">
                         {typeof selectedProductDetails.product.brand === "string"
                           ? selectedProductDetails.product.brand
@@ -1088,13 +1088,13 @@ export default function StockClient({
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px]">Selling Price</span>
+                      <span className="text-slate-400 block text-[11px]">Selling Price</span>
                       <span className="font-bold text-blue-600">
                         ₹{Number(selectedProductDetails.product.sellingPrice || 0).toFixed(2)}
                       </span>
                     </div>
                     <div>
-                      <span className="text-slate-400 block text-[10px]">HSN Code</span>
+                      <span className="text-slate-400 block text-[11px]">HSN Code</span>
                       <span className="font-mono text-slate-700">
                         {selectedProductDetails.product.hsnCode || "N/A"}
                       </span>
@@ -1154,7 +1154,7 @@ export default function StockClient({
                     <Warehouse className="h-4 w-4 text-slate-500" />
                     <span>Current Stock Across All Warehouses</span>
                   </h5>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[11px] text-slate-400">
                     Live Database Calculation (Available = On Hand - Reserved)
                   </span>
                 </div>
@@ -1162,7 +1162,7 @@ export default function StockClient({
                 {/* Desktop Table View */}
                 <div className="hidden sm:block border border-slate-200 rounded-md overflow-hidden">
                   <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
-                    <thead className="bg-slate-50 text-slate-500 font-semibold uppercase text-[10px]">
+                    <thead className="bg-slate-50 text-slate-500 font-semibold uppercase text-[11px]">
                       <tr>
                         <th className="px-3 py-2">Warehouse</th>
                         <th className="px-3 py-2 text-right">On Hand</th>
@@ -1239,11 +1239,11 @@ export default function StockClient({
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           <div>
-                            <span className="text-[10px] uppercase font-bold text-slate-400 block">On Hand</span>
+                            <span className="text-[11px] uppercase font-bold text-slate-400 block">On Hand</span>
                             <span className="text-slate-700 font-semibold">{w.onHand}</span>
                           </div>
                           <div>
-                            <span className="text-[10px] uppercase font-bold text-slate-400 block">Reserved</span>
+                            <span className="text-[11px] uppercase font-bold text-slate-400 block">Reserved</span>
                             <span className="text-amber-700 font-semibold">{w.reserved}</span>
                           </div>
                         </div>
@@ -1254,12 +1254,12 @@ export default function StockClient({
                   <div className="p-3 bg-blue-50/70 border border-blue-200 rounded-md flex justify-between items-center text-xs">
                     <div>
                       <span className="font-bold text-slate-800 block">Total All Warehouses</span>
-                      <span className="text-[10px] text-slate-500">
+                      <span className="text-[11px] text-slate-500">
                         On Hand: {selectedProductDetails.totalOnHand ?? 0} | Res: {selectedProductDetails.totalReserved ?? 0}
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-[10px] uppercase font-bold text-slate-500 block">Available</span>
+                      <span className="text-[11px] uppercase font-bold text-slate-500 block">Available</span>
                       <span className="text-sm font-bold text-emerald-700">{selectedProductDetails.totalAvailable ?? 0}</span>
                     </div>
                   </div>
@@ -1269,7 +1269,7 @@ export default function StockClient({
 
             {/* Modal Footer */}
             <div className="p-3 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-xs">
-              <span className="text-slate-400 text-[10px]">
+              <span className="text-slate-400 text-[11px]">
                 {selectedProductDetails.lastUpdated ? `Retrieved at ${selectedProductDetails.lastUpdated}` : "Live Database Calculation"}
               </span>
               <button

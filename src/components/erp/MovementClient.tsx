@@ -177,7 +177,7 @@ export default function MovementClient({
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Sales Deliveries</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Sales Deliveries</p>
             <p className="text-base sm:text-lg font-extrabold text-slate-900">{total}</p>
           </div>
           <div className="p-2 bg-slate-100 text-slate-600 rounded">
@@ -187,7 +187,7 @@ export default function MovementClient({
 
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Ready / Draft</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Ready / Draft</p>
             <p className="text-base sm:text-lg font-extrabold text-amber-600">{ready}</p>
           </div>
           <div className="p-2 bg-amber-50 text-amber-600 rounded">
@@ -197,7 +197,7 @@ export default function MovementClient({
 
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Out for Delivery</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Out for Delivery</p>
             <p className="text-base sm:text-lg font-extrabold text-blue-600">{inTransit}</p>
           </div>
           <div className="p-2 bg-blue-50 text-blue-600 rounded">
@@ -207,7 +207,7 @@ export default function MovementClient({
 
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Delivered</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Delivered</p>
             <p className="text-base sm:text-lg font-extrabold text-teal-600">{delivered}</p>
           </div>
           <div className="p-2 bg-teal-50 text-teal-600 rounded">
@@ -217,7 +217,7 @@ export default function MovementClient({
 
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between col-span-2 sm:col-span-1">
           <div>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Completed (Locked)</p>
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Completed (Locked)</p>
             <p className="text-base sm:text-lg font-extrabold text-emerald-600">{completed}</p>
           </div>
           <div className="p-2 bg-emerald-50 text-emerald-600 rounded">
@@ -236,7 +236,7 @@ export default function MovementClient({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search delivery ID, order, customer..."
-              className="pl-9 pr-4 py-2 sm:py-1.5 w-full border border-slate-200 rounded-sm text-xs bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 focus:bg-white min-h-[40px] sm:min-h-0"
+              className="pl-9 pr-4 py-2 sm:py-1.5 w-full border border-slate-200 rounded-sm text-xs bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 text-slate-900 focus:bg-white min-h-[36px] sm:min-h-0"
             />
           </div>
 
@@ -244,7 +244,7 @@ export default function MovementClient({
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="flex-1 sm:flex-none px-2.5 py-2 sm:py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none min-h-[40px] sm:min-h-0"
+              className="flex-1 sm:flex-none px-2.5 py-2 sm:py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none min-h-[36px] sm:min-h-0"
             >
               <option value="ALL">All Statuses</option>
               <option value="DRAFT">DRAFT</option>
@@ -261,7 +261,7 @@ export default function MovementClient({
             <select
               value={warehouseFilter}
               onChange={(e) => setWarehouseFilter(e.target.value)}
-              className="flex-1 sm:flex-none px-2.5 py-2 sm:py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none min-h-[40px] sm:min-h-0"
+              className="flex-1 sm:flex-none px-2.5 py-2 sm:py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none min-h-[36px] sm:min-h-0"
             >
               <option value="ALL">All Warehouses</option>
               {warehouses.map((w) => (
@@ -276,7 +276,7 @@ export default function MovementClient({
         {canEditStatus && (
           <button
             onClick={() => setShowDispatchModal(true)}
-            className="flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition flex-shrink-0 min-h-[40px] sm:min-h-0"
+            className="flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition flex-shrink-0 min-h-[36px] sm:min-h-0"
           >
             <Plus className="h-4 w-4" />
             <span>New Sales Dispatch</span>
@@ -285,7 +285,7 @@ export default function MovementClient({
       </div>
 
       {/* Deliveries Table (Desktop >= 768px) */}
-      <div className="hidden md:block bg-white border border-slate-200 rounded shadow-xs overflow-x-auto">
+      <div className="hidden xl:block bg-white border border-slate-200 rounded shadow-xs overflow-x-auto">
         <table className="min-w-full divide-y divide-slate-200 text-left text-xs">
           <thead className="bg-slate-50 text-slate-500 uppercase font-semibold">
             <tr>
@@ -332,7 +332,7 @@ export default function MovementClient({
                     </td>
                     <td className="px-3.5 py-3 text-slate-700">
                       <div className="flex items-center space-x-1.5">
-                        <div className="h-5 w-5 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[10px] shrink-0">
+                        <div className="h-5 w-5 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-[11px] shrink-0">
                           {(d.createdByName || "U").charAt(0).toUpperCase()}
                         </div>
                         <span className="font-medium text-slate-800">{d.createdByName || "Not recorded"}</span>
@@ -346,13 +346,13 @@ export default function MovementClient({
                     <td className="px-3.5 py-3 text-slate-600">{d.expectedDeliveryDate}</td>
                     <td className="px-3.5 py-3">
                       {isCompleted ? (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 space-x-1">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 space-x-1">
                           <Lock className="h-3 w-3" />
                           <span>COMPLETED</span>
                         </span>
                       ) : !canEditStatus ? (
                         <span
-                          className={`inline-flex px-2 py-0.5 rounded text-[10px] font-bold border ${
+                          className={`inline-flex px-2 py-0.5 rounded text-[11px] font-bold border ${
                             d.status === "DELIVERED"
                               ? "bg-teal-50 text-teal-800 border-teal-200"
                               : d.status === "OUT_FOR_DELIVERY" || d.status === "DISPATCHED"
@@ -367,7 +367,7 @@ export default function MovementClient({
                           value={d.status}
                           disabled={isPending}
                           onChange={(e) => handleStatusChange(d, e.target.value)}
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold border outline-none ${
+                          className={`px-2 py-0.5 rounded text-[11px] font-bold border outline-none ${
                             d.status === "DELIVERED"
                               ? "bg-teal-50 text-teal-800 border-teal-200"
                               : d.status === "OUT_FOR_DELIVERY" || d.status === "DISPATCHED"
@@ -393,7 +393,7 @@ export default function MovementClient({
                           <div className="font-semibold text-emerald-800 text-xs">
                             {d.completedByName || "Not recorded"}
                           </div>
-                          <div className="text-[10px] text-slate-400">
+                          <div className="text-[11px] text-slate-400">
                             {d.completedAtFormatted || d.actualDeliveryDate || "—"}
                           </div>
                         </div>
@@ -428,7 +428,7 @@ export default function MovementClient({
       </div>
 
       {/* Deliveries Card View (Mobile < 768px) */}
-      <div className="md:hidden space-y-3">
+      <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
         {filteredDeliveries.length === 0 ? (
           <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
             No active customer sales deliveries found.
@@ -443,7 +443,7 @@ export default function MovementClient({
                   <div>
                     <button
                       onClick={() => setSelectedDeliveryForDetail(d)}
-                      className="text-blue-600 hover:underline font-mono font-bold text-sm text-left block"
+                      className="text-blue-600 hover:underline font-mono font-bold text-sm text-left block py-1.5 -my-1.5 pr-3"
                     >
                       {d.deliveryNo}
                     </button>
@@ -494,28 +494,28 @@ export default function MovementClient({
 
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Customer</span>
+                    <span className="text-[11px] uppercase font-bold text-slate-400 block">Customer</span>
                     <span className="font-semibold text-slate-900 block truncate">{d.partyName}</span>
                     {d.partyPhone && <span className="text-[11px] text-slate-500 block">{d.partyPhone}</span>}
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Warehouse</span>
+                    <span className="text-[11px] uppercase font-bold text-slate-400 block">Warehouse</span>
                     <span className="text-slate-700 block truncate">{d.warehouse}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Driver & Vehicle</span>
+                    <span className="text-[11px] uppercase font-bold text-slate-400 block">Driver & Vehicle</span>
                     <span className="font-medium text-slate-800 block truncate">{d.driverName}</span>
-                    <span className="font-mono text-[10px] text-slate-500 block">{d.vehicleNo}</span>
+                    <span className="font-mono text-[11px] text-slate-500 block">{d.vehicleNo}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Expected Date</span>
+                    <span className="text-[11px] uppercase font-bold text-slate-400 block">Expected Date</span>
                     <span className="text-slate-700 block">{d.expectedDeliveryDate || "—"}</span>
                   </div>
                 </div>
 
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
                   <div className="flex items-center space-x-1.5">
-                    <span className="text-[10px] uppercase font-bold text-slate-400">By:</span>
+                    <span className="text-[11px] uppercase font-bold text-slate-400">By:</span>
                     <span className="font-medium text-slate-800">{d.createdByName || "Not recorded"}</span>
                   </div>
                   {isCompleted && d.completedByName && (
@@ -528,7 +528,7 @@ export default function MovementClient({
                 <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
                   <button
                     onClick={() => setSelectedDeliveryForDetail(d)}
-                    className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold flex items-center justify-center space-x-1.5 transition min-h-[40px]"
+                    className="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs font-semibold flex items-center justify-center space-x-1.5 transition min-h-[36px]"
                   >
                     <Eye className="h-3.5 w-3.5" />
                     <span>View Audit Details</span>
@@ -536,7 +536,7 @@ export default function MovementClient({
                   {canEditStatus && !isCompleted && (
                     <button
                       onClick={() => handleDelete(d)}
-                      className="py-2 px-3 bg-red-50 hover:bg-red-100 text-red-600 rounded text-xs font-semibold flex items-center justify-center transition min-h-[40px]"
+                      className="py-2 px-3 bg-red-50 hover:bg-red-100 text-red-600 rounded text-xs font-semibold flex items-center justify-center transition min-h-[36px]"
                       title="Delete delivery"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -577,23 +577,23 @@ export default function MovementClient({
 
               <div className="grid grid-cols-2 gap-4 pt-1">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-500">Created By</span>
+                  <span className="text-[11px] uppercase font-bold text-slate-500">Created By</span>
                   <div className="font-semibold text-slate-900 text-xs mt-1">
                     {selectedDeliveryForDetail.createdByName || "Not recorded"}
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">
+                  <div className="text-[11px] text-slate-400 mt-0.5">
                     {selectedDeliveryForDetail.createdAtFormatted || selectedDeliveryForDetail.date}
                   </div>
                 </div>
 
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-500">Completed By</span>
+                  <span className="text-[11px] uppercase font-bold text-slate-500">Completed By</span>
                   <div className="font-semibold text-emerald-800 text-xs mt-1">
                     {(selectedDeliveryForDetail.isLocked || selectedDeliveryForDetail.status === "COMPLETED")
                       ? (selectedDeliveryForDetail.completedByName || "Not recorded")
                       : "—"}
                   </div>
-                  <div className="text-[10px] text-slate-400 mt-0.5">
+                  <div className="text-[11px] text-slate-400 mt-0.5">
                     {(selectedDeliveryForDetail.isLocked || selectedDeliveryForDetail.status === "COMPLETED")
                       ? (selectedDeliveryForDetail.completedAtFormatted || selectedDeliveryForDetail.actualDeliveryDate)
                       : "In progress"}
@@ -621,13 +621,13 @@ export default function MovementClient({
                         <div className="flex items-center space-x-2">
                           {h.oldStatus && (
                             <>
-                              <span className="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[10px] font-bold">
+                              <span className="px-1.5 py-0.5 bg-slate-200 text-slate-700 rounded text-[11px] font-bold">
                                 {h.oldStatus}
                               </span>
                               <span className="text-slate-400">→</span>
                             </>
                           )}
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                          <span className={`px-1.5 py-0.5 rounded text-[11px] font-bold ${
                             h.newStatus === "COMPLETED"
                               ? "bg-emerald-100 text-emerald-800"
                               : "bg-blue-100 text-blue-800"
@@ -642,7 +642,7 @@ export default function MovementClient({
                         <div className="font-semibold text-slate-800 text-[11px]">
                           {h.changedByName || h.userName || h.performedBy || "System"}
                         </div>
-                        <div className="text-[10px] text-slate-400">
+                        <div className="text-[11px] text-slate-400">
                           {h.changedAt ? new Date(h.changedAt).toLocaleString("en-IN") : "—"}
                         </div>
                       </div>
@@ -655,7 +655,7 @@ export default function MovementClient({
             {/* Customer & Location */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <div className="bg-slate-50 p-3 rounded border">
-                <p className="text-[10px] font-bold text-slate-400 uppercase">Customer Information</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase">Customer Information</p>
                 <p className="text-xs font-bold text-slate-900 mt-1">{selectedDeliveryForDetail.partyName}</p>
                 {selectedDeliveryForDetail.partyPhone && (
                   <p className="text-xs text-slate-500 flex items-center space-x-1 mt-1">
@@ -666,7 +666,7 @@ export default function MovementClient({
               </div>
 
               <div className="bg-slate-50 p-3 rounded border">
-                <p className="text-[10px] font-bold text-slate-400 uppercase">Driver & Vehicle</p>
+                <p className="text-[11px] font-bold text-slate-400 uppercase">Driver & Vehicle</p>
                 <p className="text-xs font-bold text-slate-900 mt-1">{selectedDeliveryForDetail.driverName}</p>
                 <p className="text-xs font-mono text-slate-600">{selectedDeliveryForDetail.vehicleNo}</p>
                 {selectedDeliveryForDetail.driverPhone && (
@@ -677,7 +677,7 @@ export default function MovementClient({
 
             {/* Destination */}
             <div className="bg-slate-50 p-3 rounded border mb-6">
-              <p className="text-[10px] font-bold text-slate-400 uppercase">Delivery Destination</p>
+              <p className="text-[11px] font-bold text-slate-400 uppercase">Delivery Destination</p>
               <div className="flex items-start space-x-2 mt-1">
                 <MapPin className="h-4 w-4 text-blue-600 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-slate-800 font-medium">{selectedDeliveryForDetail.destination}</p>
@@ -729,7 +729,7 @@ export default function MovementClient({
                     value={invoiceNo}
                     onChange={(e) => setInvoiceNo(e.target.value)}
                     placeholder="e.g. SO-000125"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -739,7 +739,7 @@ export default function MovementClient({
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="e.g. ABC Customer"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   />
                 </div>
               </div>
@@ -752,7 +752,7 @@ export default function MovementClient({
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="e.g. 9876543210"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -761,7 +761,7 @@ export default function MovementClient({
                     type="date"
                     value={expectedDate}
                     onChange={(e) => setExpectedDate(e.target.value)}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   />
                 </div>
               </div>
@@ -775,7 +775,7 @@ export default function MovementClient({
                     value={driverName}
                     onChange={(e) => setDriverName(e.target.value)}
                     placeholder="e.g. Mani K"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -785,7 +785,7 @@ export default function MovementClient({
                     value={driverPhone}
                     onChange={(e) => setDriverPhone(e.target.value)}
                     placeholder="9876543210"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   />
                 </div>
               </div>
@@ -799,7 +799,7 @@ export default function MovementClient({
                     value={vehicleNo}
                     onChange={(e) => setVehicleNo(e.target.value)}
                     placeholder="TN-23-AX-1234"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 uppercase min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 uppercase min-h-[36px] sm:min-h-0"
                   />
                 </div>
                 <div className="space-y-1">
@@ -807,7 +807,7 @@ export default function MovementClient({
                   <select
                     value={deliveryType}
                     onChange={(e) => setDeliveryType(e.target.value)}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   >
                     <option value="Own Vehicle">Own Vehicle</option>
                     <option value="Customer Pickup">Customer Pickup</option>
@@ -823,7 +823,7 @@ export default function MovementClient({
                   <select
                     value={sourceWarehouse}
                     onChange={(e) => setSourceWarehouse(e.target.value)}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   >
                     {warehouses.map((w) => (
                       <option key={w} value={w}>
@@ -839,7 +839,7 @@ export default function MovementClient({
                     value={destOutlet}
                     onChange={(e) => setDestOutlet(e.target.value)}
                     placeholder="e.g. Katpadi Customer Site"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[40px] sm:min-h-0"
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
                   />
                 </div>
               </div>
