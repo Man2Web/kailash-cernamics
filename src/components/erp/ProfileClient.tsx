@@ -92,7 +92,7 @@ export default function ProfileClient({ profile, access, fullAccess }: ProfileCl
             <Detail icon={Mail} label="Login email (cannot be changed here)" value={profile.email} />
             <Detail icon={BadgeCheck} label="Employee ID" value={profile.employeeNo} />
             <Detail icon={ShieldCheck} label="Role" value={profile.roles.join(", ")} />
-            <Detail icon={Warehouse} label="Assigned warehouse" value={profile.warehouse || "All / Unassigned"} />
+            <Detail icon={Warehouse} label="Assigned warehouse" value={profile.warehouse} />
             <Detail icon={Phone} label="Account status" value={profile.status} />
             <Detail icon={CalendarDays} label="Member since" value={profile.memberSince} />
           </div>

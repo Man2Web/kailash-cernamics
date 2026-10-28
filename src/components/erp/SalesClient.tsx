@@ -28,6 +28,8 @@ import {
   releaseReservationAction,
 } from "@/app/(dashboard)/sales/actions";
 import ProductQrScanner from "@/components/erp/ProductQrScanner";
+import ProductCombobox from "@/components/erp/ProductCombobox";
+import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
 
 interface InvoiceRow {
   id: string;
@@ -162,6 +164,7 @@ export default function SalesClient({
   const [newCustDeliveryAddress, setNewCustDeliveryAddress] = useState("");
   const [newCustNotes, setNewCustNotes] = useState("");
 
+  const [pickedLabels, setPickedLabels] = useState<Record<string, string>>({});
   const handleSelectScannedProduct = (scannedData: any) => {
     const scannedProd = scannedData.product;
     if (!scannedProd) return;
@@ -175,6 +178,7 @@ export default function SalesClient({
     }
 
     if (matchedVariantId) {
+      const existingIdx = orderItems.findIndex((it) => it.variantId === matchedVariantId);
       const emptyIdx = orderItems.findIndex((it) => !it.variantId);
       const newItems = [...orderItems];
       const newItem = {
@@ -185,7 +189,10 @@ export default function SalesClient({
         discount: 0,
       };
 
-      if (emptyIdx >= 0) {
+      if (existingIdx >= 0) {
+        // Same product scanned again: add to the existing line instead of a duplicate row.
+        newItems[existingIdx] = { ...newItems[existingIdx], quantity: Number(newItems[existingIdx].quantity || 0) + 1 };
+      } else if (emptyIdx >= 0) {
         newItems[emptyIdx] = newItem;
       } else {
         newItems.push(newItem);
@@ -248,7 +255,16 @@ export default function SalesClient({
     setOrderItems(orderItems.filter((_, i) => i !== index));
   };
 
-  const handleProductChange = (index: number, variantId: string) => {
+  const variantLabel = (variantId: string) => {
+    if (!variantId) return "";
+    for (const p of products) {
+      const v = p.variants.find((x) => x.id === variantId);
+      if (v) return `${p.name}${v.name && v.name !== "Standard" ? ` – ${v.name}` : ""} (${v.sku || p.sku})`;
+    }
+    return pickedLabels[variantId] || "";
+  };
+
+  const handleProductChange = (index: number, variantId: string, picked?: ProductSearchOption) => {
     const newItems = [...orderItems];
     let matchedProduct: ProductOption | undefined;
     for (const p of products) {
@@ -257,11 +273,12 @@ export default function SalesClient({
         break;
       }
     }
+    if (picked) setPickedLabels((m) => ({ ...m, [picked.variantId]: picked.label }));
     newItems[index] = {
       ...newItems[index],
       variantId,
-      productId: matchedProduct?.id || "",
-      rate: Number(matchedProduct?.sellingPrice || 0),
+      productId: matchedProduct?.id || picked?.productId || "",
+      rate: Number(matchedProduct?.sellingPrice ?? picked?.sellingPrice ?? 0),
     };
     setOrderItems(newItems);
   };
@@ -1099,23 +1116,12 @@ export default function SalesClient({
                       {/* Desktop Grid Layout (sm+) */}
                       <div className="hidden sm:grid sm:grid-cols-12 gap-2 items-center">
                         <div className="col-span-5">
-                          <select
+                          <ProductCombobox
                             value={item.variantId}
-                            onChange={(e) => handleProductChange(index, e.target.value)}
+                            valueLabel={variantLabel(item.variantId)}
                             required
-                            className="w-full p-1.5 border rounded text-xs"
-                          >
-                            <option value="">-- Select Product --</option>
-                            {products.map((p) => (
-                              <optgroup key={p.id} label={p.name}>
-                                {p.variants.map((v) => (
-                                  <option key={v.id} value={v.id}>
-                                    {v.name} ({v.sku})
-                                  </option>
-                                ))}
-                              </optgroup>
-                            ))}
-                          </select>
+                            onChange={(o) => handleProductChange(index, o?.variantId || "", o || undefined)}
+                          />
                         </div>
                         <div className="col-span-2">
                           <input
@@ -1175,23 +1181,12 @@ export default function SalesClient({
                           )}
                         </div>
                         <div>
-                          <select
+                          <ProductCombobox
                             value={item.variantId}
-                            onChange={(e) => handleProductChange(index, e.target.value)}
+                            valueLabel={variantLabel(item.variantId)}
                             required
-                            className="w-full p-2 border rounded text-xs bg-white min-h-[36px]"
-                          >
-                            <option value="">-- Select Product --</option>
-                            {products.map((p) => (
-                              <optgroup key={p.id} label={p.name}>
-                                {p.variants.map((v) => (
-                                  <option key={v.id} value={v.id}>
-                                    {v.name} ({v.sku})
-                                  </option>
-                                ))}
-                              </optgroup>
-                            ))}
-                          </select>
+                            onChange={(o) => handleProductChange(index, o?.variantId || "", o || undefined)}
+                          />
                         </div>
                         <div className="grid grid-cols-3 gap-2 items-center pt-1">
                           <div>

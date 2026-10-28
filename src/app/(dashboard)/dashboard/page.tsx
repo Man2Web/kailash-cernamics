@@ -1,6 +1,7 @@
 import React from "react";
 import db from "@/lib/db/db";
-import { getSession, sessionCan } from "@/lib/auth/auth";
+import { matchesWarehouse } from "@/lib/inventory/warehouse-scope";
+import { getSession, sessionCan, warehouseScopeId } from "@/lib/auth/auth";
 import { firstAllowedPath } from "@/lib/auth/permissions";
 import { redirect } from "next/navigation";
 import DashboardCharts from "@/components/charts/DashboardCharts";
@@ -31,7 +32,7 @@ export default async function DashboardPage() {
   // A member who also has Warehouse Manager (or Super Admin) access is not limited to the sales dashboard.
   const isSalesOnlyRole = isSalesPersonRole && !isWarehouseMgrRole && !isSuperAdminRole;
 
-  const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? session.user.warehouseId : undefined;
+  const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? warehouseScopeId(session) : undefined;
 
   // Run auto-expiry check
   await checkAndExpireReservations();
@@ -86,18 +87,16 @@ export default async function DashboardPage() {
     },
   });
 
-  const pendingSalesDeliveries = assignedWarehouseId && session.user.warehouseName
-    ? allVehicleMovements.filter((m: any) => {
-        const src = (m.sourceWarehouse || "").toLowerCase();
-        const assigned = session.user.warehouseName?.toLowerCase() || "";
-        return src.includes(assigned) || assigned.includes(src) || m.sourceWarehouse === assignedWarehouseId;
-      }).length
+  const pendingSalesDeliveries = assignedWarehouseId
+    ? allVehicleMovements.filter((m: any) => matchesWarehouse(m.sourceWarehouse, assignedWarehouseId, session.user.warehouseName)).length
     : allVehicleMovements.length;
 
   // Completed Deliveries (Both Sales + Purchase)
-  const completedSalesDeliveries = await db.vehicleMovement.count({
-    where: { status: "COMPLETED" },
-  });
+  const completedSalesDeliveries = assignedWarehouseId
+    ? allVehicleMovements.filter(
+        (m: any) => m.status === "COMPLETED" && matchesWarehouse(m.sourceWarehouse, assignedWarehouseId, session.user.warehouseName)
+      ).length
+    : await db.vehicleMovement.count({ where: { status: "COMPLETED" } });
   const completedPurchaseDeliveries = isSalesOnlyRole
     ? 0
     : await db.goodsReceipt.count({

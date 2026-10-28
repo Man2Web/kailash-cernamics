@@ -19,6 +19,8 @@ import {
   receivePurchaseOrderStock,
   updatePurchaseOrderStatus,
 } from "@/app/(dashboard)/purchase/actions";
+import ProductCombobox from "@/components/erp/ProductCombobox";
+import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
 
 interface VendorRow {
   id: string;
@@ -189,13 +191,26 @@ export default function PurchaseClient({
     setPoItems(poItems.filter((_, i) => i !== idx));
   };
 
-  const handleItemChange = (idx: number, field: string, val: any) => {
+  const [pickedLabels, setPickedLabels] = useState<Record<string, string>>({});
+  const poVariantLabel = (variantId: string) => {
+    if (!variantId) return "";
+    for (const p of products) {
+      const v = p.variants?.find((x) => x.id === variantId);
+      if (v) return `${p.name} - ${v.name || v.sku || "Standard"}`;
+    }
+    return pickedLabels[variantId] || "";
+  };
+
+  const handleItemChange = (idx: number, field: string, val: any, picked?: ProductSearchOption) => {
     const updated = [...poItems];
     if (field === "variantId") {
       updated[idx].variantId = val;
+      if (picked) setPickedLabels((m) => ({ ...m, [picked.variantId]: picked.label }));
       const prod = products.find((p) => p.variants?.some((v) => v.id === val) || p.id === val);
       if (prod) {
         updated[idx].rate = Number(prod.purchasePrice || 0);
+      } else if (picked) {
+        updated[idx].rate = Number(picked.purchasePrice || 0);
       }
     } else if (field === "quantity") {
       updated[idx].quantity = Math.max(1, Number(val));
@@ -1184,28 +1199,13 @@ export default function PurchaseClient({
                 <div className="space-y-2">
                   {poItems.map((item, idx) => (
                     <div key={idx} className="flex items-center space-x-2 bg-slate-50 p-2 rounded border">
-                      <select
+                      <ProductCombobox
+                        className="flex-1"
                         required
                         value={item.variantId}
-                        onChange={(e) => handleItemChange(idx, "variantId", e.target.value)}
-                        className="flex-1 p-1.5 border rounded text-xs bg-white"
-                      >
-                        <option value="">Select Product Variant...</option>
-                        {products.map((p) => {
-                          if (p.variants && p.variants.length > 0) {
-                            return p.variants.map((v) => (
-                              <option key={v.id} value={v.id}>
-                                {p.name} - {v.name || v.sku || "Standard"}
-                              </option>
-                            ));
-                          }
-                          return (
-                            <option key={p.id} value={p.id}>
-                              {p.name} ({p.sku})
-                            </option>
-                          );
-                        })}
-                      </select>
+                        valueLabel={poVariantLabel(item.variantId)}
+                        onChange={(o) => handleItemChange(idx, "variantId", o?.variantId || "", o || undefined)}
+                      />
 
                       <div className="w-24">
                         <input

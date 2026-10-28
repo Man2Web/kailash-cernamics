@@ -2,6 +2,7 @@ import db from "@/lib/db/db";
 import QRCode from "qrcode";
 import { randomBytes } from "crypto";
 import { getActiveReservations } from "@/lib/inventory/movement";
+import { classifyScan } from "@/lib/products/qr-parse";
 
 export interface WarehouseStockItem {
   warehouseId: string;
@@ -258,59 +259,31 @@ export async function getLiveProductInventory(productId: string): Promise<Produc
  * - Product SKU: SKU-XXXX
  * - Product ID: UUID
  */
-export async function resolveProductByQr(scannedValue: string): Promise<ProductQrResult | null> {
-  if (!scannedValue || typeof scannedValue !== "string" || scannedValue.trim().length === 0) {
-    return null;
-  }
-  const query = scannedValue.trim();
+export async function resolveProductByQr(
+  scannedValue: string,
+  mode: "camera" | "manual" = "manual"
+): Promise<ProductQrResult | null> {
+  if (!scannedValue || typeof scannedValue !== "string" || scannedValue.trim().length === 0) return null;
+  const { kind, value } = classifyScan(scannedValue);
 
-  // 1. Search in product_barcodes by QR code
-  const barcodeRec = await db.productBarcode.findFirst({
-    where: { code: query },
-  });
-  if (barcodeRec && barcodeRec.productId) {
-    return getLiveProductInventory(barcodeRec.productId);
-  }
-
-  // 2. Search in products table by Code
-  const productByCode = await db.product.findFirst({
-    where: { code: query },
-  });
-  if (productByCode) {
-    return getLiveProductInventory(productByCode.id);
+  // 1. Registered product QR token (exact match)
+  if (kind === "product-token") {
+    const rec = await db.productBarcode.findFirst({ where: { code: value } });
+    if (rec?.productId) return getLiveProductInventory(rec.productId);
   }
 
-  // 3. Search in products table by SKU
-  const productBySku = await db.product.findFirst({
-    where: { sku: query },
-  });
-  if (productBySku) {
-    return getLiveProductInventory(productBySku.id);
-  }
+  // Camera scans must be a real product QR; typed lookups may also use code / SKU / id.
+  if (mode === "camera") return null;
 
-  // 4. Search in products table by ID (if valid UUID)
-  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(query);
-  if (isUuid) {
-    const productById = await db.product.findFirst({
-      where: { id: query },
-    });
-    if (productById) {
-      return getLiveProductInventory(productById.id);
-    }
+  const query = value;
+  const byCode = await db.product.findFirst({ where: { code: { equals: query, mode: "insensitive" } } });
+  if (byCode) return getLiveProductInventory(byCode.id);
+  const bySku = await db.product.findFirst({ where: { sku: { equals: query, mode: "insensitive" } } });
+  if (bySku) return getLiveProductInventory(bySku.id);
+  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(query)) {
+    const byId = await db.product.findFirst({ where: { id: query.toLowerCase() } });
+    if (byId) return getLiveProductInventory(byId.id);
   }
-
-  // 5. Case-insensitive fallback across all products
-  const allProducts = await db.product.findMany();
-  const matched = allProducts.find(
-    (p: any) =>
-      (p.code && p.code.toLowerCase() === query.toLowerCase()) ||
-      (p.sku && p.sku.toLowerCase() === query.toLowerCase()) ||
-      (p.id && p.id.toLowerCase() === query.toLowerCase())
-  );
-  if (matched) {
-    return getLiveProductInventory(matched.id);
-  }
-
   return null;
 }
 

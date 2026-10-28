@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import db from "@/lib/db/db";
-import { getSession, isSuperAdmin, isWarehouseManager, sessionCan } from "@/lib/auth/auth";
+import { getSession, isSuperAdmin, isWarehouseManager, sessionCan, warehouseAccessError } from "@/lib/auth/auth";
 
 // ==========================================
 // 1. VENDOR ACTIONS
@@ -299,9 +299,8 @@ export async function receivePurchaseOrderStock({
     }
 
     // If Warehouse Manager, enforce assigned warehouse
-    if (!isSuper && isWhMgr && session.user.warehouseId && warehouseId !== session.user.warehouseId) {
-      return { error: "Unauthorized: You can only receive purchase goods for your assigned warehouse." };
-    }
+    const whErr = warehouseAccessError(session, warehouseId);
+    if (whErr) return { error: `Unauthorized: ${whErr}` };
 
     const po = await db.purchaseOrder.findUnique({
       where: { id: poId },

@@ -1,5 +1,6 @@
 import db from "@/lib/db/db";
 import { randomUUID } from "crypto";
+import { withAdvisoryLock } from "@/lib/db/locks";
 
 export interface AttendanceRecord {
   id: string;
@@ -225,6 +226,7 @@ export async function markEmployeeCheckIn({
 
     // 3. Check for existing attendance record for today (Duplicate Protection)
     const todayStr = getTodayDateStrIST();
+    return await withAdvisoryLock(`attendance:${matchedEmployee.id}:${todayStr}`, async () => {
     const allRecords = await fetchAllAttendanceLogs();
     const existing = allRecords.find(
       (r) =>
@@ -292,6 +294,7 @@ export async function markEmployeeCheckIn({
       message: "Check-in marked successfully",
       record: payload,
     };
+    });
   } catch (error: any) {
     console.error("Error in markEmployeeCheckIn:", error);
     return { success: false, message: error.message || "Failed to mark attendance." };

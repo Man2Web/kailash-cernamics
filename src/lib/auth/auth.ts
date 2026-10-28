@@ -230,6 +230,35 @@ export function sessionCan(session: UserSession | null | undefined, code: string
   return isSuperAdmin(session.user.roles) || session.user.permissions.includes(code);
 }
 
+export const NO_WAREHOUSE = "00000000-0000-0000-0000-000000000000"; // valid UUID that matches no warehouse
+
+/** True for warehouse-restricted members (warehouse manager / inventory staff who are not admins). */
+export function isWarehouseRestricted(session: UserSession | null | undefined): boolean {
+  if (!session) return false;
+  const roles = session.user.roles;
+  if (isSuperAdmin(roles)) return false;
+  return roles.includes("WAREHOUSE_MANAGER") || roles.includes("INVENTORY_STAFF");
+}
+
+/**
+ * The single warehouse a restricted member may see, or undefined when unrestricted.
+ * Fails closed: a restricted member with no active assigned warehouse gets a sentinel id that matches nothing.
+ */
+export function warehouseScopeId(session: UserSession | null | undefined): string | undefined {
+  if (!session || !isWarehouseRestricted(session)) return undefined;
+  const { warehouseId, warehouseName } = session.user;
+  return warehouseId && warehouseName ? warehouseId : NO_WAREHOUSE;
+}
+
+/** Server-side check that the member may act on a warehouse. Returns an error message or null. */
+export function warehouseAccessError(session: UserSession | null | undefined, warehouseId?: string | null): string | null {
+  const scope = warehouseScopeId(session);
+  if (scope === undefined) return null;
+  if (scope === NO_WAREHOUSE) return "You have not been assigned to an active warehouse. Ask a Super Admin to assign one.";
+  if (!warehouseId || warehouseId !== scope) return "You can only work with your assigned warehouse.";
+  return null;
+}
+
 /** Server-action guard: returns an error object unless the signed-in member holds the permission. */
 export async function denyUnlessCan(code: string): Promise<{ error: string } | null> {
   const session = await getSession();

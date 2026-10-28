@@ -643,7 +643,7 @@ export default function MovementClient({
                           {h.changedByName || h.userName || h.performedBy || "System"}
                         </div>
                         <div className="text-[11px] text-slate-400">
-                          {h.changedAt ? new Date(h.changedAt).toLocaleString("en-IN") : "—"}
+                          {h.changedAt ? new Date(h.changedAt).toLocaleString("en-IN", { timeZone: "Asia/Kolkata" }) : "—"}
                         </div>
                       </div>
                     </div>

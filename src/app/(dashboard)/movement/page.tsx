@@ -1,7 +1,8 @@
 import React from "react";
 import db from "@/lib/db/db";
 import MovementClient, { DeliveryItem } from "@/components/erp/MovementClient";
-import { getSession, sessionCan } from "@/lib/auth/auth";
+import { matchesWarehouse } from "@/lib/inventory/warehouse-scope";
+import { getSession, sessionCan, warehouseScopeId } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +11,7 @@ function formatDate(value: unknown): string {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(String(value));
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("en-IN");
+  return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 }
 
 export default async function MovementPage() {
@@ -25,7 +26,7 @@ export default async function MovementPage() {
     redirect("/unauthorized");
   }
 
-  const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? session.user.warehouseId : undefined;
+  const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? warehouseScopeId(session) : undefined;
   const assignedWarehouseName = (!isSuperAdminRole && isWarehouseMgrRole) ? session.user.warehouseName : undefined;
 
   // 1. Fetch Sales Deliveries (Vehicle Movements)
@@ -36,12 +37,8 @@ export default async function MovementPage() {
   });
 
   // Filter sales deliveries for Warehouse Manager if assigned
-  const vehicleMovements = assignedWarehouseName
-    ? allVehicleMovements.filter((m: any) => {
-        const src = (m.sourceWarehouse || "").toLowerCase();
-        const assigned = assignedWarehouseName.toLowerCase();
-        return src.includes(assigned) || assigned.includes(src) || m.sourceWarehouse === assignedWarehouseId;
-      })
+  const vehicleMovements = assignedWarehouseId
+    ? allVehicleMovements.filter((m: any) => matchesWarehouse(m.sourceWarehouse, assignedWarehouseId, assignedWarehouseName))
     : allVehicleMovements;
 
   // Also fetch customers and sales orders to cross-reference customer phone and order details if needed

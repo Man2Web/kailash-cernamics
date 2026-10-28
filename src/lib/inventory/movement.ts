@@ -1,4 +1,6 @@
 import db from "@/lib/db/db";
+import { randomBytes } from "crypto";
+import { withAdvisoryLock } from "@/lib/db/locks";
 
 interface TransferItem {
   productId: string;
@@ -166,27 +168,47 @@ export async function reserveStock({
   expiryDate: Date;
   notes?: string;
 }) {
-  return db.$transaction(async (tx: any) => {
-    // 1. Verify available stock
-    const stockRec = await tx.stock.findFirst({
-      where: {
-        variantId,
-        warehouseId,
-      },
-    });
+  const qty = Number(quantity);
+  if (!variantId) throw new Error("Choose a product for every line before reserving stock.");
+  if (!warehouseId) throw new Error("Choose a warehouse to reserve stock from.");
+  if (!Number.isFinite(qty) || qty <= 0) throw new Error("Quantity to reserve must be greater than zero.");
 
-    const onHand = Number(stockRec?.quantity || 0);
+  // One reservation at a time per variant+warehouse, so two orders can never both claim the last units.
+  return withAdvisoryLock(`stock:${variantId}:${warehouseId}`, async () => {
+    const tx: any = db;
+    const variant = await tx.productVariant.findUnique({ where: { id: variantId } });
+    if (!variant) throw new Error("The selected product no longer exists.");
+    productId = variant.productId; // never trust the client-supplied product id
+    const warehouse = await tx.warehouse.findUnique({ where: { id: warehouseId } });
+    if (!warehouse) throw new Error("The selected warehouse no longer exists.");
+
+    // 1. Verify available stock (all bins of the warehouse)
+    const stockRows = await tx.stock.findMany({ where: { variantId, warehouseId } });
+    const onHand = stockRows.reduce((n: number, r: any) => n + Number(r.quantity || 0), 0);
     const activeRes = await getActiveReservations(warehouseId);
     const currentlyReserved = activeRes[`${variantId}_${warehouseId}`] || 0;
     const available = onHand - currentlyReserved;
 
-    if (available < quantity) {
+    if (available < qty) {
       throw new Error(
-        `Insufficient available stock to reserve. On Hand: ${onHand}, Already Reserved: ${currentlyReserved}, Available: ${available}, Requested: ${quantity}`
+        `Not enough stock available to reserve. On hand: ${onHand}, already reserved: ${currentlyReserved}, available: ${Math.max(available, 0)}, requested: ${qty}.`
       );
     }
 
-    const reservationNo = `RES-${Date.now().toString().slice(-6)}`;
+    // Duplicate protection: the same order cannot hold two active reservations for one product.
+    const existing = await tx.inventoryTransaction.findMany({ where: { docType: "SALES_RESERVATION", docId: salesOrderId } });
+    for (const t of existing) {
+      try {
+        const m = JSON.parse(t.remarks || "{}");
+        if (m.status === "ACTIVE" && m.variantId === variantId && m.warehouseId === warehouseId) {
+          throw new Error("This order already has an active reservation for this product.");
+        }
+      } catch (e: any) {
+        if (e?.message?.startsWith("This order already")) throw e;
+      }
+    }
+
+    const reservationNo = `RES-${Date.now().toString().slice(-6)}${randomBytes(2).toString("hex").toUpperCase()}`;
     const metadata = {
       reservationNo,
       salesOrderId,
@@ -265,14 +287,35 @@ export async function releaseReservation(transactionId: string, reason = "Manual
     });
 
     if (meta.salesOrderId) {
-      await tx.salesOrder.update({
-        where: { id: meta.salesOrderId },
+      // Only step a still-RESERVED order back; never revive a cancelled / completed one.
+      await tx.salesOrder.updateMany({
+        where: { id: meta.salesOrderId, status: "RESERVED" },
         data: { status: "CONFIRMED" },
       });
     }
 
     return { success: true };
   });
+}
+
+/** Releases every ACTIVE reservation held by a sales order (used when the order is cancelled / expires). */
+export async function releaseReservationsForOrder(salesOrderId: string, reason: string) {
+  const txns = await db.inventoryTransaction.findMany({ where: { docType: "SALES_RESERVATION", docId: salesOrderId } });
+  let released = 0;
+  for (const t of txns) {
+    try {
+      const m = JSON.parse(t.remarks || "{}");
+      if (m.status !== "ACTIVE") continue;
+      m.status = "CANCELLED";
+      m.releasedAt = new Date().toISOString();
+      m.releaseReason = reason;
+      await db.inventoryTransaction.update({ where: { id: t.id }, data: { remarks: JSON.stringify(m) } });
+      released++;
+    } catch {
+      // unreadable record: leave untouched
+    }
+  }
+  return released;
 }
 
 /**
@@ -462,10 +505,10 @@ export async function recordStockAdjustment({
   currentQty: number;
   remarks?: string;
 }) {
-  const qtyChange = physicalQty - currentQty;
-  if (qtyChange === 0) return { success: true, message: "No adjustment needed (quantities match)" };
+  if (!Number.isFinite(physicalQty) || physicalQty < 0) throw new Error("Counted quantity cannot be negative.");
 
-  return db.$transaction(async (tx: any) => {
+  return withAdvisoryLock(`stock:${variantId}:${warehouseId}`, async () => {
+    const tx: any = db;
     const existingStock = await tx.stock.findFirst({
       where: {
         variantId,
@@ -473,6 +516,10 @@ export async function recordStockAdjustment({
         binId: binId || null,
       },
     });
+
+    // Use the live quantity, not the (possibly stale) value the form was opened with.
+    const qtyChange = physicalQty - Number(existingStock?.quantity ?? 0);
+    if (qtyChange === 0) return { success: true, message: "No adjustment needed (quantities match)" };
 
     if (existingStock) {
       await tx.stock.update({
@@ -535,7 +582,12 @@ export async function recordStockTransfer({
   items: TransferItem[];
   remarks?: string;
 }) {
+  if (sourceWarehouseId === destWarehouseId) throw new Error("Source and destination warehouse must be different.");
+  for (const it of items) {
+    if (!Number.isFinite(it.quantity) || it.quantity <= 0) throw new Error("Transfer quantity must be greater than zero.");
+  }
   return db.$transaction(async (tx: any) => {
+    const reserved = await getActiveReservations(sourceWarehouseId);
     const transaction = await tx.inventoryTransaction.create({
       data: {
         docType: "TRANSFER_OUT",
@@ -554,11 +606,10 @@ export async function recordStockTransfer({
         },
       });
 
-      if (!sourceStock || Number(sourceStock.quantity) < item.quantity) {
+      const free = Number(sourceStock?.quantity ?? 0) - (reserved[`${item.variantId}_${sourceWarehouseId}`] || 0);
+      if (!sourceStock || free < item.quantity) {
         throw new Error(
-          `Insufficient stock in source warehouse. Available: ${
-            sourceStock ? sourceStock.quantity : 0
-          }, Requested: ${item.quantity}`
+          `Insufficient free stock in source warehouse (reserved stock cannot be moved). Free: ${Math.max(free, 0)}, requested: ${item.quantity}`
         );
       }
 

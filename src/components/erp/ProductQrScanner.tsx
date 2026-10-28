@@ -42,6 +42,8 @@ export default function ProductQrScanner({
   const [isPending, startTransition] = useTransition();
 
   const scannerRef = useRef<any>(null);
+  const busyRef = useRef(false); // camera fires many frames: only the first decode is processed
+  const mountedRef = useRef(true);
   const scannerContainerId = "product-qr-reader-container";
 
   // Beep sound on scan
@@ -62,8 +64,9 @@ export default function ProductQrScanner({
     } catch {}
   };
 
-  const handleProcessQr = (qrString: string) => {
-    if (!qrString || isPending) return;
+  const handleProcessQr = (qrString: string, source: "camera" | "manual" = "manual") => {
+    if (!qrString || isPending || busyRef.current) return;
+    busyRef.current = true;
     setErrorMsg(null);
     playBeep();
 
@@ -71,11 +74,18 @@ export default function ProductQrScanner({
     stopCameraScanner();
 
     startTransition(async () => {
-      const res = await getProductByQrAction(qrString.trim());
-      if (res.success && res.data) {
-        setScannedResult(res.data);
-      } else {
-        setErrorMsg(res.error || "No product found matching this QR code.");
+      try {
+        const res = await getProductByQrAction(qrString.trim(), source);
+        if (!mountedRef.current) return;
+        if (res.success && res.data) {
+          setScannedResult(res.data);
+        } else {
+          setErrorMsg(res.error || "No product found matching this QR code.");
+        }
+      } catch {
+        if (mountedRef.current) setErrorMsg("Could not look up this code. Check your connection and try again.");
+      } finally {
+        busyRef.current = false;
       }
     });
   };
@@ -100,7 +110,7 @@ export default function ProductQrScanner({
       scannerRef.current = html5QrCode;
 
       const qrCodeSuccessCallback = (decodedText: string) => {
-        handleProcessQr(decodedText);
+        handleProcessQr(decodedText, "camera");
       };
 
       const config = {
@@ -115,6 +125,12 @@ export default function ProductQrScanner({
         qrCodeSuccessCallback,
         () => {} // ignore frame errors
       );
+      if (!mountedRef.current) {
+        // Closed while the camera was still starting: release it right away.
+        try { await html5QrCode.stop(); } catch {}
+        try { html5QrCode.clear(); } catch {}
+        scannerRef.current = null;
+      }
     } catch (err: any) {
       console.warn("Camera init error:", err);
       setIsScanning(false);
@@ -126,19 +142,23 @@ export default function ProductQrScanner({
   };
 
   const stopCameraScanner = async () => {
-    if (scannerRef.current) {
+    const scanner = scannerRef.current;
+    scannerRef.current = null;
+    if (scanner) {
       try {
-        await scannerRef.current.stop();
+        await scanner.stop();
       } catch {}
-      scannerRef.current = null;
+      try {
+        scanner.clear();
+      } catch {}
     }
-    setIsScanning(false);
+    if (mountedRef.current) setIsScanning(false);
   };
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!manualCode.trim()) return;
-    handleProcessQr(manualCode);
+    handleProcessQr(manualCode, "manual");
   };
 
   const handleResetForNextScan = () => {
@@ -230,8 +250,10 @@ export default function ProductQrScanner({
 
   // Start scanner on mount
   useEffect(() => {
+    mountedRef.current = true;
     startCameraScanner();
     return () => {
+      mountedRef.current = false;
       stopCameraScanner();
     };
   }, []);

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { calculateGst } from "@/lib/tax/gst";
 import { createInvoice } from "@/app/(dashboard)/sales/actions";
+import ProductCombobox from "@/components/erp/ProductCombobox";
 
 interface Address {
   id: string;
@@ -955,17 +956,11 @@ export default function InvoiceCreateClient({
                   <tr key={idx} className="hover:bg-slate-50 transition-colors">
                     {/* Product Select */}
                     <td className="px-3 py-1.5">
-                      <select
-                        value={item.productId}
-                        onChange={(e) => handleItemProductChange(idx, e.target.value)}
-                        className="w-full px-2 py-1 border border-slate-300 bg-white rounded-sm outline-none focus:ring-1 focus:ring-blue-500 font-medium"
-                      >
-                        {products.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.name}
-                          </option>
-                        ))}
-                      </select>
+                      <ProductCombobox
+                        value={item.variantId}
+                        valueLabel={item.description}
+                        onChange={(o) => o && handleItemProductChange(idx, o.productId)}
+                      />
                     </td>
 
                     {/* SKU */}
@@ -1090,17 +1085,11 @@ export default function InvoiceCreateClient({
 
                 <div className="space-y-1">
                   <label className="text-[11px] font-bold text-slate-500 uppercase">Product *</label>
-                  <select
-                    value={item.productId}
-                    onChange={(e) => handleItemProductChange(idx, e.target.value)}
-                    className="w-full p-2 border border-slate-300 bg-white rounded outline-none text-xs font-semibold"
-                  >
-                    {products.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
+                  <ProductCombobox
+                        value={item.variantId}
+                        valueLabel={item.description}
+                        onChange={(o) => o && handleItemProductChange(idx, o.productId)}
+                      />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2">

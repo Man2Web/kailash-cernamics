@@ -1,7 +1,7 @@
 import React from "react";
 import db from "@/lib/db/db";
 import { redirect } from "next/navigation";
-import { getSession, isSuperAdmin } from "@/lib/auth/auth";
+import { getSession, isSuperAdmin, isWarehouseRestricted } from "@/lib/auth/auth";
 import { PERMISSION_GROUPS } from "@/lib/auth/permissions";
 import { roleLabel } from "@/lib/auth/access";
 import ProfileClient from "@/components/erp/ProfileClient";
@@ -31,7 +31,8 @@ export default async function ProfilePage() {
         phone: employee?.phone || "",
         employeeNo: employee?.employeeNo || "",
         roles: session.user.roles.map(roleLabel),
-        warehouse: session.user.warehouseName || "",
+        warehouse:
+          session.user.warehouseName || (isWarehouseRestricted(session) ? "None assigned yet (ask a Super Admin)" : "All warehouses"),
         status: session.user.status,
         memberSince: user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN") : "",
         hasEmployeeRecord: !!employee,

@@ -1,9 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { randomBytes } from "crypto";
 import db from "@/lib/db/db";
-import { releaseReservation } from "@/lib/inventory/movement";
-import { getSession, isSuperAdmin, denyUnlessCan, sessionCan } from "@/lib/auth/auth";
+import { releaseReservation, releaseReservationsForOrder } from "@/lib/inventory/movement";
+import { getSession, isSuperAdmin, denyUnlessCan, sessionCan, warehouseScopeId, warehouseAccessError } from "@/lib/auth/auth";
+import { matchesWarehouse } from "@/lib/inventory/warehouse-scope";
 
 export interface SalesItemInput {
   variantId: string;
@@ -183,7 +185,27 @@ export async function createSalesOrder(input: CreateSalesOrderInput | any, ...le
 
     if (!items || items.length === 0) return { error: "Please add at least one item." };
 
-    const orderNo = `SO-${Date.now().toString().slice(-6)}`;
+    if (warehouseId) {
+      const whErr = warehouseAccessError(await getSession(), warehouseId);
+      if (whErr) return { error: whErr };
+    }
+
+    // Validate everything before touching the database.
+    if (!customerId) return { error: "Please choose a customer." };
+    const seen = new Set<string>();
+    for (const [i, it] of items.entries()) {
+      if (!it.variantId) return { error: `Line ${i + 1}: please choose a product.` };
+      if (seen.has(it.variantId)) return { error: `Line ${i + 1}: this product is already on the order. Increase its quantity instead.` };
+      seen.add(it.variantId);
+      const q = Number(it.quantity);
+      if (!Number.isFinite(q) || q <= 0) return { error: `Line ${i + 1}: quantity must be greater than zero.` };
+      if (!Number.isFinite(Number(it.rate)) || Number(it.rate) < 0) return { error: `Line ${i + 1}: rate cannot be negative.` };
+    }
+    if (isReserved && !warehouseId) return { error: "Choose the warehouse to reserve stock from." };
+    const variantRows = await db.productVariant.findMany({ where: { id: { in: [...seen] } } });
+    if (variantRows.length !== seen.size) return { error: "One of the selected products no longer exists. Please re-select it." };
+
+    const orderNo = `SO-${Date.now().toString().slice(-6)}${randomBytes(1).toString("hex").toUpperCase()}`;
     const initialStatus = isReserved ? "RESERVED" : "CONFIRMED";
 
     const result = await db.$transaction(async (tx: any) => {
@@ -224,7 +246,7 @@ export async function createSalesOrder(input: CreateSalesOrderInput | any, ...le
             orderNo,
             customerName,
             variantId: item.variantId,
-            productId: item.productId || "",
+            productId: "", // resolved from the variant inside reserveStock
             warehouseId,
             quantity: Number(item.quantity),
             expectedPickupDate: pickup,
@@ -297,9 +319,19 @@ export async function updateSalesOrderStatus(
       return { error: "COMPLETED orders are locked and cannot be altered." };
     }
 
-    await db.salesOrder.update({
-      where: { id: orderId },
-      data: { status: newStatus },
+    if ((order.status === "CANCELLED" || order.status === "EXPIRED") && newStatus !== order.status) {
+      return { error: `This order is ${order.status.toLowerCase()} and cannot be reopened. Create a new order instead.` };
+    }
+
+    await db.$transaction(async () => {
+      await db.salesOrder.update({
+        where: { id: orderId },
+        data: { status: newStatus },
+      });
+      if (newStatus === "CANCELLED" || newStatus === "EXPIRED") {
+        // Free the held stock together with the status change (all or nothing).
+        await releaseReservationsForOrder(orderId, `Order ${newStatus.toLowerCase()}`);
+      }
     });
 
     // Automatically record status history and action performer
@@ -482,12 +514,9 @@ export async function updateSalesDeliveryStatus(
     }
 
     // Warehouse scoping for Warehouse Manager
-    if (!isSuper && isWhMgr && session.user.warehouseName && delivery.sourceWarehouse) {
-      const whName = session.user.warehouseName.toLowerCase();
-      const srcWh = delivery.sourceWarehouse.toLowerCase();
-      if (!srcWh.includes(whName) && !whName.includes(srcWh) && delivery.sourceWarehouse !== session.user.warehouseId) {
-        return { error: "Unauthorized: You can only update deliveries dispatched from your assigned warehouse." };
-      }
+    const scopeId = warehouseScopeId(session);
+    if (scopeId && !matchesWarehouse(delivery.sourceWarehouse, scopeId, session.user.warehouseName)) {
+      return { error: "Unauthorized: You can only update deliveries dispatched from your assigned warehouse." };
     }
 
     await db.vehicleMovement.update({
@@ -750,7 +779,9 @@ export async function createInvoice(input: CreateInvoiceInput) {
           },
         });
 
-        // Deduct Stock Quantity
+        // Deduct Stock Quantity (serialised per variant+warehouse so concurrent invoices cannot both spend the same units)
+        if (!(Number(item.quantity) > 0)) throw new Error("Invoice quantity must be greater than zero.");
+        await (db as any).$executeRawUnsafe("SELECT pg_advisory_xact_lock(hashtext($1))", `stock:${item.variantId}:${item.warehouseId}`);
         let stock = await tx.stock.findFirst({
           where: {
             variantId: item.variantId,

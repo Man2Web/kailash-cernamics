@@ -2,7 +2,7 @@ import React from "react";
 import db from "@/lib/db/db";
 import { Package, Plus, FolderPlus, Tag, Ruler } from "lucide-react";
 import StockClient from "@/components/erp/StockClient";
-import { getSession, sessionCan } from "@/lib/auth/auth";
+import { getSession, sessionCan, warehouseScopeId } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 
 export default async function StockPage() {
@@ -19,7 +19,7 @@ export default async function StockPage() {
     redirect("/unauthorized");
   }
 
-  const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? session.user.warehouseId : undefined;
+  const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? warehouseScopeId(session) : undefined;
 
   // 1. Fetch Master Data from PostgreSQL
   const products = await db.product.findMany({

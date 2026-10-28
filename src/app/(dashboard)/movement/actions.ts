@@ -2,6 +2,8 @@
 
 import { db } from "@/lib/db/db";
 import { revalidatePath } from "next/cache";
+import { randomBytes } from "crypto";
+import { matchesWarehouse } from "@/lib/inventory/warehouse-scope";
 
 export async function createMovement(formData: {
   invoiceNo: string;
@@ -22,8 +24,19 @@ export async function createMovement(formData: {
     if (!session) {
       return { success: false, error: "Authentication required." };
     }
+    const { sessionCan, warehouseScopeId } = await import("@/lib/auth/auth");
+    if (!sessionCan(session, "movement:update") && !sessionCan(session, "sales:dispatch")) {
+      return { success: false, error: "Unauthorized: you do not have permission to create deliveries." };
+    }
+    const scopeId = warehouseScopeId(session);
+    if (scopeId && !matchesWarehouse(formData.sourceWarehouse, scopeId, session.user.warehouseName)) {
+      return { success: false, error: "You can only dispatch from your assigned warehouse." };
+    }
+    if (!formData.invoiceNo?.trim() || !formData.vehicleNo?.trim() || !formData.driverName?.trim()) {
+      return { success: false, error: "Invoice, driver and vehicle number are required." };
+    }
 
-    const dispatchNo = `SD-${Date.now().toString().slice(-6)}`;
+    const dispatchNo = `SD-${Date.now().toString().slice(-6)}${randomBytes(2).toString("hex").toUpperCase()}`;
 
     const metadata = {
       dispatchNo,
@@ -44,7 +57,8 @@ export async function createMovement(formData: {
       isLocked: false,
     };
 
-    const result = await db.vehicleMovement.create({
+    const result = await db.$transaction(async () => {
+    const created = await db.vehicleMovement.create({
       data: {
         dispatchNo,
         invoiceNo: formData.invoiceNo,
@@ -60,7 +74,7 @@ export async function createMovement(formData: {
     await db.inventoryTransaction.create({
       data: {
         docType: "SALES_DELIVERY_LOG",
-        docId: result.id,
+        docId: created.id,
         transactionNo: dispatchNo,
         remarks: JSON.stringify(metadata),
       },
@@ -70,7 +84,7 @@ export async function createMovement(formData: {
     const { recordDocumentStatusHistory } = await import("@/lib/audit/status-history");
     await recordDocumentStatusHistory({
       documentType: "SALES_DELIVERY",
-      documentId: result.id,
+      documentId: created.id,
       documentNo: dispatchNo,
       oldStatus: "NONE",
       newStatus: "READY_FOR_DISPATCH",
@@ -78,6 +92,8 @@ export async function createMovement(formData: {
       userName: session.user.name,
       notes: formData.notes || `Sales Delivery created by ${session.user.name}`,
       actionType: "CREATED",
+    });
+    return created;
     });
 
     revalidatePath("/movement");
@@ -112,6 +128,14 @@ export async function updateMovementStatus(id: string, status: string, eta?: str
       return { success: false, error: "Movement record not found." };
     }
 
+    {
+      const { warehouseScopeId } = await import("@/lib/auth/auth");
+      const scopeId = warehouseScopeId(session);
+      if (scopeId && !matchesWarehouse(movement.sourceWarehouse, scopeId, session.user.warehouseName)) {
+        return { success: false, error: "You can only update deliveries from your assigned warehouse." };
+      }
+    }
+
     // STRICT LOCK RULE: Completed movements are permanently locked
     if (movement.status === "COMPLETED") {
       return {
@@ -120,6 +144,7 @@ export async function updateMovementStatus(id: string, status: string, eta?: str
       };
     }
 
+    await db.$transaction(async () => {
     await db.vehicleMovement.update({
       where: { id },
       data: {
@@ -159,6 +184,7 @@ export async function updateMovementStatus(id: string, status: string, eta?: str
       notes: `Status changed to ${status} by ${session.user.name}`,
       actionType: status === "COMPLETED" ? "COMPLETED" : "STATUS_UPDATE",
     });
+    });
 
     revalidatePath("/movement");
     revalidatePath("/sales");
@@ -171,8 +197,18 @@ export async function updateMovementStatus(id: string, status: string, eta?: str
 
 export async function deleteMovement(id: string) {
   try {
+    const { getSession, sessionCan, warehouseScopeId } = await import("@/lib/auth/auth");
+    const session = await getSession();
+    if (!session) return { success: false, error: "Authentication required." };
+    if (!sessionCan(session, "movement:update")) {
+      return { success: false, error: "Unauthorized: you do not have permission to delete deliveries." };
+    }
     const movement = await db.vehicleMovement.findUnique({ where: { id } });
     if (!movement) return { success: false, error: "Not found" };
+    const scopeId = warehouseScopeId(session);
+    if (scopeId && !matchesWarehouse(movement.sourceWarehouse, scopeId, session.user.warehouseName)) {
+      return { success: false, error: "You can only delete deliveries from your assigned warehouse." };
+    }
 
     if (movement.status === "COMPLETED") {
       return { success: false, error: "Cannot delete a COMPLETED delivery record." };

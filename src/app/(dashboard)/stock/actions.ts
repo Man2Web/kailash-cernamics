@@ -103,6 +103,25 @@ export async function createProduct(input: CreateProductInput) {
   const denied = await denyUnlessCan("products:create");
   if (denied) return denied;
   try {
+    const nums: Array<[string, unknown]> = [
+      ["Purchase price", input.purchasePrice], ["Selling price", input.sellingPrice], ["MRP", input.mrp],
+      ["GST rate", input.gstRate], ["Minimum stock", input.minStock], ["Reorder level", input.reorderLevel],
+      ["Opening stock", input.openingStock ?? 0],
+    ];
+    for (const [label, v] of nums) {
+      const n = Number(v ?? 0);
+      if (!Number.isFinite(n) || n < 0) return { error: `${label} must be zero or a positive number.` };
+    }
+    if (!input.name?.trim() || !input.sku?.trim() || !input.code?.trim()) return { error: "Name, SKU and Product Code are required." };
+    if (input.openingStock && input.openingStock > 0) {
+      if (!input.warehouseId) return { error: "Choose a warehouse for the opening stock." };
+      const wh = await db.warehouse.findUnique({ where: { id: input.warehouseId } });
+      if (!wh) return { error: "The selected warehouse does not exist." };
+      const { getSession, warehouseAccessError } = await import("@/lib/auth/auth");
+      const whErr = warehouseAccessError(await getSession(), input.warehouseId);
+      if (whErr) return { error: whErr };
+    }
+
     // Check if SKU or Code already exists
     const existingSku = await db.product.findUnique({ where: { sku: input.sku } });
     if (existingSku) return { error: "Product with this SKU already exists." };
@@ -223,7 +242,19 @@ export async function createProduct(input: CreateProductInput) {
  * Server action to scan/lookup a product by QR code or Code/SKU.
  * Verifies authenticated session and returns live inventory across all warehouses.
  */
-export async function getProductByQrAction(qrCodeOrQuery: string) {
+/** Warehouse-restricted members only see stock for their own warehouse. */
+async function scopeInventoryToMember(session: any, result: any) {
+  const { warehouseScopeId } = await import("@/lib/auth/auth");
+  const scope = warehouseScopeId(session);
+  if (!scope) return;
+  const mine = result.warehouses.filter((w: any) => w.warehouseId === scope);
+  result.warehouses = mine;
+  result.totalOnHand = mine.reduce((n: number, w: any) => n + w.onHand, 0);
+  result.totalReserved = mine.reduce((n: number, w: any) => n + w.reserved, 0);
+  result.totalAvailable = mine.reduce((n: number, w: any) => n + w.available, 0);
+}
+
+export async function getProductByQrAction(qrCodeOrQuery: string, source: "camera" | "manual" = "manual") {
   try {
     const { getSession } = await import("@/lib/auth/auth");
     const session = await getSession();
@@ -231,7 +262,8 @@ export async function getProductByQrAction(qrCodeOrQuery: string) {
       return { error: "Authentication required. Please log in." };
     }
 
-    if (!session.user.permissions.includes("stock:view")) {
+    const { sessionCan } = await import("@/lib/auth/auth");
+    if (!sessionCan(session, "stock:view")) {
       return { error: "Unauthorized: You do not have permission to scan or view product inventory." };
     }
 
@@ -239,13 +271,27 @@ export async function getProductByQrAction(qrCodeOrQuery: string) {
       return { error: "Please provide a valid QR code or product identifier." };
     }
 
+    if (typeof qrCodeOrQuery !== "string" || qrCodeOrQuery.length > 300) {
+      return { error: "That is not a valid product QR code." };
+    }
+
+    const { classifyScan } = await import("@/lib/products/qr-parse");
+    const kind = classifyScan(qrCodeOrQuery).kind;
+    if (kind === "attendance") {
+      return { error: "This is an attendance QR code, not a product QR code." };
+    }
+    if (source === "camera" && kind !== "product-token") {
+      return { error: "This QR code is not a product QR code. Use the product's own QR label, or search by code below." };
+    }
+
     const { resolveProductByQr } = await import("@/lib/products/qr");
-    const result = await resolveProductByQr(qrCodeOrQuery);
+    const result = await resolveProductByQr(qrCodeOrQuery, source === "camera" ? "camera" : "manual");
 
     if (!result) {
       return { error: "No product found matching this QR code. Please verify the code and try again." };
     }
 
+    await scopeInventoryToMember(session, result);
     return { success: true, data: result };
   } catch (error: any) {
     console.error("Error resolving product QR:", error);
@@ -264,6 +310,11 @@ export async function getProductStockDetailsAction(productId: string) {
       return { error: "Authentication required." };
     }
 
+    const { sessionCan } = await import("@/lib/auth/auth");
+    if (!sessionCan(session, "stock:view")) {
+      return { error: "Unauthorized: you do not have permission to view stock." };
+    }
+
     const { getLiveProductInventory } = await import("@/lib/products/qr");
     const result = await getLiveProductInventory(productId);
 
@@ -271,6 +322,7 @@ export async function getProductStockDetailsAction(productId: string) {
       return { error: "Product not found." };
     }
 
+    await scopeInventoryToMember(session, result);
     return { success: true, data: result };
   } catch (error: any) {
     console.error("Error getting product stock details:", error);

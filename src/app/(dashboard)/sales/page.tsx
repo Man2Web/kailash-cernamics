@@ -3,7 +3,7 @@ import db from "@/lib/db/db";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import SalesClient from "@/components/erp/SalesClient";
-import { getSession, sessionCan } from "@/lib/auth/auth";
+import { getSession, sessionCan, warehouseScopeId } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 
 // Safe Date Formatter
@@ -13,7 +13,7 @@ function formatDate(value: unknown): string {
   if (Number.isNaN(date.getTime())) {
     return "—";
   }
-  return date.toLocaleDateString("en-IN");
+  return date.toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
 }
 
 export default async function SalesDashboardPage() {
@@ -28,7 +28,7 @@ export default async function SalesDashboardPage() {
     redirect("/unauthorized");
   }
 
-  const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? session.user.warehouseId : undefined;
+  const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? warehouseScopeId(session) : undefined;
   const assignedWarehouseName = (!isSuperAdminRole && isWarehouseMgrRole) ? session.user.warehouseName : undefined;
 
   // 1. Fetch Sales Documents & Reservations from DB
@@ -139,7 +139,7 @@ export default async function SalesDashboardPage() {
   const scopedReservations = formattedReservations.filter((r) => {
     if (isSuperAdminRole || isSalesPersonRole) return true;
     if (!assignedWarehouseId) return true;
-    return r.warehouseName === assignedWarehouseName || r.salesOrderId?.includes(assignedWarehouseId);
+    return !!assignedWarehouseName && r.warehouseName === assignedWarehouseName;
   });
 
   const formattedProducts = products.map((p: any) => ({
