@@ -305,8 +305,8 @@ export default function StockClient({
       {activeTab === "products" && (
         <div className="space-y-3 sm:space-y-4">
           {/* Action Toolbar */}
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 bg-white p-2.5 sm:p-3 border border-slate-200 rounded-lg shadow-xs">
-            <div className="relative w-full sm:max-w-xs">
+          <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-2 bg-white p-2.5 sm:p-3 border border-slate-200 rounded-lg shadow-xs">
+            <div className="relative w-full lg:max-w-xs">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-3.5 w-3.5 text-slate-400" />
               </span>
@@ -664,7 +664,7 @@ export default function StockClient({
               filteredProducts.map((p) => (
                 <div key={p.id} className="bg-white p-4 border border-slate-200 rounded-lg shadow-xs space-y-3">
                   <div className="flex justify-between items-start gap-2 border-b border-slate-100 pb-2.5">
-                    <div>
+                    <div className="min-w-0">
                       <h4 className="font-bold text-slate-900 text-sm leading-snug">{p.name}</h4>
                       <div className="text-[11px] font-mono text-slate-500 mt-0.5">
                         SKU: {p.sku} | Code: {p.code}

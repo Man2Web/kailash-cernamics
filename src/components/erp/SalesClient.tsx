@@ -468,8 +468,8 @@ export default function SalesClient({
       </div>
 
       {/* Action Toolbar */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white p-3 border border-slate-200 rounded shadow-xs">
-        <div className="relative w-full sm:max-w-xs md:max-w-sm">
+      <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-white p-3 border border-slate-200 rounded shadow-xs">
+        <div className="relative w-full lg:max-w-xs md:max-w-sm">
           <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
           <input
             type="text"
@@ -651,7 +651,7 @@ export default function SalesClient({
               filteredOrders.map((o) => (
                 <div key={o.id} className="bg-white p-4 border border-slate-200 rounded-lg shadow-xs space-y-3">
                   <div className="flex justify-between items-start gap-2 border-b border-slate-100 pb-2.5">
-                    <div>
+                    <div className="min-w-0">
                       <button
                         onClick={() => setSelectedOrderForDetail(o)}
                         className="text-blue-600 hover:underline font-mono font-bold text-sm text-left block py-1.5 -my-1.5 pr-3"
@@ -836,7 +836,7 @@ export default function SalesClient({
               filteredReservations.map((r) => (
                 <div key={r.id} className="bg-white p-4 border border-slate-200 rounded-lg shadow-xs space-y-3">
                   <div className="flex justify-between items-start gap-2 border-b border-slate-100 pb-2.5">
-                    <div>
+                    <div className="min-w-0">
                       <span className="font-mono font-bold text-slate-900 text-sm">{r.transactionNo}</span>
                       <div className="text-[11px] font-mono text-slate-500">Order: {r.orderNo}</div>
                     </div>

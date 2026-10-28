@@ -45,3 +45,10 @@ textarea {
   min-width: 0;
   max-width: 100%;
 }
+
+/* Long unbroken codes (SKUs, order numbers) must wrap instead of pushing badges off the card. */
+h3,
+h4,
+.font-mono {
+  overflow-wrap: anywhere;
+}

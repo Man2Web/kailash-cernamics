@@ -358,8 +358,8 @@ export default function OfficeClient({
       </div>
 
       {/* Action Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white p-3 border border-slate-200 rounded shadow-xs">
-        <div className="relative w-full sm:max-w-xs md:max-w-sm">
+      <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-3 bg-white p-3 border border-slate-200 rounded shadow-xs">
+        <div className="relative w-full lg:max-w-xs md:max-w-sm">
           <Search className="h-4 w-4 absolute left-3 top-2.5 text-slate-400" />
           <input
             type="text"

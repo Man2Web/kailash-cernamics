@@ -203,8 +203,8 @@ export default function CustomerClient({
       {/* 1. Customers List View */}
       {activeTab === "customers" && (
         <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 bg-white p-3 border border-slate-200 rounded-sm shadow-xs">
-            <div className="relative w-full sm:max-w-xs">
+          <div className="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-2 bg-white p-3 border border-slate-200 rounded-sm shadow-xs">
+            <div className="relative w-full lg:max-w-xs">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search className="h-3.5 w-3.5 text-slate-400" />
               </span>
