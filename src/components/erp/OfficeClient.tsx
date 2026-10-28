@@ -431,7 +431,7 @@ export default function OfficeClient({
       {activeTab === "users" && (
         <div>
           {/* Mobile Cards View */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredUsers.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded text-xs">
                 No users found matching your search.
@@ -650,7 +650,7 @@ export default function OfficeClient({
       {activeTab === "customers" && (
         <div>
           {/* Mobile Card View */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredCustomers.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded text-xs">
                 No customers found matching your search.
@@ -729,7 +729,7 @@ export default function OfficeClient({
       {activeTab === "suppliers" && (
         <div>
           {/* Mobile Card View */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredSuppliers.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded text-xs">
                 No suppliers found matching your search.
@@ -802,7 +802,7 @@ export default function OfficeClient({
       {activeTab === "warehouses" && (
         <div>
           {/* Mobile Card View */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredWarehouses.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded text-xs">
                 No warehouses found matching your search.

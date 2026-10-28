@@ -642,7 +642,7 @@ export default function SalesClient({
           </div>
 
           {/* Mobile Card View (< 768px) */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredOrders.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No sales orders found.
@@ -827,7 +827,7 @@ export default function SalesClient({
           </div>
 
           {/* Mobile Cards */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredReservations.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No stock reservations recorded.

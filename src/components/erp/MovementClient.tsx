@@ -428,7 +428,7 @@ export default function MovementClient({
       </div>
 
       {/* Deliveries Card View (Mobile < 768px) */}
-      <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
         {filteredDeliveries.length === 0 ? (
           <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
             No active customer sales deliveries found.

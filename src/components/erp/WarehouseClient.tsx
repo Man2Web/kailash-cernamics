@@ -507,7 +507,7 @@ export default function WarehouseClient({
           </div>
 
           {/* Mobile Cards View */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredStocks.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No stock items found in this warehouse.
@@ -592,7 +592,7 @@ export default function WarehouseClient({
             </table>
           </div>
 
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredOrders.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No sales orders found for this warehouse facility.
@@ -665,7 +665,7 @@ export default function WarehouseClient({
             </table>
           </div>
 
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredDeliveries.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No sales dispatches found for this warehouse facility.

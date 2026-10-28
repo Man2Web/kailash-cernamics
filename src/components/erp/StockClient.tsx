@@ -655,7 +655,7 @@ export default function StockClient({
           </div>
 
           {/* Products Card View (Mobile < 768px) */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredProducts.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No products found. Add a product to get started.
@@ -797,7 +797,7 @@ export default function StockClient({
             </div>
 
             {/* Mobile Cards View */}
-            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-2">
               {categories.length === 0 ? (
                 <div className="bg-white p-4 text-center text-slate-400 border border-slate-200 rounded-sm text-xs">
                   No categories found
@@ -891,7 +891,7 @@ export default function StockClient({
             </div>
 
             {/* Mobile Cards View */}
-            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-2">
               {brands.length === 0 ? (
                 <div className="bg-white p-4 text-center text-slate-400 border border-slate-200 rounded-sm text-xs">
                   No brands found
@@ -985,7 +985,7 @@ export default function StockClient({
             </div>
 
             {/* Mobile Cards View */}
-            <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-2">
               {units.length === 0 ? (
                 <div className="bg-white p-4 text-center text-slate-400 border border-slate-200 rounded-sm text-xs">
                   No units found

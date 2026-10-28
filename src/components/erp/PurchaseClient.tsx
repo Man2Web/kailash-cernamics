@@ -557,7 +557,7 @@ export default function PurchaseClient({
           </div>
 
           {/* Mobile Cards View */}
-          <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div className="xl:hidden grid grid-cols-1 lg:grid-cols-2 gap-3">
             {filteredPos.length === 0 ? (
               <div className="bg-white p-6 text-center text-slate-400 border border-slate-200 rounded-sm">
                 No Purchase Orders found.
