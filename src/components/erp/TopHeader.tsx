@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Menu,
   Search,
@@ -100,12 +101,13 @@ export default function TopHeader({ user, onMenuToggle }: TopHeaderProps) {
             <Keyboard className="h-4 w-4" />
           </button>
 
-          <button
-            title="Settings"
+          <Link
+            href="/account"
+            title="Account Settings"
             className="p-1.5 rounded hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition"
           >
             <Settings className="h-4 w-4" />
-          </button>
+          </Link>
 
           <button
             title="Notifications"
@@ -154,20 +156,22 @@ export default function TopHeader({ user, onMenuToggle }: TopHeaderProps) {
                     {user.email}
                   </p>
                 </div>
-                <button
+                <Link
+                  href="/profile"
                   className="w-full flex items-center text-left px-4 py-2 text-xs hover:bg-slate-50 text-slate-600 transition"
                   onClick={() => setIsProfileOpen(false)}
                 >
                   <UserIcon className="mr-2 h-3.5 w-3.5" />
                   My Profile
-                </button>
-                <button
+                </Link>
+                <Link
+                  href="/account"
                   className="w-full flex items-center text-left px-4 py-2 text-xs hover:bg-slate-50 text-slate-600 transition"
                   onClick={() => setIsProfileOpen(false)}
                 >
                   <Settings className="mr-2 h-3.5 w-3.5" />
                   Account Settings
-                </button>
+                </Link>
                 <div className="border-t border-slate-100 my-1"></div>
                 <form action={handleLogout} className="w-full">
                   <button
