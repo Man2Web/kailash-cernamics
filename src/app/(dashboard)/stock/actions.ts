@@ -1,5 +1,7 @@
 "use server";
 
+import { denyUnlessCan } from "@/lib/auth/auth";
+
 import { revalidatePath } from "next/cache";
 import db from "@/lib/db/db";
 
@@ -8,6 +10,8 @@ import db from "@/lib/db/db";
 // ==========================================
 
 export async function createCategory(name: string, code: string) {
+  const denied = await denyUnlessCan("products:manage");
+  if (denied) return denied;
   try {
     const category = await db.category.create({
       data: {
@@ -28,6 +32,8 @@ export async function createCategory(name: string, code: string) {
 // ==========================================
 
 export async function createBrand(name: string, code: string) {
+  const denied = await denyUnlessCan("products:manage");
+  if (denied) return denied;
   try {
     const brand = await db.brand.create({
       data: {
@@ -48,6 +54,8 @@ export async function createBrand(name: string, code: string) {
 // ==========================================
 
 export async function createUnit(name: string, code: string) {
+  const denied = await denyUnlessCan("products:manage");
+  if (denied) return denied;
   try {
     const unit = await db.unit.create({
       data: {
@@ -92,6 +100,8 @@ export interface CreateProductInput {
 }
 
 export async function createProduct(input: CreateProductInput) {
+  const denied = await denyUnlessCan("products:create");
+  if (denied) return denied;
   try {
     // Check if SKU or Code already exists
     const existingSku = await db.product.findUnique({ where: { sku: input.sku } });
@@ -221,12 +231,7 @@ export async function getProductByQrAction(qrCodeOrQuery: string) {
       return { error: "Authentication required. Please log in." };
     }
 
-    const roles = session.user.roles || [];
-    const isSuperAdminRole = roles.includes("SUPER_ADMIN") || roles.includes("ADMIN");
-    const isWarehouseMgrRole = roles.includes("WAREHOUSE_MANAGER") || roles.includes("INVENTORY_STAFF");
-    const isSalesPersonRole = roles.includes("SALES_PERSON") || roles.includes("SALES_MANAGER") || roles.includes("SALES_STAFF");
-
-    if (!isSuperAdminRole && !isWarehouseMgrRole && !isSalesPersonRole) {
+    if (!session.user.permissions.includes("stock:view")) {
       return { error: "Unauthorized: You do not have permission to scan or view product inventory." };
     }
 

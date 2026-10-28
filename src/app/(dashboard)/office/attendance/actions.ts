@@ -13,7 +13,7 @@ import ExcelJS from "exceljs";
 
 function checkSuperAdmin(session: any) {
   if (!session) throw new Error("Unauthorized: Please log in.");
-  if (!canManageAttendance(session.user.roles)) {
+  if (!canManageAttendance(session)) {
     throw new Error("Forbidden: Attendance records are restricted to Super Admin and Attendance Manager.");
   }
 }

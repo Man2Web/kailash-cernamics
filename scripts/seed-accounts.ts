@@ -19,13 +19,13 @@ async function seedRoleAccounts() {
   const roleMap = new Map(roles.map((r: any) => [r.name, r.id]));
 
   const accounts = [
-    { email: "admin@geethaceramics.com", name: "Super Admin", roles: ["SUPER_ADMIN"] },
+    { email: "admin@kailashceramics.com", name: "Super Admin", roles: ["SUPER_ADMIN"] },
     { email: "admin@sixorbit.com", name: "System Administrator", roles: ["ADMIN"] },
-    { email: "sales@geethaceramics.com", name: "Sales Manager", roles: ["SALES_MANAGER", "SALES_STAFF"] },
-    { email: "purchase@geethaceramics.com", name: "Purchase Manager", roles: ["PURCHASE_MANAGER", "PURCHASE_STAFF"] },
-    { email: "warehouse@geethaceramics.com", name: "Warehouse Manager", roles: ["WAREHOUSE_MANAGER", "INVENTORY_STAFF"] },
-    { email: "finance@geethaceramics.com", name: "Finance Manager", roles: ["FINANCE_MANAGER", "ACCOUNTANT"] },
-    { email: "viewer@geethaceramics.com", name: "Auditor / Viewer", roles: ["VIEWER"] },
+    { email: "sales@kailashceramics.com", name: "Sales Manager", roles: ["SALES_MANAGER", "SALES_STAFF"] },
+    { email: "purchase@kailashceramics.com", name: "Purchase Manager", roles: ["PURCHASE_MANAGER", "PURCHASE_STAFF"] },
+    { email: "warehouse@kailashceramics.com", name: "Warehouse Manager", roles: ["WAREHOUSE_MANAGER", "INVENTORY_STAFF"] },
+    { email: "finance@kailashceramics.com", name: "Finance Manager", roles: ["FINANCE_MANAGER", "ACCOUNTANT"] },
+    { email: "viewer@kailashceramics.com", name: "Auditor / Viewer", roles: ["VIEWER"] },
   ];
 
   for (const acc of accounts) {

@@ -1,6 +1,7 @@
 import React from "react";
 import AttendancePublicClient from "@/components/erp/AttendancePublicClient";
-import { getSession } from "@/lib/auth/auth";
+import Link from "next/link";
+import { getSession, canManageAttendance } from "@/lib/auth/auth";
 import { generateDynamicAttendanceToken, validateAttendanceToken } from "@/lib/attendance/token";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,28 @@ export default async function PublicAttendancePage({ searchParams }: PublicAtten
   const token = params?.token || "";
 
   const session = await getSession();
+
+  // The live rotating QR (kiosk screen) is only shown to attendance managers / Super Admins. Everyone else must reach
+  // this page by scanning the office QR code, so the link carries a valid token.
+  if (!token && !canManageAttendance(session)) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+        <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-3">
+          <h1 className="text-lg font-bold text-white">Employee Attendance</h1>
+          <p className="text-sm text-slate-400">
+            Scan the attendance QR code displayed at the office or warehouse entrance with your phone to mark your check-in
+            or check-out.
+          </p>
+          {!session && (
+            <Link href="/login?callbackUrl=%2Fattendance" className="inline-block text-sm font-semibold text-blue-400 underline">
+              Log in
+            </Link>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   const initialIdentifier = session?.user?.employeeNo || session?.user?.phone || session?.user?.email || "";
   const initialName = session?.user?.name || "";
 

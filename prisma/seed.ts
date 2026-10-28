@@ -2,7 +2,7 @@ import prisma from "../src/lib/db/db";
 import bcrypt from "bcryptjs";
 
 async function main() {
-  console.log("Starting database seeding for Geetha Ceramics...");
+  console.log("Starting database seeding for Kailash Ceramics...");
 
   // Reset database before seeding to ensure idempotency
   await prisma.$executeRawUnsafe(`
@@ -66,10 +66,10 @@ async function main() {
     update: {},
     create: {
       id: "00000000-0000-0000-0000-000000000001",
-      name: "Geetha Ceramics Group Ltd",
+      name: "Kailash Ceramics Group Ltd",
       gstin: "33AAACG1234A1Z1",
       pan: "AAACG1234A",
-      email: "info@geethaceramics.com",
+      email: "info@kailashceramics.com",
       phone: "+91 98765 43210",
       address: "12, Main Bazaar Road, Vellore, Tamil Nadu, 632001",
     },
@@ -183,10 +183,10 @@ async function main() {
   }
   const passwordHash = await bcrypt.hash(initialAdminPassword, 10);
   const adminUser = await prisma.user.upsert({
-    where: { email: "admin@geethaceramics.com" },
+    where: { email: "admin@kailashceramics.com" },
     update: {},
     create: {
-      email: "admin@geethaceramics.com",
+      email: "admin@kailashceramics.com",
       name: "Super Admin",
       passwordHash,
       status: "ACTIVE",
@@ -228,7 +228,7 @@ async function main() {
       roleId: dbRoles["SUPER_ADMIN"].id,
     },
   });
-  console.log("Associated admin@geethaceramics.com to SUPER_ADMIN role");
+  console.log("Associated admin@kailashceramics.com to SUPER_ADMIN role");
 
   // 7. Seed Chart of Accounts & default Ledgers
   const DEFAULT_COA = [
@@ -369,15 +369,15 @@ async function main() {
     create: { name: "Wholesale Buyers", discountPercent: 10.0 },
   });
 
-  const custGeetha = await prisma.customer.upsert({
-    where: { code: "CUST-GEETHA" },
+  const custKailash = await prisma.customer.upsert({
+    where: { code: "CUST-KAILASH" },
     update: {},
     create: {
       groupId: groupWholesale.id,
-      name: "Geetha Ceramics House",
-      code: "CUST-GEETHA",
+      name: "Kailash Ceramics House",
+      code: "CUST-KAILASH",
       gstin: "33AAACG1111A1Z1",
-      email: "billing@geethaceramics.com",
+      email: "billing@kailashceramics.com",
       phone: "9876543210",
       creditLimit: 500000.0,
     },
@@ -385,7 +385,7 @@ async function main() {
 
   await prisma.customerAddress.create({
     data: {
-      customerId: custGeetha.id,
+      customerId: custKailash.id,
       type: "BILLING",
       address: "15, Katpadi Road, Vellore",
       city: "Vellore",
@@ -420,7 +420,7 @@ async function main() {
       isDefault: true,
     },
   });
-  console.log("Seeded Customers: Geetha Ceramics (Vellore), Bangalore Granite (Karnataka)");
+  console.log("Seeded Customers: Kailash Ceramics (Vellore), Bangalore Granite (Karnataka)");
 
   // 11. Seed Vendors
   const vendorKaj = await prisma.vendor.upsert({
@@ -454,7 +454,7 @@ async function main() {
     data: [
       {
         ticketNo: "TCK-1001",
-        customerId: custGeetha.id,
+        customerId: custKailash.id,
         subject: "Delay in Ceramic Tiles Shipment",
         description: "Customer reports Vellore order is delayed by 3 days. Needs priority tracking.",
         priority: "HIGH",
@@ -472,7 +472,7 @@ async function main() {
       },
       {
         ticketNo: "TCK-1003",
-        customerId: custGeetha.id,
+        customerId: custKailash.id,
         subject: "Damaged Sanitaryware Items Delivered",
         description: "2 Kajaria bathroom bowls received in cracked state. Replacements needed.",
         priority: "URGENT",
@@ -507,7 +507,7 @@ async function main() {
       },
       {
         title: "New Supplier Catalog Added: Sanitaryware 2026",
-        content: "Geetha Ceramics is proud to introduce 50+ new catalog products under sanitaryware lines. Check details in the Stock directory.",
+        content: "Kailash Ceramics is proud to introduce 50+ new catalog products under sanitaryware lines. Check details in the Stock directory.",
         category: "GENERAL",
         isActive: true,
       }
@@ -541,9 +541,9 @@ async function main() {
   await prisma.employee.createMany({
     data: [
       {
-        employeeNo: "GC-EMP-001",
+        employeeNo: "KC-EMP-001",
         name: "Arun Kumar",
-        email: "arun.k@geethaceramics.com",
+        email: "arun.k@kailashceramics.com",
         phone: "+91 91234 56789",
         department: "FINANCE",
         jobTitle: "Senior Accountant",
@@ -552,9 +552,9 @@ async function main() {
         joiningDate: new Date("2024-01-15"),
       },
       {
-        employeeNo: "GC-EMP-002",
+        employeeNo: "KC-EMP-002",
         name: "Priya Rajan",
-        email: "priya.r@geethaceramics.com",
+        email: "priya.r@kailashceramics.com",
         phone: "+91 98123 45670",
         department: "SALES",
         jobTitle: "Sales Manager",
@@ -563,9 +563,9 @@ async function main() {
         joiningDate: new Date("2024-06-01"),
       },
       {
-        employeeNo: "GC-EMP-003",
+        employeeNo: "KC-EMP-003",
         name: "Ramesh Selvan",
-        email: "ramesh.s@geethaceramics.com",
+        email: "ramesh.s@kailashceramics.com",
         phone: "+91 97123 45689",
         department: "WAREHOUSE",
         jobTitle: "Warehouse Supervisor",

@@ -2,7 +2,7 @@ import React from "react";
 import db from "@/lib/db/db";
 import { Package, Plus, FolderPlus, Tag, Ruler } from "lucide-react";
 import StockClient from "@/components/erp/StockClient";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, sessionCan } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 
 export default async function StockPage() {
@@ -15,7 +15,7 @@ export default async function StockPage() {
   // A member who also has Warehouse Manager (or Super Admin) access is not limited to the sales view.
   const isSalesOnlyRole = isSalesPersonRole && !isWarehouseMgrRole && !isSuperAdminRole;
 
-  if (!isSuperAdminRole && !isWarehouseMgrRole && !isSalesPersonRole) {
+  if (!sessionCan(session, "stock:view")) {
     redirect("/unauthorized");
   }
 
@@ -90,7 +90,7 @@ export default async function StockPage() {
         brands={brands}
         units={units}
         warehouses={warehouses}
-        viewOnly={isSalesOnlyRole}
+        viewOnly={!sessionCan(session, "products:create") && !sessionCan(session, "products:manage")}
       />
     </div>
   );

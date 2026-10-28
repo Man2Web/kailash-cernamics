@@ -3,10 +3,31 @@
 import { markEmployeeCheckIn, markEmployeeCheckOut } from "@/lib/attendance/attendance";
 import { generateDynamicAttendanceToken, validateAttendanceToken } from "@/lib/attendance/token";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, canManageAttendance } from "@/lib/auth/auth";
+import { normalizePhoneNumber } from "@/lib/attendance/attendance";
 
-async function requireTokenOrSession(token?: string) {
-  if (await getSession()) return null;
+/**
+ * Marking attendance needs a signed-in member. Members can only mark their own record, and must have scanned the
+ * current QR code (valid rotating token). Attendance managers / Super Admins may mark on behalf of staff.
+ */
+async function requireLoginAndQr(identifier: string, token?: string) {
+  const session = await getSession();
+  if (!session) {
+    return { success: false as const, message: "Please log in with your username and password to mark attendance." };
+  }
+  if (canManageAttendance(session)) return null;
+
+  const id = identifier.trim().toLowerCase();
+  const own = [session.user.employeeNo, session.user.email, session.user.phone]
+    .filter(Boolean)
+    .map((v) => String(v).trim().toLowerCase());
+  const norm = normalizePhoneNumber(identifier);
+  const isOwn =
+    own.includes(id) || (!!session.user.phone && norm.length >= 10 && normalizePhoneNumber(session.user.phone) === norm);
+  if (!isOwn) {
+    return { success: false as const, message: "You can only mark your own attendance." };
+  }
+
   const tokenCheck = await validateAttendanceToken(token || "");
   if (!tokenCheck.valid) {
     return {
@@ -43,8 +64,7 @@ export async function checkInEmployeeAction(identifier: string, token?: string) 
     };
   }
 
-  // A valid rotating QR token is mandatory unless the caller has a valid session
-  const denied = await requireTokenOrSession(token);
+  const denied = await requireLoginAndQr(cleanId, token);
   if (denied) return denied;
 
   const res = await markEmployeeCheckIn({ identifier: cleanId, method: "QR" });
@@ -69,7 +89,7 @@ export async function checkOutEmployeeAction(identifier: string, token?: string)
     };
   }
 
-  const denied = await requireTokenOrSession(token);
+  const denied = await requireLoginAndQr(cleanId, token);
   if (denied) return denied;
 
   const res = await markEmployeeCheckOut({ identifier: cleanId });

@@ -28,19 +28,23 @@ function unauthorized(message = "Authentication required.") {
 }
 
 async function resolveCaller(request: NextRequest, bodyToken?: string): Promise<Caller | NextResponse> {
+  // Attendance needs a signed-in member (username and password).
   const session = await getSession();
-  if (session) return { kind: "session", session };
+  if (!session) return unauthorized("Please log in with your username and password.");
 
-  const token =
-    request.headers.get("x-attendance-token") ||
-    new URL(request.url).searchParams.get("token") ||
-    bodyToken ||
-    "";
-  const check = await validateAttendanceToken(token);
-  if (!check.valid) {
-    return unauthorized(check.message || "QR code expired. Please scan the latest QR code.");
+  // Staff must also present the current rotating QR token (attendance managers / Super Admins are exempt).
+  if (!isSuperAdmin(session.user.roles) && !session.user.permissions.includes("attendance:manage")) {
+    const token =
+      request.headers.get("x-attendance-token") ||
+      new URL(request.url).searchParams.get("token") ||
+      bodyToken ||
+      "";
+    const check = await validateAttendanceToken(token);
+    if (!check.valid) {
+      return unauthorized(check.message || "QR code expired. Please scan the latest QR code.");
+    }
   }
-  return { kind: "public" };
+  return { kind: "session", session };
 }
 
 function canAccessIdentifier(session: UserSession, identifier: string): boolean {

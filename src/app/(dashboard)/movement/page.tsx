@@ -1,7 +1,7 @@
 import React from "react";
 import db from "@/lib/db/db";
 import MovementClient, { DeliveryItem } from "@/components/erp/MovementClient";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, sessionCan } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -21,7 +21,7 @@ export default async function MovementPage() {
   const isWarehouseMgrRole = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
   const isSalesPersonRole = session.user.roles.includes("SALES_PERSON") || session.user.roles.includes("SALES_MANAGER") || session.user.roles.includes("SALES_STAFF");
 
-  if (!isSuperAdminRole && !isWarehouseMgrRole && !isSalesPersonRole) {
+  if (!sessionCan(session, "movement:view")) {
     redirect("/unauthorized");
   }
 
@@ -126,7 +126,7 @@ export default async function MovementPage() {
         deliveries={deliveries}
         warehouses={warehouseOptions}
         outlets={outletOptions}
-        canEditStatus={isSuperAdminRole || isWarehouseMgrRole}
+        canEditStatus={sessionCan(session, "movement:update")}
       />
     </div>
   );

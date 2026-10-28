@@ -7,7 +7,9 @@ import { loginAction, LoginState } from "./actions";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const requested = searchParams.get("callbackUrl") || "";
+  // Only follow in-app paths after login (never an external address).
+  const callbackUrl = requested.startsWith("/") && !requested.startsWith("//") ? requested : "/dashboard";
 
   const [state, formAction, isPending] = useActionState<LoginState, FormData>(
     loginAction,

@@ -5,7 +5,7 @@ import db from "@/lib/db/db";
 import { authorize } from "@/lib/auth/auth";
 
 export async function createWarehouse(name: string, code: string, branchId: string, address?: string) {
-  const session = await authorize();
+  const session = await authorize({ permission: "warehouse:manage" });
   if (!session) return { success: false as const, error: "Unauthorized" };
   try {
     const warehouse = await db.warehouse.create({
@@ -25,7 +25,7 @@ export async function createWarehouse(name: string, code: string, branchId: stri
 }
 
 export async function createLocation(name: string, code: string, warehouseId: string) {
-  const session = await authorize();
+  const session = await authorize({ permission: "warehouse:manage" });
   if (!session) return { success: false as const, error: "Unauthorized" };
   try {
     const location = await db.warehouseLocation.create({
@@ -44,7 +44,7 @@ export async function createLocation(name: string, code: string, warehouseId: st
 }
 
 export async function createRack(name: string, code: string, locationId: string) {
-  const session = await authorize();
+  const session = await authorize({ permission: "warehouse:manage" });
   if (!session) return { success: false as const, error: "Unauthorized" };
   try {
     const rack = await db.rack.create({
@@ -63,7 +63,7 @@ export async function createRack(name: string, code: string, locationId: string)
 }
 
 export async function createBin(name: string, code: string, rackId: string) {
-  const session = await authorize();
+  const session = await authorize({ permission: "warehouse:manage" });
   if (!session) return { success: false as const, error: "Unauthorized" };
   try {
     const bin = await db.bin.create({

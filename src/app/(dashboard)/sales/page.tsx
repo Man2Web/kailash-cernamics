@@ -3,7 +3,7 @@ import db from "@/lib/db/db";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import SalesClient from "@/components/erp/SalesClient";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, sessionCan } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 
 // Safe Date Formatter
@@ -24,7 +24,7 @@ export default async function SalesDashboardPage() {
   const isWarehouseMgrRole = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
   const isSalesPersonRole = session.user.roles.includes("SALES_PERSON") || session.user.roles.includes("SALES_MANAGER") || session.user.roles.includes("SALES_STAFF");
 
-  if (!isSuperAdminRole && !isWarehouseMgrRole && !isSalesPersonRole) {
+  if (!sessionCan(session, "sales:view")) {
     redirect("/unauthorized");
   }
 
@@ -192,8 +192,10 @@ export default async function SalesDashboardPage() {
         warehouses={formattedWarehouses}
         branches={branches}
         outlets={outlets}
-        canDispatch={isSuperAdminRole || isWarehouseMgrRole || !isSalesPersonRole}
-        isSalesPerson={isSalesPersonRole}
+        canDispatch={sessionCan(session, "sales:dispatch")}
+        isSalesPerson={!sessionCan(session, "sales:status")}
+        canCreate={sessionCan(session, "sales:create")}
+        canAddCustomer={sessionCan(session, "customers:create")}
         isWarehouseManager={isWarehouseMgrRole}
       />
     </div>

@@ -78,7 +78,7 @@ src/
 └── tests/                    # E2E and unit tests
 prisma/
 ├── schema.prisma             # Database schema
-└── seed.ts                   # Realistic seed data (Geetha Ceramics)
+└── seed.ts                   # Realistic seed data (Kailash Ceramics)
 ```
 
 ---

@@ -1,15 +1,18 @@
 "use client";
 
 import React from "react";
-import { PRIMARY_ROLE_OPTIONS, EXTRA_ACCESS_OPTIONS, roleLabel } from "@/lib/auth/access";
+import { PRIMARY_ROLE_OPTIONS, roleLabel } from "@/lib/auth/access";
+import { PERMISSION_GROUPS } from "@/lib/auth/permissions";
 
 interface RoleBadgesProps {
   role: string;
   roles?: string[];
+  /** Number of individually chosen permissions (when a Super Admin customised this member). */
+  customCount?: number | null;
 }
 
-/** The member's main role plus a badge for every extra access they hold. */
-export function RoleBadges({ role, roles }: RoleBadgesProps) {
+/** The member's role plus a note when their permissions were customised. */
+export function RoleBadges({ role, roles, customCount }: RoleBadgesProps) {
   const tone = (r: string) =>
     r === "SUPER_ADMIN" || r === "ADMIN"
       ? "bg-purple-100 text-purple-700"
@@ -18,15 +21,23 @@ export function RoleBadges({ role, roles }: RoleBadgesProps) {
       : r === "ATTENDANCE_MANAGER"
       ? "bg-teal-100 text-teal-800"
       : "bg-blue-100 text-blue-700";
-  const extras = (roles || []).filter((r) => r !== role);
+  const others = (roles || []).filter((r) => r !== role);
   return (
     <span className="inline-flex flex-wrap items-center gap-1">
       <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${tone(role)}`}>{roleLabel(role)}</span>
-      {extras.map((r) => (
-        <span key={r} className={`px-2 py-0.5 rounded text-[11px] font-semibold border border-dashed ${tone(r)}`} title="Extra access">
+      {others.map((r) => (
+        <span key={r} className={`px-2 py-0.5 rounded text-[11px] font-semibold border border-dashed ${tone(r)}`}>
           + {roleLabel(r)}
         </span>
       ))}
+      {typeof customCount === "number" && (
+        <span
+          className="px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200"
+          title="Permissions chosen individually by a Super Admin"
+        >
+          Custom access · {customCount}
+        </span>
+      )}
     </span>
   );
 }
@@ -52,47 +63,79 @@ export function PrimaryRoleSelect({ value, onChange }: PrimaryRoleSelectProps) {
   );
 }
 
-interface ExtraAccessChecklistProps {
-  primary: string;
+interface PermissionMatrixProps {
+  role: string;
   selected: string[];
-  onToggle: (value: string) => void;
+  onChange: (codes: string[]) => void;
 }
 
-/** Extra access the Super Admin can add on top of the main role. */
-export function ExtraAccessChecklist({ primary, selected, onToggle }: ExtraAccessChecklistProps) {
-  if (primary === "SUPER_ADMIN") {
+/** Grouped checklist of everything a member can be allowed to open and do. */
+export function PermissionMatrix({ role, selected, onChange }: PermissionMatrixProps) {
+  if (role === "SUPER_ADMIN") {
     return (
-      <div className="p-2.5 bg-purple-50 border border-purple-100 rounded text-[11px] text-purple-800">
-        A Super Admin already has access to everything, so no extra access is needed.
+      <div className="p-3 bg-purple-50 border border-purple-100 rounded text-xs text-purple-800">
+        A Super Admin automatically has every permission, including user and permission management.
       </div>
     );
   }
-  const options = EXTRA_ACCESS_OPTIONS.filter((o) => o.value !== primary);
+
+  const toggle = (code: string) =>
+    onChange(selected.includes(code) ? selected.filter((c) => c !== code) : [...selected, code]);
+
   return (
-    <div className="space-y-1.5">
-      <label className="font-semibold text-slate-700">Extra access (optional)</label>
-      <p className="text-[11px] text-slate-500">Tick anything this member should be able to open in addition to their main role.</p>
-      <div className="space-y-1.5">
-        {options.map((o) => {
-          const checked = selected.includes(o.value);
+    <div className="space-y-2">
+      <div>
+        <label className="font-semibold text-slate-700">Permissions</label>
+        <p className="text-[11px] text-slate-500">
+          Choosing a role fills in its usual permissions. Tick or untick anything to give this member exactly the access you want.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        {PERMISSION_GROUPS.map((group) => {
+          const assignable = group.permissions.filter((p) => !p.superAdminOnly);
+          const allOn = assignable.length > 0 && assignable.every((p) => selected.includes(p.code));
+          const setGroup = (on: boolean) => {
+            const codes = assignable.map((p) => p.code);
+            onChange(on ? Array.from(new Set([...selected, ...codes])) : selected.filter((c) => !codes.includes(c)));
+          };
           return (
-            <label
-              key={o.value}
-              className={`flex items-start gap-2.5 p-2.5 border rounded cursor-pointer transition ${
-                checked ? "border-blue-300 bg-blue-50/60" : "border-slate-200 hover:bg-slate-50"
-              }`}
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={() => onToggle(o.value)}
-                className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-              />
-              <span className="min-w-0">
-                <span className="block text-xs font-semibold text-slate-800">{o.label}</span>
-                <span className="block text-[11px] text-slate-500">{o.help}</span>
-              </span>
-            </label>
+            <div key={group.key} className="border border-slate-200 rounded-lg p-3 bg-white">
+              <div className="flex items-center justify-between gap-2 pb-2 mb-2 border-b border-slate-100">
+                <h4 className="text-xs font-bold text-slate-900">{group.title}</h4>
+                {assignable.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setGroup(!allOn)}
+                    className="text-[11px] font-semibold text-blue-600 hover:text-blue-800"
+                  >
+                    {allOn ? "Deselect All" : "Select All"}
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {group.permissions.map((p) => {
+                  const locked = !!p.superAdminOnly;
+                  return (
+                    <label
+                      key={p.code}
+                      className={`flex items-start gap-2 ${locked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!locked && selected.includes(p.code)}
+                        disabled={locked}
+                        onChange={() => toggle(p.code)}
+                        className="mt-0.5 h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="min-w-0">
+                        <span className="block text-xs font-semibold text-slate-800">{p.label}</span>
+                        <span className="block text-[11px] text-slate-500">{p.help}</span>
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </div>

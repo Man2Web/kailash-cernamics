@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import db from "@/lib/db/db";
 import { releaseReservation } from "@/lib/inventory/movement";
-import { getSession, isSuperAdmin, isSalesPerson, isWarehouseManager } from "@/lib/auth/auth";
+import { getSession, isSuperAdmin, denyUnlessCan, sessionCan } from "@/lib/auth/auth";
 
 export interface SalesItemInput {
   variantId: string;
@@ -27,6 +27,8 @@ export interface CreateCustomerInput {
 }
 
 export async function createCustomerAction(input: CreateCustomerInput) {
+  const denied = await denyUnlessCan("customers:create");
+  if (denied) return denied;
   try {
     const session = await getSession();
     if (!session) return { error: "Authentication required." };
@@ -143,6 +145,8 @@ export interface CreateSalesOrderInput {
 }
 
 export async function createSalesOrder(input: CreateSalesOrderInput | any, ...legacyArgs: any[]) {
+  const denied = await denyUnlessCan("sales:create");
+  if (denied) return denied;
   try {
     const session = await getSession();
     if (!session) {
@@ -262,6 +266,8 @@ export async function updateSalesOrderStatus(
   newStatus: string,
   reason?: string
 ) {
+  const denied = await denyUnlessCan("sales:status");
+  if (denied) return denied;
   try {
     const session = await getSession();
     if (!session) {
@@ -350,6 +356,8 @@ export interface CreateSalesDeliveryInput {
 }
 
 export async function createSalesDeliveryAction(input: CreateSalesDeliveryInput) {
+  const denied = await denyUnlessCan("sales:dispatch");
+  if (denied) return denied;
   try {
     const session = await getSession();
     if (!session) {
@@ -438,7 +446,7 @@ export async function updateSalesDeliveryStatus(
     const isWhMgr = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
 
     // Sales Person cannot modify warehouse delivery status
-    if (!isSuper && !isWhMgr) {
+    if (!sessionCan(session, "movement:update")) {
       return { error: "Unauthorized: Sales Person cannot change delivery status. Delivery status updates are restricted to Warehouse Manager / Super Admin." };
     }
 
@@ -647,6 +655,8 @@ export interface CreateInvoiceInput {
 }
 
 export async function createInvoice(input: CreateInvoiceInput) {
+  const denied = await denyUnlessCan("invoices:create");
+  if (denied) return denied;
   try {
     if (input.items.length === 0) return { error: "Please add at least one item to the invoice." };
 
@@ -948,7 +958,7 @@ export async function releaseReservationAction(
     if (!session) return { success: false, error: "Authentication required." };
 
     const roles = session.user.roles;
-    if (!isSuperAdmin(roles) && !isSalesPerson(roles) && !isWarehouseManager(roles)) {
+    if (!sessionCan(session, "sales:create") && !sessionCan(session, "sales:status")) {
       return { success: false, error: "Unauthorized: you cannot release stock reservations." };
     }
 

@@ -84,6 +84,8 @@ interface PurchaseClientProps {
     variants?: { id: string; name?: string; sku?: string }[];
   }[];
   isWarehouseManager?: boolean;
+  canCreatePo?: boolean;
+  canReceive?: boolean;
   assignedWarehouseId?: string;
   assignedWarehouseName?: string;
 }
@@ -107,6 +109,8 @@ export default function PurchaseClient({
   warehouses,
   products,
   isWarehouseManager = false,
+  canCreatePo = true,
+  canReceive = true,
   assignedWarehouseId,
   assignedWarehouseName,
 }: PurchaseClientProps) {
@@ -407,7 +411,7 @@ export default function PurchaseClient({
               </div>
             </div>
 
-            {!isWarehouseManager && (
+            {!isWarehouseManager && canCreatePo && (
               <button
                 onClick={() => setShowPoForm(true)}
                 className="flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition flex-shrink-0 cursor-pointer min-h-[36px] sm:min-h-0"
@@ -538,7 +542,7 @@ export default function PurchaseClient({
                             <Eye className="h-4 w-4" />
                           </button>
 
-                          {!isCompleted && (
+                          {!isCompleted && canReceive && (
                             <button
                               onClick={() => handleOpenReceiveModal(po)}
                               title="Receive Goods into Warehouse Stock"
@@ -665,7 +669,7 @@ export default function PurchaseClient({
                         <Eye className="h-3.5 w-3.5" />
                         <span>Audit Details</span>
                       </button>
-                      {!isCompleted && (
+                      {!isCompleted && canReceive && (
                         <button
                           onClick={() => handleOpenReceiveModal(po)}
                           className="flex-1 py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold flex items-center justify-center space-x-1.5 transition min-h-[36px]"

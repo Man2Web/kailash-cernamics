@@ -122,6 +122,7 @@ interface WarehouseClientProps {
   assignedWarehouseId?: string;
   assignedWarehouseName?: string;
   isManager: boolean;
+  canManageStructure?: boolean;
 }
 
 export default function WarehouseClient({
@@ -136,6 +137,7 @@ export default function WarehouseClient({
   assignedWarehouseId,
   assignedWarehouseName,
   isManager,
+  canManageStructure = true,
 }: WarehouseClientProps) {
   const [activeTab, setActiveTab] = useState<"stock" | "orders" | "deliveries" | "config">("stock");
   const [selectedWarehouseFilter, setSelectedWarehouseFilter] = useState(
@@ -429,7 +431,7 @@ export default function WarehouseClient({
           <span>Relevant Deliveries ({salesDeliveries.length})</span>
         </button>
 
-        {!isManager && (
+        {canManageStructure && (
           <button
             onClick={() => setActiveTab("config")}
             className={`px-4 py-2 text-xs font-semibold border-b-2 -mb-px flex items-center space-x-2 transition-all whitespace-nowrap cursor-pointer ${
@@ -705,7 +707,7 @@ export default function WarehouseClient({
       )}
 
       {/* Tab 4: Storage Locations, Racks & Bins (Super Admin Only) */}
-      {activeTab === "config" && !isManager && (
+      {activeTab === "config" && canManageStructure && (
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Warehouse Form */}

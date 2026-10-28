@@ -15,7 +15,7 @@ export default async function AttendanceAdminPage() {
   if (!session) redirect("/login");
 
   // Strict Super Admin RBAC Check
-  const isSuperAdmin = canManageAttendance(session.user.roles); // Super Admin or Attendance Manager
+  const isSuperAdmin = canManageAttendance(session); // Super Admin or Attendance Manager
   if (!isSuperAdmin) {
     redirect("/unauthorized");
   }

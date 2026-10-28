@@ -1,6 +1,7 @@
 import React from "react";
 import db from "@/lib/db/db";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, sessionCan } from "@/lib/auth/auth";
+import { firstAllowedPath } from "@/lib/auth/permissions";
 import { redirect } from "next/navigation";
 import DashboardCharts from "@/components/charts/DashboardCharts";
 import { checkAndExpireReservations, getActiveReservations } from "@/lib/inventory/movement";
@@ -20,6 +21,9 @@ import {
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (!sessionCan(session, "dashboard:view")) {
+    redirect(firstAllowedPath(session.user.permissions, false) || "/unauthorized");
+  }
 
   const isSuperAdminRole = session.user.roles.includes("SUPER_ADMIN") || session.user.roles.includes("ADMIN");
   const isWarehouseMgrRole = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");

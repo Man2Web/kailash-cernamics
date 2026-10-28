@@ -12,7 +12,6 @@ export function proxy(request: NextRequest) {
     pathname.startsWith("/login") ||
     pathname.startsWith("/forgot-password") ||
     pathname.startsWith("/reset-password") ||
-    pathname.startsWith("/attendance") ||
     pathname.startsWith("/api/public");
 
   // Allow static assets, images, and next internal files to pass through
@@ -28,7 +27,7 @@ export function proxy(request: NextRequest) {
     // Redirect unauthenticated user to login page
     const loginUrl = new URL("/login", request.url);
     // Keep track of the original url to redirect back after login
-    loginUrl.searchParams.set("callbackUrl", pathname);
+    loginUrl.searchParams.set("callbackUrl", pathname + request.nextUrl.search);
     return NextResponse.redirect(loginUrl);
   }
 

@@ -566,7 +566,7 @@ export default function HrClient({ employees }: HrClientProps) {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. dinesh.m@geetha.com"
+                  placeholder="e.g. dinesh.m@kailashceramics.com"
                   className="w-full p-2 border rounded-sm text-xs focus:ring-1 focus:ring-blue-500 text-slate-900"
                   required
                 />

@@ -157,7 +157,7 @@ export async function runTallyExhaustiveE2ETest() {
     // -------------------------------------------------------------------------
     console.log("\n🔐 Authenticating as Super Admin...");
     await page.goto("http://localhost:3000/login", { waitUntil: "networkidle" });
-    await page.fill('input[name="email"]', "admin@geethaceramics.com");
+    await page.fill('input[name="email"]', "admin@kailashceramics.com");
     await page.fill('input[name="password"]', "Admin@12345");
     await page.click('button[type="submit"]');
     await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 10000 });
@@ -432,7 +432,7 @@ export async function runTallyExhaustiveE2ETest() {
       code: `QC_${runId}`,
       gstin: "33AAAAA0000A1Z5",
       debtorGroup: "Sundry Debtors",
-    }, "Geetha Ceramics");
+    }, "Kailash Ceramics");
     if (!custXml.fullXml.includes("<PARENT>Sundry Debtors</PARENT>")) throw new Error("Customer XML invalid");
     customerSyncStatus = "PASS";
 
@@ -443,7 +443,7 @@ export async function runTallyExhaustiveE2ETest() {
       code: `QV_${runId}`,
       gstin: "33AAACG0000G1Z9",
       debtorGroup: "Sundry Creditors",
-    }, "Geetha Ceramics");
+    }, "Kailash Ceramics");
     if (!vendXml.fullXml.includes("<PARENT>Sundry Creditors</PARENT>")) throw new Error("Vendor XML invalid");
     vendorSyncStatus = "PASS";
 
@@ -456,7 +456,7 @@ export async function runTallyExhaustiveE2ETest() {
       hsnCode: "69072100",
       unitName: "NOS",
       gstRate: 18,
-    }, "Geetha Ceramics");
+    }, "Kailash Ceramics");
     if (!prodXml.fullXml.includes("<BASEUNITS>NOS</BASEUNITS>")) throw new Error("Product XML invalid");
     productSyncStatus = "PASS";
 
@@ -487,7 +487,7 @@ export async function runTallyExhaustiveE2ETest() {
           totalAmt: 1180,
         },
       ],
-    }, "Geetha Ceramics");
+    }, "Kailash Ceramics");
     if (!invoiceXml.fullXml.includes("<VOUCHERTYPENAME>Sales</VOUCHERTYPENAME>") || !invoiceXml.fullXml.includes("<LEDGERNAME>CGST</LEDGERNAME>")) {
       throw new Error("Sales Invoice XML invalid");
     }

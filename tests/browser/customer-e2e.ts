@@ -68,8 +68,8 @@ export async function runCustomerBrowserE2ETest() {
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, "01_login_page.png") });
 
     // 3. Fill Login Credentials
-    console.log("3. ✍️ Entering login credentials (admin@geethaceramics.com)...");
-    await page.fill('input[name="email"]', "admin@geethaceramics.com");
+    console.log("3. ✍️ Entering login credentials (admin@kailashceramics.com)...");
+    await page.fill('input[name="email"]', "admin@kailashceramics.com");
     await page.fill('input[name="password"]', "Admin@12345");
     await page.click('button[type="submit"]');
 
@@ -89,14 +89,14 @@ export async function runCustomerBrowserE2ETest() {
     await addBtn.click();
 
     // 7. Wait for form
-    await page.waitForSelector('input[placeholder="e.g. Geetha Ceramic House"]', { timeout: 5000 });
+    await page.waitForSelector('input[placeholder="e.g. Kailash Ceramic House"]', { timeout: 5000 });
     console.log("   Form opened successfully!");
 
     // 8. Fill All Form Fields
     console.log("7. 📝 Physically entering test values into all form fields...");
     
     // Customer Name
-    await page.fill('input[placeholder="e.g. Geetha Ceramic House"]', testCustomer.name);
+    await page.fill('input[placeholder="e.g. Kailash Ceramic House"]', testCustomer.name);
     console.log(`   - Customer Name: ${testCustomer.name}`);
 
     // Customer Code
@@ -124,7 +124,7 @@ export async function runCustomerBrowserE2ETest() {
     console.log(`   - GSTIN: ${testCustomer.gstin}`);
 
     // Email
-    await page.fill('input[placeholder="e.g. contact@geethaceramics.com"]', testCustomer.email);
+    await page.fill('input[placeholder="e.g. contact@kailashceramics.com"]', testCustomer.email);
     console.log(`   - Email: ${testCustomer.email}`);
 
     // Mobile Number

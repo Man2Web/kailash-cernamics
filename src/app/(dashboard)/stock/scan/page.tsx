@@ -1,5 +1,5 @@
 import React from "react";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, sessionCan } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 import ProductQrScanner from "@/components/erp/ProductQrScanner";
 import Link from "next/link";
@@ -14,7 +14,7 @@ export default async function ScanProductQrPage() {
   const isWarehouseMgrRole = roles.includes("WAREHOUSE_MANAGER") || roles.includes("INVENTORY_STAFF");
   const isSalesPersonRole = roles.includes("SALES_PERSON") || roles.includes("SALES_MANAGER") || roles.includes("SALES_STAFF");
 
-  if (!isSuperAdminRole && !isWarehouseMgrRole && !isSalesPersonRole) {
+  if (!sessionCan(session, "stock:view")) {
     redirect("/unauthorized");
   }
 

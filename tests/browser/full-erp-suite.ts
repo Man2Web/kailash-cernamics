@@ -91,19 +91,19 @@ export async function runFullErpSuite() {
       await page.screenshot({ path: path.join(SCREENSHOT_DIR, "mod01_login.png") });
 
       // Negative test: invalid credentials
-      await page.fill('input[name="email"]', "invalid@geetha.com");
+      await page.fill('input[name="email"]', "invalid@kailashceramics.com");
       await page.fill('input[name="password"]', "WrongPass999");
       await page.click('button[type="submit"]');
       await page.waitForTimeout(500);
 
       // Real login
-      await page.fill('input[name="email"]', "admin@geethaceramics.com");
+      await page.fill('input[name="email"]', "admin@kailashceramics.com");
       await page.fill('input[name="password"]', "Admin@12345");
       await page.click('button[type="submit"]');
       await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 10000 });
 
       // Verify active user in DB
-      const user = await db.user.findFirst({ where: { email: "admin@geethaceramics.com" } });
+      const user = await db.user.findFirst({ where: { email: "admin@kailashceramics.com" } });
 
       results.push({
         module: "Authentication & Session",
@@ -191,10 +191,10 @@ export async function runFullErpSuite() {
     try {
       await page.goto("http://localhost:3000/customer", { waitUntil: "networkidle" });
       await page.click('button:has-text("Add Customer")');
-      await page.waitForSelector('input[placeholder="e.g. Geetha Ceramic House"]', { timeout: 5000 });
+      await page.waitForSelector('input[placeholder="e.g. Kailash Ceramic House"]', { timeout: 5000 });
 
       // Fill Form
-      await page.fill('input[placeholder="e.g. Geetha Ceramic House"]', custName);
+      await page.fill('input[placeholder="e.g. Kailash Ceramic House"]', custName);
       await page.fill('input[placeholder="e.g. CUST0001"]', custCode);
 
       const groupSelect = page.locator("form select").first();
@@ -208,7 +208,7 @@ export async function runFullErpSuite() {
       }
 
       await page.fill('input[placeholder="33AAAAA0000A1Z"]', "33AAAAA0000A1Z5");
-      await page.fill('input[placeholder="e.g. contact@geethaceramics.com"]', custEmail);
+      await page.fill('input[placeholder="e.g. contact@kailashceramics.com"]', custEmail);
       await page.fill('input[placeholder="e.g. 9876543210"]', custPhone);
       await page.locator('form input[type="number"]').fill("500000");
       await page.fill('input[placeholder="12, Main Bazaar Road"]', "12 QA Industrial Estate");
@@ -1073,7 +1073,7 @@ export async function runFullErpSuite() {
         code: custCode,
         gstin: "33AAAAA0000A1Z5",
         debtorGroup: "Sundry Debtors",
-      }, "Geetha Ceramics");
+      }, "Kailash Ceramics");
 
       if (!custXml.fullXml.includes("<PARENT>Sundry Debtors</PARENT>")) {
         throw new Error("Tally customer XML missing Sundry Debtors parent tag");
@@ -1088,7 +1088,7 @@ export async function runFullErpSuite() {
         hsnCode: "69072100",
         unitName: "NOS",
         gstRate: 18,
-      }, "Geetha Ceramics");
+      }, "Kailash Ceramics");
 
       if (!prodXml.fullXml.includes("<BASEUNITS>NOS</BASEUNITS>")) {
         throw new Error("Tally stock item XML missing BASEUNITS tag");
@@ -1121,7 +1121,7 @@ export async function runFullErpSuite() {
             totalAmt: 1180,
           },
         ],
-      }, "Geetha Ceramics");
+      }, "Kailash Ceramics");
 
       if (!voucherXml.fullXml.includes("<VOUCHERTYPENAME>Sales</VOUCHERTYPENAME>")) {
         throw new Error("Tally sales voucher XML missing Sales voucher tag");

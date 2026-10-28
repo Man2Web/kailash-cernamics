@@ -91,7 +91,7 @@ export async function createMovement(formData: {
 
 export async function updateMovementStatus(id: string, status: string, eta?: string) {
   try {
-    const { getSession, isSuperAdmin } = await import("@/lib/auth/auth");
+    const { getSession, isSuperAdmin, sessionCan } = await import("@/lib/auth/auth");
     const session = await getSession();
     if (!session) {
       return { success: false, error: "Authentication required." };
@@ -100,7 +100,7 @@ export async function updateMovementStatus(id: string, status: string, eta?: str
     const isSuper = isSuperAdmin(session.user.roles);
     const isWhMgr = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
 
-    if (!isSuper && !isWhMgr) {
+    if (!sessionCan(session, "movement:update")) {
       return { success: false, error: "Unauthorized: Delivery status updates are restricted to Warehouse Manager / Super Admin." };
     }
 

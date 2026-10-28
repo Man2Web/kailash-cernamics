@@ -118,6 +118,8 @@ interface SalesClientProps {
   canDispatch?: boolean;
   isSalesPerson?: boolean;
   isWarehouseManager?: boolean;
+  canCreate?: boolean;
+  canAddCustomer?: boolean;
 }
 
 export default function SalesClient({
@@ -133,6 +135,8 @@ export default function SalesClient({
   canDispatch = true,
   isSalesPerson = false,
   isWarehouseManager = false,
+  canCreate = true,
+  canAddCustomer = true,
 }: SalesClientProps) {
   const [activeTab, setActiveTab] = useState<"orders" | "reservations">("orders");
   const [searchQuery, setSearchQuery] = useState("");
@@ -495,6 +499,7 @@ export default function SalesClient({
             <span>Scan QR</span>
           </button>
 
+          {canAddCustomer && (
           <button
             onClick={() => {
               setErrorMsg("");
@@ -506,8 +511,9 @@ export default function SalesClient({
             <User className="h-3.5 w-3.5" />
             <span>Add Customer</span>
           </button>
+          )}
 
-          {activeTab === "orders" && (
+          {activeTab === "orders" && canCreate && (
             <button
               onClick={() => {
                 setErrorMsg("");

@@ -15,7 +15,7 @@ export async function createEmployee(formData: {
   const session = await authorize({ adminOnly: true });
   if (!session) return { success: false as const, error: "Unauthorized" };
   try {
-    const employeeNo = `GC-EMP-${Math.floor(100 + Math.random() * 900)}`;
+    const employeeNo = `KC-EMP-${Math.floor(100 + Math.random() * 900)}`;
 
     await db.employee.create({
       data: {

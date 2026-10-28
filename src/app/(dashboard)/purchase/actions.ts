@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import db from "@/lib/db/db";
-import { getSession, isSuperAdmin, isWarehouseManager } from "@/lib/auth/auth";
+import { getSession, isSuperAdmin, isWarehouseManager, sessionCan } from "@/lib/auth/auth";
 
 // ==========================================
 // 1. VENDOR ACTIONS
@@ -23,8 +23,8 @@ export async function createVendor(
 ) {
   try {
     const session = await getSession();
-    if (!session || !isSuperAdmin(session.user.roles)) {
-      return { error: "Unauthorized: Only Super Admin can manage suppliers/vendors." };
+    if (!sessionCan(session, "suppliers:create")) {
+      return { error: "Unauthorized: you do not have permission to register suppliers." };
     }
 
     const result = await db.$transaction(async (tx) => {
@@ -100,8 +100,8 @@ export async function createPurchaseOrder(
 ) {
   try {
     const session = await getSession();
-    if (!session || !isSuperAdmin(session.user.roles)) {
-      return { error: "Unauthorized: Only Super Admin can create Purchase Orders." };
+    if (!sessionCan(session, "purchase:create")) {
+      return { error: "Unauthorized: you do not have permission to create purchase orders." };
     }
 
     let vendorId: string;
@@ -294,7 +294,7 @@ export async function receivePurchaseOrderStock({
     const isSuper = isSuperAdmin(session.user.roles);
     const isWhMgr = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
 
-    if (!isSuper && !isWhMgr) {
+    if (!sessionCan(session, "purchase:receive")) {
       return { error: "Unauthorized: You do not have permission to receive purchase goods." };
     }
 
@@ -473,7 +473,7 @@ export async function updatePurchaseOrderStatus(poId: string, newStatus: string)
     const isSuper = isSuperAdmin(session.user.roles);
     const isWhMgr = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
 
-    if (!isSuper && !isWhMgr) {
+    if (!sessionCan(session, "purchase:receive")) {
       return { error: "Unauthorized: You do not have permission to update purchase orders." };
     }
 

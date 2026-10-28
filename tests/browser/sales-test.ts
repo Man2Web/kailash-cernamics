@@ -52,7 +52,7 @@ export async function runSalesBrowserTest() {
     // 2. Login
     console.log("2. 🔐 Logging in via http://localhost:3000/login ...");
     await page.goto("http://localhost:3000/login", { waitUntil: "networkidle" });
-    await page.fill('input[name="email"]', "admin@geethaceramics.com");
+    await page.fill('input[name="email"]', "admin@kailashceramics.com");
     await page.fill('input[name="password"]', "Admin@12345");
     await page.click('button[type="submit"]');
     await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 10000 });

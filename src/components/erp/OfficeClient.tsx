@@ -28,8 +28,9 @@ import {
   createCustomerAction,
   createSupplierAction,
 } from "@/app/(dashboard)/office/actions";
-import { RoleBadges, PrimaryRoleSelect, ExtraAccessChecklist } from "@/components/erp/AccessFields";
+import { RoleBadges, PrimaryRoleSelect, PermissionMatrix } from "@/components/erp/AccessFields";
 import { splitRoles } from "@/lib/auth/access";
+import { presetFor, effectivePermissions } from "@/lib/auth/permissions";
 
 interface OfficeUser {
   id: string;
@@ -39,6 +40,7 @@ interface OfficeUser {
   employeeNo: string;
   role: string;
   roles?: string[];
+  customPermissions?: string[] | null;
   warehouseId?: string;
   warehouseName?: string;
   status: string;
@@ -109,13 +111,13 @@ export default function OfficeClient({
   const [userWarehouseId, setUserWarehouseId] = useState("");
   const [userPassword, setUserPassword] = useState("Inventory@123");
   const [userStatus, setUserStatus] = useState<"ACTIVE" | "INACTIVE">("ACTIVE");
-  const [userExtraRoles, setUserExtraRoles] = useState<string[]>([]);
+  const [userPermissions, setUserPermissions] = useState<string[]>(presetFor("SALES_PERSON"));
 
   // Manage-access modal state
   const [showAccessModal, setShowAccessModal] = useState(false);
   const [selectedUserForAccess, setSelectedUserForAccess] = useState<OfficeUser | null>(null);
   const [accessRole, setAccessRole] = useState<string>("SALES_PERSON");
-  const [accessExtras, setAccessExtras] = useState<string[]>([]);
+  const [accessPermissions, setAccessPermissions] = useState<string[]>([]);
   const [accessWarehouseId, setAccessWarehouseId] = useState("");
 
   // Reset password state
@@ -151,7 +153,7 @@ export default function OfficeClient({
         name: userName,
         employeeNo: userEmployeeNo,
         role: userRole,
-        extraRoles: userExtraRoles,
+        permissions: userPermissions,
         email: userEmail,
         phone: userPhone,
         warehouseId: userWarehouseId,
@@ -167,7 +169,7 @@ export default function OfficeClient({
         setUserPhone("");
         setUserEmployeeNo("");
         setUserWarehouseId("");
-        setUserExtraRoles([]);
+        setUserPermissions(presetFor(userRole));
       } else {
         setErrorMsg(res.error || "Failed to create user.");
       }
@@ -177,10 +179,11 @@ export default function OfficeClient({
   const toggleIn = (list: string[], value: string) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
 
   const openAccessModal = (user: OfficeUser) => {
-    const { primary, extras } = splitRoles(user.roles && user.roles.length ? user.roles : [user.role], user.role);
+    const heldRoles = user.roles && user.roles.length ? user.roles : [user.role];
+    const { primary } = splitRoles(heldRoles, user.role);
     setSelectedUserForAccess(user);
     setAccessRole(primary);
-    setAccessExtras(extras);
+    setAccessPermissions(user.customPermissions ?? effectivePermissions(heldRoles, null));
     setAccessWarehouseId(user.warehouseId || "");
     setErrorMsg("");
     setShowAccessModal(true);
@@ -195,7 +198,7 @@ export default function OfficeClient({
       const res = await updateUserAccessAction({
         userId: selectedUserForAccess.id,
         role: accessRole,
-        extraRoles: accessExtras,
+        permissions: accessPermissions,
         warehouseId: accessWarehouseId || undefined,
       });
       if (res.success) {
@@ -493,7 +496,7 @@ export default function OfficeClient({
                       <div className="text-[11px] font-mono text-slate-500 font-bold">{u.employeeNo || "No ID"}</div>
                     </div>
                     <div className="flex items-center space-x-1.5">
-                      <RoleBadges role={u.role} roles={u.roles} />
+                      <RoleBadges role={u.role} roles={(u.roles || []).filter((r) => r !== u.role)} customCount={u.customPermissions ? u.customPermissions.length : null} />
                       <span
                         className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold ${
                           u.status === "ACTIVE"
@@ -603,7 +606,7 @@ export default function OfficeClient({
                         <div>{u.name}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <RoleBadges role={u.role} roles={u.roles} />
+                        <RoleBadges role={u.role} roles={(u.roles || []).filter((r) => r !== u.role)} customCount={u.customPermissions ? u.customPermissions.length : null} />
                       </td>
                       <td className="px-4 py-3">
                         <div className="space-y-0.5">
@@ -897,7 +900,7 @@ export default function OfficeClient({
       {/* CREATE USER MODAL */}
       {showAccessModal && selectedUserForAccess && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <ShieldCheck className="h-4 w-4 text-blue-600" />
@@ -914,18 +917,14 @@ export default function OfficeClient({
                   value={accessRole}
                   onChange={(v) => {
                     setAccessRole(v);
-                    setAccessExtras((prev) => prev.filter((x) => x !== v));
+                    setAccessPermissions(presetFor(v));
                   }}
                 />
               </div>
 
-              <ExtraAccessChecklist
-                primary={accessRole}
-                selected={accessExtras}
-                onToggle={(v) => setAccessExtras((prev) => toggleIn(prev, v))}
-              />
+              <PermissionMatrix role={accessRole} selected={accessPermissions} onChange={setAccessPermissions} />
 
-              {(accessRole === "WAREHOUSE_MANAGER" || accessExtras.includes("WAREHOUSE_MANAGER")) && (
+              {accessRole === "WAREHOUSE_MANAGER" && (
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Assigned Warehouse *</label>
                   <select
@@ -945,7 +944,7 @@ export default function OfficeClient({
               )}
 
               <p className="text-[11px] text-slate-500">
-                Saving replaces this member&apos;s current roles with the selection above. It takes effect the next time they open a page.
+                Saving replaces this member&apos;s role and permissions with the selection above. It takes effect the next time they open a page.
               </p>
 
               {errorMsg && <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 rounded">{errorMsg}</div>}
@@ -973,7 +972,7 @@ export default function OfficeClient({
 
       {showCreateUserModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <ShieldCheck className="h-4 w-4 text-blue-600" />
@@ -1005,7 +1004,10 @@ export default function OfficeClient({
                   <label className="font-semibold text-slate-700">Role *</label>
                   <select
                     value={userRole}
-                    onChange={(e) => setUserRole(e.target.value as any)}
+                    onChange={(e) => {
+                      setUserRole(e.target.value as any);
+                      setUserPermissions(presetFor(e.target.value));
+                    }}
                     className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 font-medium"
                   >
                     <option value="SALES_PERSON">Sales Person</option>
@@ -1054,13 +1056,9 @@ export default function OfficeClient({
                 </div>
               </div>
 
-              <ExtraAccessChecklist
-                primary={userRole}
-                selected={userExtraRoles}
-                onToggle={(v) => setUserExtraRoles((prev) => toggleIn(prev, v))}
-              />
+              <PermissionMatrix role={userRole} selected={userPermissions} onChange={setUserPermissions} />
 
-              {(userRole === "WAREHOUSE_MANAGER" || userExtraRoles.includes("WAREHOUSE_MANAGER")) && (
+              {userRole === "WAREHOUSE_MANAGER" && (
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Assigned Warehouse *</label>
                   <select

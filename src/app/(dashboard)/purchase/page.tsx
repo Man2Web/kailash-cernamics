@@ -1,7 +1,7 @@
 import React from "react";
 import db from "@/lib/db/db";
 import PurchaseClient from "@/components/erp/PurchaseClient";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, sessionCan } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 
 export default async function PurchasePage() {
@@ -12,7 +12,7 @@ export default async function PurchasePage() {
   const isWarehouseMgrRole = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
   
   // Sales Person is strictly forbidden from Purchase
-  if (!isSuperAdminRole && !isWarehouseMgrRole) {
+  if (!sessionCan(session, "purchase:view")) {
     redirect("/unauthorized");
   }
 
@@ -217,7 +217,9 @@ export default async function PurchasePage() {
         branches={branches}
         warehouses={warehouses.map((w: any) => ({ id: w.id, name: w.name }))}
         products={formattedProducts}
-        isWarehouseManager={isWarehouseMgrRole}
+        isWarehouseManager={!sessionCan(session, "purchase:create") && !sessionCan(session, "suppliers:create")}
+        canCreatePo={sessionCan(session, "purchase:create")}
+        canReceive={sessionCan(session, "purchase:receive")}
         assignedWarehouseId={assignedWarehouseId}
         assignedWarehouseName={assignedWarehouseName}
       />

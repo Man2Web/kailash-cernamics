@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { cookies } from "next/headers";
 import { db } from "@/lib/db/db";
+import { CUSTOM_ACCESS_PREFIX, effectivePermissions } from "@/lib/auth/permissions";
 
 const SESSION_COOKIE_NAME = "sixorbit_session_token";
 
@@ -138,21 +139,30 @@ export async function getSession(): Promise<UserSession | null> {
     // Extract roles and permissions
     const roles: string[] = [];
     const permissionsSet = new Set<string>();
+    // Permissions a Super Admin chose individually for this member live on a hidden per-member role.
+    let customCodes: string[] | null = null;
 
     if (dbSession.user && Array.isArray(dbSession.user.userRoles)) {
       dbSession.user.userRoles.forEach((ur: any) => {
-        if (ur?.role?.name) {
-          roles.push(ur.role.name);
+        const roleName: string | undefined = ur?.role?.name;
+        const isCustomRole = !!roleName && roleName.startsWith(CUSTOM_ACCESS_PREFIX);
+        if (roleName && !isCustomRole) {
+          roles.push(roleName);
         }
+        if (isCustomRole) customCodes = customCodes || [];
         if (ur?.role?.rolePermissions && Array.isArray(ur.role.rolePermissions)) {
           ur.role.rolePermissions.forEach((rp: any) => {
-            if (rp?.permission?.code) {
-              permissionsSet.add(rp.permission.code);
-            }
+            const code = rp?.permission?.code;
+            if (!code) return;
+            if (isCustomRole) (customCodes as string[]).push(code);
+            else permissionsSet.add(code);
           });
         }
       });
     }
+
+    // Effective permissions: Super Admin = all, individually chosen = exactly those, otherwise the role presets.
+    for (const code of effectivePermissions(roles, customCodes)) permissionsSet.add(code);
 
     // Fetch employee details to attach phone, employeeNo, and assigned warehouse
     let phone = "";
@@ -214,8 +224,24 @@ export function isSalesPerson(roles: string[]): boolean {
   return roles.some((r) => ["SUPER_ADMIN", "ADMIN", "SALES_PERSON", "SALES_MANAGER", "SALES_STAFF"].includes(r));
 }
 
-export function canManageAttendance(roles: string[]): boolean {
-  return roles.some((r) => ["SUPER_ADMIN", "ADMIN", "ATTENDANCE_MANAGER"].includes(r));
+/** True when the member holds a permission (Super Admins hold all of them). */
+export function sessionCan(session: UserSession | null | undefined, code: string): boolean {
+  if (!session) return false;
+  return isSuperAdmin(session.user.roles) || session.user.permissions.includes(code);
+}
+
+/** Server-action guard: returns an error object unless the signed-in member holds the permission. */
+export async function denyUnlessCan(code: string): Promise<{ error: string } | null> {
+  const session = await getSession();
+  if (!session) return { error: "Authentication required. Please log in." };
+  if (!sessionCan(session, code)) {
+    return { error: "Unauthorized: you do not have permission to do this. Ask a Super Admin to grant access." };
+  }
+  return null;
+}
+
+export function canManageAttendance(session: UserSession | null | undefined): boolean {
+  return sessionCan(session, "attendance:manage");
 }
 
 export function isWarehouseManager(roles: string[]): boolean {

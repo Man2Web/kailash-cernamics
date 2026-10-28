@@ -1,8 +1,14 @@
 import React from "react";
 import db from "@/lib/db/db";
 import InvoiceCreateClient from "@/components/erp/InvoiceCreateClient";
+import { getSession, sessionCan } from "@/lib/auth/auth";
+import { redirect } from "next/navigation";
 
 export default async function InvoiceCreatePage() {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  if (!sessionCan(session, "invoices:create")) redirect("/unauthorized");
+
   // 1. Fetch Customers, Outlets, Warehouses, Bins, and Products for dropdown selectors
   const customers = await db.customer.findMany({
     include: {

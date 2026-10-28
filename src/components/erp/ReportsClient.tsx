@@ -276,7 +276,7 @@ export default function ReportsClient({
       {/* Printable Report Header Block (Visible ONLY during print layout) */}
       <div className="hidden print:block text-slate-900 border-b-2 border-slate-900 pb-4 text-xs space-y-1">
         <h2 className="text-xl font-bold uppercase tracking-wider text-slate-950">
-          Geetha Ceramics & ERP Systems
+          Kailash Ceramics & ERP Systems
         </h2>
         <div className="flex justify-between font-medium">
           <span>Module: {activeTab.toUpperCase()} Ledger Report</span>

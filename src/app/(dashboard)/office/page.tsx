@@ -3,6 +3,7 @@ import db from "@/lib/db/db";
 import OfficeClient from "@/components/erp/OfficeClient";
 import { getSession, isSuperAdmin } from "@/lib/auth/auth";
 import { splitRoles, toAssignableRole } from "@/lib/auth/access";
+import { CUSTOM_ACCESS_PREFIX } from "@/lib/auth/permissions";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -27,7 +28,7 @@ export default async function OfficePage() {
     include: {
       userRoles: {
         include: {
-          role: true,
+          role: { include: { rolePermissions: { include: { permission: true } } } },
         },
       },
     },
@@ -59,7 +60,15 @@ export default async function OfficePage() {
 
   // Format users
   const formattedUsers = users.map((u: any) => {
-    const allRoles: string[] = (u.userRoles || []).map((ur: any) => ur?.role?.name).filter(Boolean);
+    const allUserRoles: any[] = u.userRoles || [];
+    // Individually chosen permissions are stored on a hidden per-member role: keep it out of the visible roles.
+    const customRole = allUserRoles.find((ur: any) => ur?.role?.name?.startsWith(CUSTOM_ACCESS_PREFIX));
+    const customPermissions: string[] | null = customRole
+      ? (customRole.role.rolePermissions || []).map((rp: any) => rp?.permission?.code).filter(Boolean)
+      : null;
+    const allRoles: string[] = allUserRoles
+      .map((ur: any) => ur?.role?.name)
+      .filter((n: any) => n && !n.startsWith(CUSTOM_ACCESS_PREFIX));
     const emp = employeeMap.get(u.email?.toLowerCase() || "");
     // Main role = the one remembered on the employee record (falls back to the highest-priority role held).
     const { primary } = splitRoles(allRoles, emp?.jobTitle);
@@ -78,6 +87,7 @@ export default async function OfficePage() {
       employeeNo: emp?.employeeNo || "",
       role: roleName,
       roles: allRoles,
+      customPermissions,
       warehouseId,
       warehouseName,
       status: u.status || "ACTIVE",

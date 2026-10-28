@@ -3,7 +3,8 @@
 import { revalidatePath } from "next/cache";
 import db from "@/lib/db/db";
 import { hashPassword, getSession, isSuperAdmin, invalidateUserSessions } from "@/lib/auth/auth";
-import { isAssignableRole, type AssignableRole } from "@/lib/auth/access";
+import { isAssignableRole } from "@/lib/auth/access";
+import { CUSTOM_ACCESS_PREFIX, permissionMeta, sanitizePermissionCodes } from "@/lib/auth/permissions";
 
 // Finds (or creates) the role record for an assignable access role.
 async function ensureRole(tx: any, roleName: string) {
@@ -19,22 +20,38 @@ async function ensureRole(tx: any, roleName: string) {
   return roleRec;
 }
 
-// Cleans the requested extra access: only known roles, no duplicates, none beyond a Super Admin.
-function cleanExtraRoles(primary: string, extras?: string[]): AssignableRole[] {
-  if (primary === "SUPER_ADMIN") return [];
-  const out: AssignableRole[] = [];
-  for (const e of extras || []) {
-    if (e !== "SUPER_ADMIN" && e !== primary && isAssignableRole(e) && !out.includes(e)) out.push(e);
+// Stores the permissions a Super Admin ticked for one member on a hidden per-member role (replacing any earlier choice).
+async function setCustomPermissions(tx: any, userId: string, codes: string[]) {
+  const roleName = CUSTOM_ACCESS_PREFIX + userId;
+  let role = await tx.role.findFirst({ where: { name: roleName } });
+  if (!role) {
+    role = await tx.role.create({ data: { name: roleName, description: "Individually chosen permissions" } });
   }
-  return out;
+  await tx.rolePermission.deleteMany({ where: { roleId: role.id } });
+  for (const code of codes) {
+    let perm = await tx.permission.findFirst({ where: { code } });
+    if (!perm) {
+      const meta = permissionMeta(code);
+      perm = await tx.permission.create({ data: { code, name: meta.name, module: meta.module } });
+    }
+    await tx.rolePermission.create({ data: { roleId: role.id, permissionId: perm.id } });
+  }
+  const link = await tx.userRole.findFirst({ where: { userId, roleId: role.id } });
+  if (!link) await tx.userRole.create({ data: { userId, roleId: role.id } });
+}
+
+// Removes individually chosen permissions: the member goes back to what their role gives.
+async function clearCustomPermissions(tx: any, userId: string) {
+  const role = await tx.role.findFirst({ where: { name: CUSTOM_ACCESS_PREFIX + userId } });
+  if (role) await tx.role.delete({ where: { id: role.id } });
 }
 
 export interface CreateUserData {
   name: string;
   employeeNo?: string;
   role: "SUPER_ADMIN" | "SALES_PERSON" | "WAREHOUSE_MANAGER";
-  /** Extra access given on top of the main role (chosen by the Super Admin). */
-  extraRoles?: string[];
+  /** Permissions ticked by the Super Admin. When omitted the member simply gets what their role gives. */
+  permissions?: string[];
   email?: string;
   phone?: string;
   warehouseId?: string;
@@ -72,11 +89,11 @@ export async function createUserAction(data: CreateUserData) {
     if (!isAssignableRole(data.role)) {
       return { error: "Unknown user role." };
     }
-    const extraRoles = cleanExtraRoles(data.role, data.extraRoles);
-    const hasWarehouseAccess = data.role === "WAREHOUSE_MANAGER" || extraRoles.includes("WAREHOUSE_MANAGER");
+    const customPermissions = data.role !== "SUPER_ADMIN" && Array.isArray(data.permissions) ? sanitizePermissionCodes(data.permissions) : null;
+    const hasWarehouseAccess = data.role === "WAREHOUSE_MANAGER";
 
     if (hasWarehouseAccess && !data.warehouseId) {
-      return { error: "Assigned Warehouse is required when the user has Warehouse Manager access." };
+      return { error: "Assigned Warehouse is required when creating a Warehouse Manager." };
     }
 
     const email = data.email?.trim().toLowerCase() || "";
@@ -125,12 +142,11 @@ export async function createUserAction(data: CreateUserData) {
         },
       });
 
-      // 2. Assign the main role and every extra access role the Super Admin selected
+      // 2. Assign the main role, then the individually ticked permissions (if any)
       const roleName: string = data.role;
-      for (const name of [roleName, ...extraRoles]) {
-        const roleRec = await ensureRole(tx, name);
-        await tx.userRole.create({ data: { userId: newUser.id, roleId: roleRec.id } });
-      }
+      const roleRec = await ensureRole(tx, roleName);
+      await tx.userRole.create({ data: { userId: newUser.id, roleId: roleRec.id } });
+      if (customPermissions) await setCustomPermissions(tx, newUser.id, customPermissions);
 
       // 3. Create Employee entry for contact and warehouse linking
       await tx.employee.create({
@@ -225,11 +241,12 @@ export async function updateUserAction(data: UpdateUserData) {
 export interface UpdateUserAccessData {
   userId: string;
   role: string;
-  extraRoles?: string[];
+  /** Permissions ticked by the Super Admin. When omitted the member goes back to what their role gives. */
+  permissions?: string[];
   warehouseId?: string;
 }
 
-/** Changes what a member can open: their main role plus any extra access. Super Admin only. */
+/** Changes what a member can open and do: their role template plus the permissions ticked. Super Admin only. */
 export async function updateUserAccessAction(data: UpdateUserAccessData) {
   try {
     const session = await getSession();
@@ -240,10 +257,10 @@ export async function updateUserAccessAction(data: UpdateUserAccessData) {
       return { error: "Unknown user role." };
     }
 
-    const extraRoles = cleanExtraRoles(data.role, data.extraRoles);
-    const hasWarehouseAccess = data.role === "WAREHOUSE_MANAGER" || extraRoles.includes("WAREHOUSE_MANAGER");
+    const customPermissions = data.role !== "SUPER_ADMIN" && Array.isArray(data.permissions) ? sanitizePermissionCodes(data.permissions) : null;
+    const hasWarehouseAccess = data.role === "WAREHOUSE_MANAGER";
     if (hasWarehouseAccess && !data.warehouseId) {
-      return { error: "Assigned Warehouse is required when the user has Warehouse Manager access." };
+      return { error: "Assigned Warehouse is required for a Warehouse Manager." };
     }
 
     const user = await db.user.findUnique({ where: { id: data.userId } });
@@ -263,11 +280,11 @@ export async function updateUserAccessAction(data: UpdateUserAccessData) {
     }
 
     await db.$transaction(async (tx: any) => {
+      await clearCustomPermissions(tx, data.userId);
       await tx.userRole.deleteMany({ where: { userId: data.userId } });
-      for (const name of [data.role, ...extraRoles]) {
-        const roleRec = await ensureRole(tx, name);
-        await tx.userRole.create({ data: { userId: data.userId, roleId: roleRec.id } });
-      }
+      const roleRec = await ensureRole(tx, data.role);
+      await tx.userRole.create({ data: { userId: data.userId, roleId: roleRec.id } });
+      if (customPermissions) await setCustomPermissions(tx, data.userId, customPermissions);
 
       const emp = await tx.employee.findFirst({ where: { email: user.email } });
       if (emp) {

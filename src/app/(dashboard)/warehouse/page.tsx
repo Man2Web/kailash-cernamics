@@ -1,7 +1,7 @@
 import React from "react";
 import db from "@/lib/db/db";
 import WarehouseClient from "@/components/erp/WarehouseClient";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, sessionCan } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 import { checkAndExpireReservations, getActiveReservations } from "@/lib/inventory/movement";
 
@@ -13,7 +13,7 @@ export default async function WarehousePage() {
   const isWarehouseMgrRole = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
 
   // Sales Person is strictly forbidden from /warehouse
-  if (!isSuperAdminRole && !isWarehouseMgrRole) {
+  if (!sessionCan(session, "warehouse:view")) {
     redirect("/unauthorized");
   }
 
@@ -214,6 +214,7 @@ export default async function WarehousePage() {
         assignedWarehouseId={assignedWarehouseId}
         assignedWarehouseName={assignedWarehouseName}
         isManager={isWarehouseMgrRole}
+        canManageStructure={sessionCan(session, "warehouse:manage")}
       />
     </div>
   );

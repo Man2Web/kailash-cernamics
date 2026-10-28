@@ -56,6 +56,6 @@ graph TD
 - Integrate PDF generation for invoices, quotations, POs, and GRNs in clean A4 layouts.
 
 ### Phase 7: End-to-End Testing & QA
-- Build seed script containing realistic business data (Geetha Ceramics, Vellore/Chennai branches, stock tiles/adhesives, etc.).
+- Build seed script containing realistic business data (Kailash Ceramics, Vellore/Chennai branches, stock tiles/adhesives, etc.).
 - Validate E2E flow via browser testing: login → create product → warehouse assignment → opening stock → customer quotation → conversion to sales order → conversion to invoice → stock ledger updates → general ledger updates.
 - Verify production build compilation (`npm run build`).

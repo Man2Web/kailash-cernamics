@@ -20,6 +20,7 @@ interface SidebarProps {
     name: string;
     email: string;
     roles: string[];
+    permissions?: string[];
     warehouseName?: string;
   };
   isMobile?: boolean;
@@ -33,52 +34,23 @@ export default function Sidebar({ user, isMobile = false, onClose }: SidebarProp
   const isSuperAdmin = roles.includes("SUPER_ADMIN") || roles.includes("ADMIN");
   const isWarehouseManager = roles.includes("WAREHOUSE_MANAGER") || roles.includes("INVENTORY_STAFF");
   const isSalesPerson = roles.includes("SALES_PERSON") || roles.includes("SALES_MANAGER") || roles.includes("SALES_STAFF");
+  const permissions = user.permissions || [];
+  const can = (code: string) => isSuperAdmin || permissions.includes(code);
 
-  let menuItems: Array<{ name: string; path: string; icon: React.ComponentType<{ className?: string }> }> = [];
-
-  if (isSuperAdmin) {
-    menuItems = [
-      { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-      { name: "Office", path: "/office", icon: Building2 },
-      { name: "Employee Attendance", path: "/office/attendance", icon: CalendarCheck },
-      { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
-      { name: "Purchase", path: "/purchase", icon: Users },
-      { name: "Stock", path: "/stock", icon: Box },
-      { name: "My Warehouse", path: "/warehouse", icon: Warehouse },
-      { name: "Daily Movement Tracking", path: "/movement", icon: Navigation },
-    ];
-  } else if (isWarehouseManager) {
-    menuItems = [
-      { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-      { name: "My Warehouse", path: "/warehouse", icon: Warehouse },
-      { name: "Stock Management", path: "/stock", icon: Box },
-      { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
-      { name: "Purchase Deliveries", path: "/purchase", icon: Users },
-      { name: "Daily Movement Tracking", path: "/movement", icon: Navigation },
-    ];
-  } else if (isSalesPerson) {
-    menuItems = [
-      { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-      { name: "Stock Availability", path: "/stock", icon: Box },
-      { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
-      { name: "Daily Movement Tracking", path: "/movement", icon: Navigation },
-    ];
-  } else {
-    // Default / Viewer role
-    menuItems = [
-      { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-      { name: "Stock", path: "/stock", icon: Box },
-      { name: "Sales Orders", path: "/sales", icon: ShoppingCart },
-    ];
-  }
-
-  // Extra access: an Attendance Manager also sees Employee Attendance (Super Admins already have it).
-  if (!isSuperAdmin && roles.includes("ATTENDANCE_MANAGER")) {
-    if (!isWarehouseManager && !isSalesPerson) {
-      menuItems = [{ name: "Dashboard", path: "/dashboard", icon: LayoutDashboard }];
-    }
-    menuItems = [...menuItems, { name: "Employee Attendance", path: "/office/attendance", icon: CalendarCheck }];
-  }
+  // The menu follows what the Super Admin allowed this member to open.
+  const stockLabel = isSuperAdmin ? "Stock" : can("products:create") ? "Stock Management" : "Stock Availability";
+  const purchaseLabel = isSuperAdmin || can("purchase:create") ? "Purchase" : "Purchase Deliveries";
+  const candidates: Array<{ allowed: boolean; name: string; path: string; icon: React.ComponentType<{ className?: string }> }> = [
+    { allowed: can("dashboard:view"), name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+    { allowed: isSuperAdmin, name: "Office", path: "/office", icon: Building2 },
+    { allowed: can("attendance:manage"), name: "Employee Attendance", path: "/office/attendance", icon: CalendarCheck },
+    { allowed: can("sales:view"), name: "Sales Orders", path: "/sales", icon: ShoppingCart },
+    { allowed: can("purchase:view"), name: purchaseLabel, path: "/purchase", icon: Users },
+    { allowed: can("stock:view"), name: stockLabel, path: "/stock", icon: Box },
+    { allowed: can("warehouse:view"), name: "My Warehouse", path: "/warehouse", icon: Warehouse },
+    { allowed: can("movement:view"), name: "Daily Movement Tracking", path: "/movement", icon: Navigation },
+  ];
+  const menuItems = candidates.filter((c) => c.allowed);
 
   return (
     <aside className="w-full md:w-64 bg-slate-900 flex flex-col h-full border-r border-slate-800 text-slate-300 select-none flex-shrink-0 z-20">

@@ -245,7 +245,7 @@ export default function CustomerClient({
                     required
                     value={cName}
                     onChange={(e) => setCName(e.target.value)}
-                    placeholder="e.g. Geetha Ceramic House"
+                    placeholder="e.g. Kailash Ceramic House"
                     className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   />
                 </div>
@@ -308,7 +308,7 @@ export default function CustomerClient({
                     type="email"
                     value={cEmail}
                     onChange={(e) => setCEmail(e.target.value)}
-                    placeholder="e.g. contact@geethaceramics.com"
+                    placeholder="e.g. contact@kailashceramics.com"
                     className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
                   />
                 </div>
