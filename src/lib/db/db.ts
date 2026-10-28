@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
+import { AsyncLocalStorage } from "node:async_hooks";
 
 // Database access layer: the real Prisma client over a direct PostgreSQL connection (DATABASE_URL).
 //
@@ -10,9 +11,14 @@ import { PrismaPg } from "@prisma/adapter-pg";
 //   - String `contains` / `startsWith` / `endsWith` filters are case-insensitive.
 //   - Values are coerced to the column type (numeric strings, ISO/date-only strings for DateTime fields).
 //   - Decimal / BigInt results are returned as plain numbers; aggregate `_sum` / `_avg` of no rows is 0.
-//   - `$transaction(callback)` is a real, atomic database transaction.
+//   - `$transaction(callback)` is a real, atomic database transaction. Transactions are ambient: any `db` call made while a
+//     transaction callback is running (including inside helper functions that use the global `db`) joins that transaction,
+//     and a nested `$transaction` reuses the outer one.
 
 type AnyClient = PrismaClient | Prisma.TransactionClient;
+
+// The transaction (if any) that the current async call chain is running in.
+const activeTx = new AsyncLocalStorage<Prisma.TransactionClient>();
 
 const globalForPrisma = globalThis as unknown as { __prisma?: PrismaClient };
 
@@ -148,8 +154,8 @@ async function withSingleRow(client: AnyClient, model: string, args: any, run: (
   }
 }
 
-function modelApi(client: AnyClient, model: string) {
-  const d = () => delegateFor(client, model);
+function modelApi(getClient: () => AnyClient, model: string) {
+  const d = () => delegateFor(getClient(), model);
   return {
     findMany: async (args: any = {}) => normalize(await d().findMany({ ...args, where: coerceWhere(model, args.where) })),
     findFirst: async (args: any = {}) => normalize(await d().findFirst({ ...args, where: coerceWhere(model, args.where) })),
@@ -157,12 +163,12 @@ function modelApi(client: AnyClient, model: string) {
     create: async (args: any = {}) => normalize(await d().create({ ...args, data: coerceData(model, args.data) })),
     update: async (args: any = {}) =>
       normalize(
-        await withSingleRow(client, model, { ...args, where: coerceWhere(model, args.where), data: coerceData(model, args.data) }, (a) =>
+        await withSingleRow(getClient(), model, { ...args, where: coerceWhere(model, args.where), data: coerceData(model, args.data) }, (a) =>
           d().update(a)
         )
       ),
     delete: async (args: any = {}) =>
-      normalize(await withSingleRow(client, model, { ...args, where: coerceWhere(model, args.where) }, (a) => d().delete(a))),
+      normalize(await withSingleRow(getClient(), model, { ...args, where: coerceWhere(model, args.where) }, (a) => d().delete(a))),
     deleteMany: async (args: any = {}) => d().deleteMany({ ...args, where: coerceWhere(model, args.where) }),
     updateMany: async (args: any = {}) =>
       d().updateMany({ ...args, where: coerceWhere(model, args.where), data: coerceData(model, args.data) }),
@@ -179,7 +185,7 @@ function modelApi(client: AnyClient, model: string) {
   };
 }
 
-function wrapClient(client: AnyClient, isRoot: boolean): any {
+function wrapClient(getClient: () => AnyClient, isRoot: boolean): any {
   const cache = new Map<string, unknown>();
   return new Proxy(
     {},
@@ -191,17 +197,20 @@ function wrapClient(client: AnyClient, isRoot: boolean): any {
             if (typeof callback !== "function") {
               throw new Error("db.$transaction only supports the interactive (callback) form.");
             }
-            return (client as PrismaClient).$transaction(async (tx) => callback(wrapClient(tx, false)), {
-              maxWait: 10_000,
-              timeout: 30_000,
-            });
+            const outer = activeTx.getStore();
+            if (outer) return callback(wrapClient(() => outer, false)); // already in a transaction: join it
+            return getPrisma().$transaction(
+              async (tx) => activeTx.run(tx, () => callback(wrapClient(() => tx, false))),
+              { maxWait: 10_000, timeout: 30_000 }
+            );
           };
         }
         if (prop.startsWith("$")) {
+          const client = getClient();
           const fn = (client as any)[prop];
           return typeof fn === "function" ? fn.bind(client) : fn;
         }
-        if (!cache.has(prop)) cache.set(prop, modelApi(client, prop));
+        if (!cache.has(prop)) cache.set(prop, modelApi(getClient, prop));
         return cache.get(prop);
       },
     }
@@ -214,7 +223,7 @@ export const db: any = new Proxy(
   {},
   {
     get: (_t, prop: string | symbol) => {
-      if (!rootProxy) rootProxy = wrapClient(getPrisma(), true);
+      if (!rootProxy) rootProxy = wrapClient(() => activeTx.getStore() ?? getPrisma(), true);
       return rootProxy[prop as string];
     },
   }

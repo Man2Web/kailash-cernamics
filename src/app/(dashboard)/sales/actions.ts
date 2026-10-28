@@ -38,9 +38,16 @@ export async function createCustomerAction(input: CreateCustomerInput) {
       return { error: "Customer phone number is required." };
     }
 
+    // A customer must belong to a group; use the default (first) group, as the Office module does.
+    const defaultGroup = await db.customerGroup.findFirst();
+    if (!defaultGroup) {
+      return { error: "No customer group exists yet. Create a customer group first." };
+    }
+
     const code = `CUST-${Date.now().toString().slice(-6)}`;
     const customer = await db.customer.create({
       data: {
+        groupId: defaultGroup.id,
         code,
         name: input.name.trim(),
         phone: input.phone.trim(),
