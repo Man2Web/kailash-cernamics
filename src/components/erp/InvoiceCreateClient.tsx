@@ -54,6 +54,7 @@ interface Product {
   sku: string;
   code: string;
   hsnCode: string | null;
+  variants?: { id: string }[];
   sellingPrice: any;
   gstRate: any;
   unit: {
@@ -256,7 +257,7 @@ export default function InvoiceCreateClient({
 
     const newRow: InvoiceItemRow = {
       productId: prod.id,
-      variantId: prod.id, // Assuming product variant ID is same as product ID for simple structure
+      variantId: prod.variants?.[0]?.id ?? prod.id, // the product's default variant
       sku: prod.sku,
       description: prod.name,
       warehouseId: wh.id,
@@ -289,7 +290,7 @@ export default function InvoiceCreateClient({
       copy[index] = {
         ...copy[index],
         productId: prod.id,
-        variantId: prod.id,
+        variantId: prod.variants?.[0]?.id ?? prod.id,
         sku: prod.sku,
         description: prod.name,
         unitId: prod.unit.id,
