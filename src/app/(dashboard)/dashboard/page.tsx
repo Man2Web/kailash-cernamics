@@ -111,30 +111,59 @@ export default async function DashboardPage() {
     }).format(val);
   };
 
-  const salesChartData = [
-    { name: "Jan", value: 120000 },
-    { name: "Feb", value: 150000 },
-    { name: "Mar", value: 180000 },
-    { name: "Apr", value: 220000 },
-    { name: "May", value: 260000 },
-    { name: "Jun", value: 310000 },
-  ];
+  // Chart data (Super Admin / Admin only): real figures for the last 6 calendar months.
+  const monthBuckets = Array.from({ length: 6 }, (_, k) => {
+    const d = new Date(new Date().getFullYear(), new Date().getMonth() - (5 - k), 1);
+    return { key: `${d.getFullYear()}-${d.getMonth()}`, name: d.toLocaleString("en-US", { month: "short" }), start: d };
+  });
+  const bucketKey = (d: Date) => `${d.getFullYear()}-${d.getMonth()}`;
+  const salesByMonth = new Map<string, number>(monthBuckets.map((m) => [m.key, 0]));
+  const purchasesByMonth = new Map<string, number>(monthBuckets.map((m) => [m.key, 0]));
+  const stockValueByCategory = new Map<string, number>();
 
-  const purchaseChartData = [
-    { name: "Jan", value: 80000 },
-    { name: "Feb", value: 110000 },
-    { name: "Mar", value: 140000 },
-    { name: "Apr", value: 130000 },
-    { name: "May", value: 170000 },
-    { name: "Jun", value: 210000 },
-  ];
+  if (isSuperAdminRole) {
+    const since = monthBuckets[0].start;
 
-  const categoryChartData = [
-    { name: "Tiles", value: Math.round(totalStockValue * 0.45) || 45000 },
-    { name: "Sanitaryware", value: Math.round(totalStockValue * 0.25) || 25000 },
-    { name: "Adhesives", value: Math.round(totalStockValue * 0.15) || 15000 },
-    { name: "Fittings", value: Math.round(totalStockValue * 0.15) || 15000 },
-  ];
+    // Sales = invoices that are not cancelled/rejected/draft, by invoice date.
+    const invoices = await db.invoice.findMany({
+      where: { date: { gte: since }, deletedAt: null },
+      select: { date: true, totalPayable: true, status: true },
+    });
+    for (const inv of invoices) {
+      if (["CANCELLED", "REJECTED", "DRAFT"].includes(inv.status)) continue;
+      const k = bucketKey(new Date(inv.date));
+      if (salesByMonth.has(k)) salesByMonth.set(k, (salesByMonth.get(k) || 0) + Number(inv.totalPayable || 0));
+    }
+
+    // Purchases = value of non-cancelled purchase orders (quantity x rate), by order date.
+    const purchaseOrders = await db.purchaseOrder.findMany({
+      where: { createdAt: { gte: since } },
+      include: { items: true },
+    });
+    for (const po of purchaseOrders) {
+      if (po.status === "CANCELLED") continue;
+      const k = bucketKey(new Date(po.createdAt));
+      if (!purchasesByMonth.has(k)) continue;
+      const value = (po.items || []).reduce((sum: number, it: any) => sum + Number(it.quantity || 0) * Number(it.rate || 0), 0);
+      purchasesByMonth.set(k, (purchasesByMonth.get(k) || 0) + value);
+    }
+
+    // Stock value (quantity x purchase price) by product category.
+    const categories = await db.category.findMany({});
+    const categoryName = new Map<string, string>(categories.map((c: any) => [c.id, c.name]));
+    stockLevels.forEach((item: any) => {
+      const value = Number(item.quantity || 0) * Number(item.product?.purchasePrice || 0);
+      if (value <= 0) return;
+      const name = categoryName.get(item.product?.categoryId) || "Uncategorised";
+      stockValueByCategory.set(name, (stockValueByCategory.get(name) || 0) + value);
+    });
+  }
+
+  const salesChartData = monthBuckets.map((m) => ({ name: m.name, value: Math.round(salesByMonth.get(m.key) || 0) }));
+  const purchaseChartData = monthBuckets.map((m) => ({ name: m.name, value: Math.round(purchasesByMonth.get(m.key) || 0) }));
+  const categoryChartData = Array.from(stockValueByCategory.entries())
+    .map(([name, value]) => ({ name, value: Math.round(value) }))
+    .sort((a, b) => b.value - a.value);
 
   // Role-Specific Summary Cards
   let summaryCards: Array<{
