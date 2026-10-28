@@ -22,11 +22,14 @@ import {
 import {
   createUserAction,
   updateUserAction,
+  updateUserAccessAction,
   toggleUserStatusAction,
   resetUserPasswordAction,
   createCustomerAction,
   createSupplierAction,
 } from "@/app/(dashboard)/office/actions";
+import { RoleBadges, PrimaryRoleSelect, ExtraAccessChecklist } from "@/components/erp/AccessFields";
+import { splitRoles } from "@/lib/auth/access";
 
 interface OfficeUser {
   id: string;
@@ -35,6 +38,7 @@ interface OfficeUser {
   phone: string;
   employeeNo: string;
   role: string;
+  roles?: string[];
   warehouseId?: string;
   warehouseName?: string;
   status: string;
@@ -105,6 +109,14 @@ export default function OfficeClient({
   const [userWarehouseId, setUserWarehouseId] = useState("");
   const [userPassword, setUserPassword] = useState("Inventory@123");
   const [userStatus, setUserStatus] = useState<"ACTIVE" | "INACTIVE">("ACTIVE");
+  const [userExtraRoles, setUserExtraRoles] = useState<string[]>([]);
+
+  // Manage-access modal state
+  const [showAccessModal, setShowAccessModal] = useState(false);
+  const [selectedUserForAccess, setSelectedUserForAccess] = useState<OfficeUser | null>(null);
+  const [accessRole, setAccessRole] = useState<string>("SALES_PERSON");
+  const [accessExtras, setAccessExtras] = useState<string[]>([]);
+  const [accessWarehouseId, setAccessWarehouseId] = useState("");
 
   // Reset password state
   const [newPassword, setNewPassword] = useState("");
@@ -139,6 +151,7 @@ export default function OfficeClient({
         name: userName,
         employeeNo: userEmployeeNo,
         role: userRole,
+        extraRoles: userExtraRoles,
         email: userEmail,
         phone: userPhone,
         warehouseId: userWarehouseId,
@@ -154,8 +167,43 @@ export default function OfficeClient({
         setUserPhone("");
         setUserEmployeeNo("");
         setUserWarehouseId("");
+        setUserExtraRoles([]);
       } else {
         setErrorMsg(res.error || "Failed to create user.");
+      }
+    });
+  };
+
+  const toggleIn = (list: string[], value: string) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
+
+  const openAccessModal = (user: OfficeUser) => {
+    const { primary, extras } = splitRoles(user.roles && user.roles.length ? user.roles : [user.role], user.role);
+    setSelectedUserForAccess(user);
+    setAccessRole(primary);
+    setAccessExtras(extras);
+    setAccessWarehouseId(user.warehouseId || "");
+    setErrorMsg("");
+    setShowAccessModal(true);
+  };
+
+  const handleSaveAccess = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedUserForAccess) return;
+    setErrorMsg("");
+    setSuccessMsg("");
+    startTransition(async () => {
+      const res = await updateUserAccessAction({
+        userId: selectedUserForAccess.id,
+        role: accessRole,
+        extraRoles: accessExtras,
+        warehouseId: accessWarehouseId || undefined,
+      });
+      if (res.success) {
+        setSuccessMsg(`Access updated for ${selectedUserForAccess.name}.`);
+        setShowAccessModal(false);
+        setSelectedUserForAccess(null);
+      } else {
+        setErrorMsg(res.error || "Failed to update access.");
       }
     });
   };
@@ -445,17 +493,7 @@ export default function OfficeClient({
                       <div className="text-[11px] font-mono text-slate-500 font-bold">{u.employeeNo || "No ID"}</div>
                     </div>
                     <div className="flex items-center space-x-1.5">
-                      <span
-                        className={`px-2 py-0.5 rounded text-[11px] font-bold ${
-                          u.role === "SUPER_ADMIN"
-                            ? "bg-purple-100 text-purple-700"
-                            : u.role.includes("WAREHOUSE")
-                            ? "bg-amber-100 text-amber-800"
-                            : "bg-blue-100 text-blue-700"
-                        }`}
-                      >
-                        {u.role.replace(/_/g, " ")}
-                      </span>
+                      <RoleBadges role={u.role} roles={u.roles} />
                       <span
                         className={`inline-flex items-center px-1.5 py-0.5 rounded text-[11px] font-bold ${
                           u.status === "ACTIVE"
@@ -489,6 +527,13 @@ export default function OfficeClient({
 
                   {isSuperAdminUser && (
                     <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
+                      <button
+                        onClick={() => openAccessModal(u)}
+                        className="flex items-center space-x-1 px-2.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded"
+                      >
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        <span>Access</span>
+                      </button>
                       <button
                         onClick={() => {
                           setSelectedUserForPassword(u);
@@ -558,17 +603,7 @@ export default function OfficeClient({
                         <div>{u.name}</div>
                       </td>
                       <td className="px-4 py-3">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
-                            u.role === "SUPER_ADMIN"
-                              ? "bg-purple-100 text-purple-700"
-                              : u.role.includes("WAREHOUSE")
-                              ? "bg-amber-100 text-amber-800"
-                              : "bg-blue-100 text-blue-700"
-                          }`}
-                        >
-                          {u.role.replace(/_/g, " ")}
-                        </span>
+                        <RoleBadges role={u.role} roles={u.roles} />
                       </td>
                       <td className="px-4 py-3">
                         <div className="space-y-0.5">
@@ -608,6 +643,13 @@ export default function OfficeClient({
                       <td className="px-4 py-3 text-right space-x-2">
                         {isSuperAdminUser && (
                           <>
+                            <button
+                              onClick={() => openAccessModal(u)}
+                              title="Manage Access"
+                              className="p-1 text-slate-400 hover:text-blue-700 transition"
+                            >
+                              <ShieldCheck className="h-4 w-4" />
+                            </button>
                             <button
                               onClick={() => {
                                 setSelectedUserForPassword(u);
@@ -853,6 +895,82 @@ export default function OfficeClient({
       )}
 
       {/* CREATE USER MODAL */}
+      {showAccessModal && selectedUserForAccess && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
+                <ShieldCheck className="h-4 w-4 text-blue-600" />
+                <span>Manage access: {selectedUserForAccess.name}</span>
+              </h3>
+              <button onClick={() => setShowAccessModal(false)} className="text-slate-400 hover:text-slate-600 text-xs">
+                ✕
+              </button>
+            </div>
+            <form onSubmit={handleSaveAccess} className="p-4 sm:p-6 space-y-4 text-xs">
+              <div className="space-y-1">
+                <label className="font-semibold text-slate-700">Main role *</label>
+                <PrimaryRoleSelect
+                  value={accessRole}
+                  onChange={(v) => {
+                    setAccessRole(v);
+                    setAccessExtras((prev) => prev.filter((x) => x !== v));
+                  }}
+                />
+              </div>
+
+              <ExtraAccessChecklist
+                primary={accessRole}
+                selected={accessExtras}
+                onToggle={(v) => setAccessExtras((prev) => toggleIn(prev, v))}
+              />
+
+              {(accessRole === "WAREHOUSE_MANAGER" || accessExtras.includes("WAREHOUSE_MANAGER")) && (
+                <div className="space-y-1">
+                  <label className="font-semibold text-slate-700">Assigned Warehouse *</label>
+                  <select
+                    value={accessWarehouseId}
+                    onChange={(e) => setAccessWarehouseId(e.target.value)}
+                    required
+                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="">-- Select Warehouse --</option>
+                    {warehouses.map((wh) => (
+                      <option key={wh.id} value={wh.id}>
+                        {wh.name} ({wh.code})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <p className="text-[11px] text-slate-500">
+                Saving replaces this member&apos;s current roles with the selection above. It takes effect the next time they open a page.
+              </p>
+
+              {errorMsg && <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 rounded">{errorMsg}</div>}
+
+              <div className="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAccessModal(false)}
+                  className="px-3.5 py-2 text-xs font-semibold text-slate-600 border border-slate-200 rounded hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isPending}
+                  className="px-3.5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-60"
+                >
+                  {isPending ? "Saving..." : "Save access"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {showCreateUserModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4">
           <div className="bg-white rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
@@ -936,7 +1054,13 @@ export default function OfficeClient({
                 </div>
               </div>
 
-              {userRole === "WAREHOUSE_MANAGER" && (
+              <ExtraAccessChecklist
+                primary={userRole}
+                selected={userExtraRoles}
+                onToggle={(v) => setUserExtraRoles((prev) => toggleIn(prev, v))}
+              />
+
+              {(userRole === "WAREHOUSE_MANAGER" || userExtraRoles.includes("WAREHOUSE_MANAGER")) && (
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Assigned Warehouse *</label>
                   <select

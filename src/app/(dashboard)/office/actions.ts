@@ -3,11 +3,38 @@
 import { revalidatePath } from "next/cache";
 import db from "@/lib/db/db";
 import { hashPassword, getSession, isSuperAdmin, invalidateUserSessions } from "@/lib/auth/auth";
+import { isAssignableRole, type AssignableRole } from "@/lib/auth/access";
+
+// Finds (or creates) the role record for an assignable access role.
+async function ensureRole(tx: any, roleName: string) {
+  let roleRec = await tx.role.findFirst({ where: { name: roleName } });
+  if (!roleRec && roleName === "SALES_PERSON") {
+    roleRec = await tx.role.findFirst({ where: { name: "SALES_STAFF" } });
+  }
+  if (!roleRec) {
+    roleRec = await tx.role.create({
+      data: { name: roleName, description: `${roleName.replace(/_/g, " ")} role` },
+    });
+  }
+  return roleRec;
+}
+
+// Cleans the requested extra access: only known roles, no duplicates, none beyond a Super Admin.
+function cleanExtraRoles(primary: string, extras?: string[]): AssignableRole[] {
+  if (primary === "SUPER_ADMIN") return [];
+  const out: AssignableRole[] = [];
+  for (const e of extras || []) {
+    if (e !== "SUPER_ADMIN" && e !== primary && isAssignableRole(e) && !out.includes(e)) out.push(e);
+  }
+  return out;
+}
 
 export interface CreateUserData {
   name: string;
   employeeNo?: string;
   role: "SUPER_ADMIN" | "SALES_PERSON" | "WAREHOUSE_MANAGER";
+  /** Extra access given on top of the main role (chosen by the Super Admin). */
+  extraRoles?: string[];
   email?: string;
   phone?: string;
   warehouseId?: string;
@@ -42,8 +69,14 @@ export async function createUserAction(data: CreateUserData) {
       return { error: "User Role is required." };
     }
 
-    if (data.role === "WAREHOUSE_MANAGER" && !data.warehouseId) {
-      return { error: "Assigned Warehouse is required when creating a Warehouse Manager." };
+    if (!isAssignableRole(data.role)) {
+      return { error: "Unknown user role." };
+    }
+    const extraRoles = cleanExtraRoles(data.role, data.extraRoles);
+    const hasWarehouseAccess = data.role === "WAREHOUSE_MANAGER" || extraRoles.includes("WAREHOUSE_MANAGER");
+
+    if (hasWarehouseAccess && !data.warehouseId) {
+      return { error: "Assigned Warehouse is required when the user has Warehouse Manager access." };
     }
 
     const email = data.email?.trim().toLowerCase() || "";
@@ -92,38 +125,11 @@ export async function createUserAction(data: CreateUserData) {
         },
       });
 
-      // 2. Map Role Name
-      let roleName = "SALES_PERSON";
-      if (data.role === "SUPER_ADMIN") roleName = "SUPER_ADMIN";
-      else if (data.role === "WAREHOUSE_MANAGER") roleName = "WAREHOUSE_MANAGER";
-      else if (data.role === "SALES_PERSON") roleName = "SALES_PERSON";
-
-      let roleRec = await tx.role.findFirst({
-        where: { name: roleName },
-      });
-
-      if (!roleRec) {
-        // Look up alternative names or create
-        if (roleName === "SALES_PERSON") {
-          roleRec = await tx.role.findFirst({ where: { name: "SALES_STAFF" } });
-        }
-        if (!roleRec) {
-          roleRec = await tx.role.create({
-            data: {
-              name: roleName,
-              description: `${roleName.replace(/_/g, " ")} role`,
-            },
-          });
-        }
-      }
-
-      if (roleRec) {
-        await tx.userRole.create({
-          data: {
-            userId: newUser.id,
-            roleId: roleRec.id,
-          },
-        });
+      // 2. Assign the main role and every extra access role the Super Admin selected
+      const roleName: string = data.role;
+      for (const name of [roleName, ...extraRoles]) {
+        const roleRec = await ensureRole(tx, name);
+        await tx.userRole.create({ data: { userId: newUser.id, roleId: roleRec.id } });
       }
 
       // 3. Create Employee entry for contact and warehouse linking
@@ -133,7 +139,7 @@ export async function createUserAction(data: CreateUserData) {
           name: data.name.trim(),
           email: resolvedEmail,
           phone: phone || null,
-          department: data.warehouseId ? `WH-${data.warehouseId}` : roleName,
+          department: hasWarehouseAccess && data.warehouseId ? `WH-${data.warehouseId}` : roleName,
           jobTitle: roleName.replace(/_/g, " "),
           status: data.status || "ACTIVE",
           salary: 0,
@@ -213,6 +219,73 @@ export async function updateUserAction(data: UpdateUserData) {
   } catch (error: any) {
     console.error("Error updating user:", error);
     return { error: error.message || "Failed to update user." };
+  }
+}
+
+export interface UpdateUserAccessData {
+  userId: string;
+  role: string;
+  extraRoles?: string[];
+  warehouseId?: string;
+}
+
+/** Changes what a member can open: their main role plus any extra access. Super Admin only. */
+export async function updateUserAccessAction(data: UpdateUserAccessData) {
+  try {
+    const session = await getSession();
+    if (!session || !isSuperAdmin(session.user.roles)) {
+      return { error: "Unauthorized: Super Admin permission required." };
+    }
+    if (!isAssignableRole(data.role)) {
+      return { error: "Unknown user role." };
+    }
+
+    const extraRoles = cleanExtraRoles(data.role, data.extraRoles);
+    const hasWarehouseAccess = data.role === "WAREHOUSE_MANAGER" || extraRoles.includes("WAREHOUSE_MANAGER");
+    if (hasWarehouseAccess && !data.warehouseId) {
+      return { error: "Assigned Warehouse is required when the user has Warehouse Manager access." };
+    }
+
+    const user = await db.user.findUnique({ where: { id: data.userId } });
+    if (!user) return { error: "User not found." };
+
+    // Never leave the system without a Super Admin (and never let someone lock themselves out).
+    if (data.role !== "SUPER_ADMIN") {
+      if (data.userId === session.user.id) {
+        return { error: "You cannot remove your own Super Admin access." };
+      }
+      const adminRoleFilter = { role: { name: { in: ["SUPER_ADMIN", "ADMIN"] } } };
+      const targetAdminRows = await db.userRole.findMany({ where: { userId: data.userId, ...adminRoleFilter } });
+      const otherAdminRows = await db.userRole.findMany({ where: { userId: { not: data.userId }, ...adminRoleFilter } });
+      if (targetAdminRows.length > 0 && otherAdminRows.length === 0) {
+        return { error: "At least one Super Admin must remain." };
+      }
+    }
+
+    await db.$transaction(async (tx: any) => {
+      await tx.userRole.deleteMany({ where: { userId: data.userId } });
+      for (const name of [data.role, ...extraRoles]) {
+        const roleRec = await ensureRole(tx, name);
+        await tx.userRole.create({ data: { userId: data.userId, roleId: roleRec.id } });
+      }
+
+      const emp = await tx.employee.findFirst({ where: { email: user.email } });
+      if (emp) {
+        await tx.employee.update({
+          where: { id: emp.id },
+          data: {
+            department: hasWarehouseAccess && data.warehouseId ? `WH-${data.warehouseId}` : data.role,
+            jobTitle: data.role.replace(/_/g, " "),
+          },
+        });
+      }
+    });
+
+    revalidatePath("/office");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating user access:", error);
+    return { error: error.message || "Failed to update access." };
   }
 }
 

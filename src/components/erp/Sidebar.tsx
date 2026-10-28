@@ -72,6 +72,14 @@ export default function Sidebar({ user, isMobile = false, onClose }: SidebarProp
     ];
   }
 
+  // Extra access: an Attendance Manager also sees Employee Attendance (Super Admins already have it).
+  if (!isSuperAdmin && roles.includes("ATTENDANCE_MANAGER")) {
+    if (!isWarehouseManager && !isSalesPerson) {
+      menuItems = [{ name: "Dashboard", path: "/dashboard", icon: LayoutDashboard }];
+    }
+    menuItems = [...menuItems, { name: "Employee Attendance", path: "/office/attendance", icon: CalendarCheck }];
+  }
+
   return (
     <aside className="w-full md:w-64 bg-slate-900 flex flex-col h-full border-r border-slate-800 text-slate-300 select-none flex-shrink-0 z-20">
       {/* Sidebar Header Brand */}

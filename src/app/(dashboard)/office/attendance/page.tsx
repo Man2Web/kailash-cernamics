@@ -1,6 +1,6 @@
 import React from "react";
 import db from "@/lib/db/db";
-import { getSession } from "@/lib/auth/auth";
+import { getSession, canManageAttendance } from "@/lib/auth/auth";
 import { redirect } from "next/navigation";
 import AttendanceAdminClient from "@/components/erp/AttendanceAdminClient";
 import { getTodayAttendanceSummary, getMonthlyAttendanceData } from "@/lib/attendance/attendance";
@@ -15,7 +15,7 @@ export default async function AttendanceAdminPage() {
   if (!session) redirect("/login");
 
   // Strict Super Admin RBAC Check
-  const isSuperAdmin = session.user.roles.includes("SUPER_ADMIN") || session.user.roles.includes("ADMIN");
+  const isSuperAdmin = canManageAttendance(session.user.roles); // Super Admin or Attendance Manager
   if (!isSuperAdmin) {
     redirect("/unauthorized");
   }

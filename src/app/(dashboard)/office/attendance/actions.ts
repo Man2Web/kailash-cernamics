@@ -1,6 +1,6 @@
 "use server";
 
-import { getSession } from "@/lib/auth/auth";
+import { getSession, canManageAttendance } from "@/lib/auth/auth";
 import {
   getTodayAttendanceSummary,
   getMonthlyAttendanceData,
@@ -13,8 +13,8 @@ import ExcelJS from "exceljs";
 
 function checkSuperAdmin(session: any) {
   if (!session) throw new Error("Unauthorized: Please log in.");
-  if (!session.user.roles.includes("SUPER_ADMIN") && !session.user.roles.includes("ADMIN")) {
-    throw new Error("Forbidden: Attendance records are restricted to Super Admin.");
+  if (!canManageAttendance(session.user.roles)) {
+    throw new Error("Forbidden: Attendance records are restricted to Super Admin and Attendance Manager.");
   }
 }
 

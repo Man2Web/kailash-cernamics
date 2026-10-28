@@ -2,6 +2,7 @@ import React from "react";
 import db from "@/lib/db/db";
 import OfficeClient from "@/components/erp/OfficeClient";
 import { getSession, isSuperAdmin } from "@/lib/auth/auth";
+import { splitRoles, toAssignableRole } from "@/lib/auth/access";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -58,8 +59,11 @@ export default async function OfficePage() {
 
   // Format users
   const formattedUsers = users.map((u: any) => {
-    const roleName = u.userRoles?.[0]?.role?.name || "VIEWER";
+    const allRoles: string[] = (u.userRoles || []).map((ur: any) => ur?.role?.name).filter(Boolean);
     const emp = employeeMap.get(u.email?.toLowerCase() || "");
+    // Main role = the one remembered on the employee record (falls back to the highest-priority role held).
+    const { primary } = splitRoles(allRoles, emp?.jobTitle);
+    const roleName = allRoles.find((r) => toAssignableRole(r) === primary) || allRoles[0] || "VIEWER";
     let warehouseId = "";
     if (emp?.department && typeof emp.department === "string" && emp.department.startsWith("WH-")) {
       warehouseId = emp.department.replace("WH-", "");
@@ -73,6 +77,7 @@ export default async function OfficePage() {
       phone: emp?.phone || "",
       employeeNo: emp?.employeeNo || "",
       role: roleName,
+      roles: allRoles,
       warehouseId,
       warehouseName,
       status: u.status || "ACTIVE",

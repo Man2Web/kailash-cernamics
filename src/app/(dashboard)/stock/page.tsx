@@ -12,6 +12,8 @@ export default async function StockPage() {
   const isSuperAdminRole = session.user.roles.includes("SUPER_ADMIN") || session.user.roles.includes("ADMIN");
   const isWarehouseMgrRole = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
   const isSalesPersonRole = session.user.roles.includes("SALES_PERSON") || session.user.roles.includes("SALES_MANAGER") || session.user.roles.includes("SALES_STAFF");
+  // A member who also has Warehouse Manager (or Super Admin) access is not limited to the sales view.
+  const isSalesOnlyRole = isSalesPersonRole && !isWarehouseMgrRole && !isSuperAdminRole;
 
   if (!isSuperAdminRole && !isWarehouseMgrRole && !isSalesPersonRole) {
     redirect("/unauthorized");
@@ -69,10 +71,10 @@ export default async function StockPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 tracking-tight leading-snug">
-            {isSalesPersonRole ? "Stock & Product Availability" : isWarehouseMgrRole ? "Warehouse Stock Inventory" : "Stock & Product Master"}
+            {isSalesOnlyRole ? "Stock & Product Availability" : isWarehouseMgrRole ? "Warehouse Stock Inventory" : "Stock & Product Master"}
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
-            {isSalesPersonRole
+            {isSalesOnlyRole
               ? "View real-time product inventory, SKU codes, pricing, and availability to create sales orders"
               : isWarehouseMgrRole
               ? `Manage and monitor stock for ${session.user.warehouseName || "assigned warehouse"}`
@@ -88,7 +90,7 @@ export default async function StockPage() {
         brands={brands}
         units={units}
         warehouses={warehouses}
-        viewOnly={isSalesPersonRole}
+        viewOnly={isSalesOnlyRole}
       />
     </div>
   );

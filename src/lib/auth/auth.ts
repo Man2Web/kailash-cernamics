@@ -214,6 +214,10 @@ export function isSalesPerson(roles: string[]): boolean {
   return roles.some((r) => ["SUPER_ADMIN", "ADMIN", "SALES_PERSON", "SALES_MANAGER", "SALES_STAFF"].includes(r));
 }
 
+export function canManageAttendance(roles: string[]): boolean {
+  return roles.some((r) => ["SUPER_ADMIN", "ADMIN", "ATTENDANCE_MANAGER"].includes(r));
+}
+
 export function isWarehouseManager(roles: string[]): boolean {
   return roles.some((r) => ["SUPER_ADMIN", "ADMIN", "WAREHOUSE_MANAGER", "INVENTORY_STAFF"].includes(r));
 }

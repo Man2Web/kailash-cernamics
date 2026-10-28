@@ -24,6 +24,8 @@ export default async function DashboardPage() {
   const isSuperAdminRole = session.user.roles.includes("SUPER_ADMIN") || session.user.roles.includes("ADMIN");
   const isWarehouseMgrRole = session.user.roles.includes("WAREHOUSE_MANAGER") || session.user.roles.includes("INVENTORY_STAFF");
   const isSalesPersonRole = session.user.roles.includes("SALES_PERSON") || session.user.roles.includes("SALES_MANAGER") || session.user.roles.includes("SALES_STAFF");
+  // A member who also has Warehouse Manager (or Super Admin) access is not limited to the sales dashboard.
+  const isSalesOnlyRole = isSalesPersonRole && !isWarehouseMgrRole && !isSuperAdminRole;
 
   const assignedWarehouseId = (!isSuperAdminRole && isWarehouseMgrRole) ? session.user.warehouseId : undefined;
 
@@ -64,7 +66,7 @@ export default async function DashboardPage() {
   const totalSalesOrders = await db.salesOrder.count();
 
   // Pending Purchase Deliveries (Goods Receipts)
-  const pendingPurchaseDeliveries = isSalesPersonRole
+  const pendingPurchaseDeliveries = isSalesOnlyRole
     ? 0
     : await db.goodsReceipt.count({
         where: {
@@ -92,7 +94,7 @@ export default async function DashboardPage() {
   const completedSalesDeliveries = await db.vehicleMovement.count({
     where: { status: "COMPLETED" },
   });
-  const completedPurchaseDeliveries = isSalesPersonRole
+  const completedPurchaseDeliveries = isSalesOnlyRole
     ? 0
     : await db.goodsReceipt.count({
         where: {
@@ -175,7 +177,7 @@ export default async function DashboardPage() {
     bg: string;
   }> = [];
 
-  if (isSalesPersonRole) {
+  if (isSalesOnlyRole) {
     summaryCards = [
       {
         title: "Sales Orders",
@@ -369,14 +371,14 @@ export default async function DashboardPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white p-3.5 sm:p-5 border border-slate-200 rounded-lg shadow-xs">
         <div className="min-w-0">
           <h1 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 tracking-tight leading-snug">
-            {isSalesPersonRole
+            {isSalesOnlyRole
               ? "Sales Representative Dashboard"
               : isWarehouseMgrRole
               ? `${session.user.warehouseName || "Warehouse"} Dashboard`
               : "Company Operations Dashboard"}
           </h1>
           <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
-            {isSalesPersonRole
+            {isSalesOnlyRole
               ? "Monitor customer orders, product availability, reservations, and dispatch status"
               : isWarehouseMgrRole
               ? `Operational summary for ${session.user.warehouseName || "assigned warehouse"}`
@@ -391,7 +393,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Metrics Grid */}
-      <div className={`grid grid-cols-2 md:grid-cols-3 ${isSalesPersonRole ? "lg:grid-cols-5" : isWarehouseMgrRole ? "lg:grid-cols-4" : "lg:grid-cols-5"} gap-3`}>
+      <div className={`grid grid-cols-2 md:grid-cols-3 ${isSalesOnlyRole ? "lg:grid-cols-5" : isWarehouseMgrRole ? "lg:grid-cols-4" : "lg:grid-cols-5"} gap-3`}>
         {summaryCards.map((card) => {
           const Icon = card.icon;
           return (

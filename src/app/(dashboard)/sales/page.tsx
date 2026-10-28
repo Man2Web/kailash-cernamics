@@ -192,7 +192,7 @@ export default async function SalesDashboardPage() {
         warehouses={formattedWarehouses}
         branches={branches}
         outlets={outlets}
-        canDispatch={!isSalesPersonRole}
+        canDispatch={isSuperAdminRole || isWarehouseMgrRole || !isSalesPersonRole}
         isSalesPerson={isSalesPersonRole}
         isWarehouseManager={isWarehouseMgrRole}
       />
