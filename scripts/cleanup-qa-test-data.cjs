@@ -45,7 +45,12 @@ const DRY = process.env.DRY !== "0";
     await del("tax_transactions", "delete from tax_transactions where invoice_id = any($1)", [iids]);
     await del("payment_allocations", "delete from payment_allocations where invoice_id = any($1)", [iids]);
     await del("invoice_items", "delete from invoice_items where invoice_id = any($1)", [iids]);
-    await del("journal_entries", "delete from journal_entries where reference = any($1) or description like '%QA-TEST%'", [docNos]);
+    // Accounting entries reference the document by id or number, and mention the number in their description.
+    await del(
+      "journal_entries",
+      "delete from journal_entries where reference = any($1::text[]) or description like '%QA-TEST%' or exists (select 1 from unnest($2::text[]) n where position(n in coalesce(description, '')) > 0)",
+      [[...docNos, ...docIds], docNos]
+    );
     await del("invoices", "delete from invoices where id = any($1)", [iids]);
     await del("sales_order_items", "delete from sales_order_items where order_id = any($1)", [soids]);
     await del("sales_orders", "delete from sales_orders where id = any($1)", [soids]);
