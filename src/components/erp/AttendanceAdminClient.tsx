@@ -28,7 +28,6 @@ import {
   exportAttendanceExcelAction,
 } from "@/app/(dashboard)/office/attendance/actions";
 import { AttendanceRecord, MonthlyEmployeeSummary } from "@/lib/attendance/attendance";
-import QRCode from "qrcode";
 
 interface AttendanceAdminClientProps {
   initialTodaySummary: {
@@ -64,9 +63,6 @@ export default function AttendanceAdminClient({
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [isPending, startTransition] = useTransition();
 
-  // QR Code Data URL
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
-  const attendanceUrl = `${appUrl}/attendance`;
 
   // Correction Modal State
   const [isCorrectionModalOpen, setIsCorrectionModalOpen] = useState(false);
@@ -80,14 +76,6 @@ export default function AttendanceAdminClient({
     status: "PRESENT" as "PRESENT" | "LATE" | "HALF_DAY" | "ABSENT" | "LEAVE",
     reason: "",
   });
-
-  useEffect(() => {
-    QRCode.toDataURL(attendanceUrl, { width: 280, margin: 2 }, (err, url) => {
-      if (!err && url) {
-        setQrCodeDataUrl(url);
-      }
-    });
-  }, [attendanceUrl]);
 
   // Handle Month Change
   const handleLoadMonth = (year: number, month: number) => {
@@ -240,8 +228,8 @@ export default function AttendanceAdminClient({
             }`}
           >
             <QrCode className="h-4 w-4" />
-            <span className="sm:hidden">QR Code</span>
-            <span className="hidden sm:inline">Attendance QR Code</span>
+            <span className="sm:hidden">Check-in</span>
+            <span className="hidden sm:inline">Live Check-in Screen</span>
           </button>
           <button
             onClick={() => openCorrectionModal()}
@@ -292,7 +280,7 @@ export default function AttendanceAdminClient({
           }`}
         >
           <QrCode className="h-4 w-4" />
-          <span>Attendance QR Poster</span>
+          <span>Live Check-in Screen</span>
         </button>
       </div>
 
@@ -748,52 +736,26 @@ export default function AttendanceAdminClient({
         </div>
       )}
 
-      {/* TAB 3: QR CODE DISPLAY & PRINT CHECKPOINT */}
+      {/* TAB 3: LIVE CHECK-IN SCREEN (rotating, server-validated code: no static/printable QR) */}
       {activeTab === "qr" && (
-        <div className="bg-white border border-slate-200 rounded-lg shadow-xs p-4 sm:p-6 max-w-xl mx-auto text-center space-y-6">
-          <div>
-            <span className="p-3 bg-blue-50 text-blue-600 rounded-2xl inline-block mb-3">
-              <QrCode className="h-8 w-8" />
-            </span>
-            <h2 className="text-xl font-bold text-slate-900">Attendance QR Code</h2>
-            <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
-              Place this QR code at office or warehouse entrances. Employees scan it to record their daily check-in and check-out.
-            </p>
-          </div>
-
-          {/* Scannable QR Code Image */}
-          <div className="p-4 sm:p-6 bg-slate-50 border border-slate-200 rounded-xl inline-block shadow-inner max-w-full overflow-hidden">
-            {qrCodeDataUrl ? (
-              <img
-                src={qrCodeDataUrl}
-                alt="Attendance QR Code"
-                className="w-56 h-56 sm:w-64 sm:h-64 mx-auto rounded-lg shadow-sm"
-              />
-            ) : (
-              <div className="w-56 h-56 sm:w-64 sm:h-64 flex items-center justify-center text-slate-400">
-                Generating QR Code...
-              </div>
-            )}
-            <p className="font-mono text-[11px] sm:text-xs text-slate-500 mt-3 break-all">{attendanceUrl}</p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row justify-center gap-2.5 sm:gap-3">
-            <button
-              onClick={() => window.print()}
-              className="w-full sm:w-auto px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded flex items-center justify-center gap-2 transition cursor-pointer"
-            >
-              <Printer className="h-4 w-4" />
-              <span>Print QR Poster</span>
-            </button>
-            <a
-              href={qrCodeDataUrl}
-              download="attendance-qr-code.png"
-              className="w-full sm:w-auto px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded flex items-center justify-center gap-2 transition"
-            >
-              <Download className="h-4 w-4" />
-              <span>Download PNG</span>
-            </a>
-          </div>
+        <div className="bg-white border border-slate-200 rounded-lg shadow-xs p-4 sm:p-6 max-w-xl mx-auto text-center space-y-4">
+          <span className="p-3 bg-blue-50 text-blue-600 rounded-2xl inline-block">
+            <QrCode className="h-8 w-8" />
+          </span>
+          <h2 className="text-xl font-bold text-slate-900">Live Check-in Screen</h2>
+          <p className="text-xs text-slate-500 max-w-md mx-auto">
+            The check-in QR changes every minute and is validated on the server, so a photo or printout cannot be reused. Open the live
+            screen on the office or warehouse display; employees sign in with their own account, scan it, and are recorded here.
+          </p>
+          <a
+            href="/attendance"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded items-center gap-2 transition"
+          >
+            <QrCode className="h-4 w-4" />
+            <span>Open live check-in screen</span>
+          </a>
         </div>
       )}
 
