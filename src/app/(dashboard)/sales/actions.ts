@@ -741,13 +741,26 @@ export async function createInvoice(input: CreateInvoiceInput) {
         });
 
         // Deduct Stock Quantity
-        const stock = await tx.stock.findFirst({
+        let stock = await tx.stock.findFirst({
           where: {
             variantId: item.variantId,
             warehouseId: item.warehouseId,
             binId: item.binId || null,
           },
         });
+
+        // The invoice form has no bin picker and defaults to the warehouse's first bin, while stock recorded without a
+        // bin (e.g. opening stock from the Stock module) has binId = null: fall back to any stock row that can cover it.
+        if (!stock || Number(stock.quantity) < item.quantity) {
+          const covering = await tx.stock.findFirst({
+            where: {
+              variantId: item.variantId,
+              warehouseId: item.warehouseId,
+              quantity: { gte: item.quantity },
+            },
+          });
+          if (covering) stock = covering;
+        }
 
         if (!stock || Number(stock.quantity) < item.quantity) {
           throw new Error(
@@ -770,7 +783,7 @@ export async function createInvoice(input: CreateInvoiceInput) {
             transactionId: transaction.id,
             variantId: item.variantId,
             warehouseId: item.warehouseId,
-            binId: item.binId || null,
+            binId: stock.binId ?? null,
             quantity: -item.quantity,
           },
         });
