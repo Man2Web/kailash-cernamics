@@ -562,8 +562,15 @@ export default function MovementClient({
 
       {/* DETAIL DRAWER / MODAL */}
       {selectedDeliveryForDetail && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="w-full max-w-full sm:max-w-lg bg-white shadow-xs border border-slate-200 rounded-lg flex flex-col p-4 sm:p-6">
+        <div className="w-full max-w-3xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="w-full bg-white shadow-xs border border-slate-200 rounded-lg flex flex-col p-4 sm:p-6">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
@@ -715,8 +722,15 @@ export default function MovementClient({
 
       {/* NEW SALES DISPATCH MODAL */}
       {showDispatchModal && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden">
+        <div className="w-full max-w-3xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Truck className="h-4 w-4 text-blue-600" />

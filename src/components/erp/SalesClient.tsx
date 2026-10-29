@@ -932,8 +932,15 @@ export default function SalesClient({
 
       {/* CREATE CUSTOMER MODAL */}
       {showCreateCustomerModal && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded shadow-xl w-full max-w-lg overflow-hidden">
+        <div className="w-full max-w-3xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <User className="h-4 w-4 text-blue-600" />
@@ -960,7 +967,7 @@ export default function SalesClient({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Phone Number *</label>
                   <input
@@ -1040,8 +1047,15 @@ export default function SalesClient({
 
       {/* CREATE SALES ORDER MODAL */}
       {showCreateOrderModal && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden">
+        <div className="w-full max-w-4xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />
@@ -1125,6 +1139,13 @@ export default function SalesClient({
                 </div>
 
                 <div className="space-y-3">
+                  <div className="hidden sm:grid sm:grid-cols-12 gap-2 px-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">
+                    <div className="col-span-5">Product</div>
+                    <div className="col-span-2 text-center">Qty</div>
+                    <div className="col-span-2 text-right">Rate (₹)</div>
+                    <div className="col-span-2 text-right">Total</div>
+                    <div className="col-span-1" />
+                  </div>
                   {orderItems.map((item, index) => (
                     <div key={index} className="bg-slate-50 p-3 rounded border border-slate-200/80 space-y-2">
                       {/* Desktop Grid Layout (sm+) */}
@@ -1316,8 +1337,15 @@ export default function SalesClient({
 
       {/* DISPATCH DELIVERY MODAL */}
       {showDispatchModal && selectedOrderForDispatch && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden">
+        <div className="w-full max-w-3xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Truck className="h-4 w-4 text-blue-600" />
@@ -1415,8 +1443,15 @@ export default function SalesClient({
 
       {/* SALES ORDER DETAIL & AUDIT MODAL */}
       {selectedOrderForDetail && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden">
+        <div className="w-full max-w-4xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <div className="flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />

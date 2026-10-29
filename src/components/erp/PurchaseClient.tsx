@@ -805,8 +805,15 @@ export default function PurchaseClient({
 
       {/* PO DETAIL & DELIVERY STATUS DRAWER */}
       {selectedPoForDetail && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="w-full max-w-xl bg-white shadow-xs border border-slate-200 rounded-lg flex flex-col p-6">
+        <div className="w-full max-w-4xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="w-full bg-white shadow-xs border border-slate-200 rounded-lg flex flex-col p-6">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
@@ -829,7 +836,7 @@ export default function PurchaseClient({
                 <span>Employee Action Audit</span>
               </div>
 
-              <div className="grid grid-cols-3 gap-3 pt-1 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 text-xs">
                 <div>
                   <span className="text-[11px] uppercase font-bold text-slate-500">Created By</span>
                   <div className="font-semibold text-slate-900 mt-1">
@@ -915,7 +922,7 @@ export default function PurchaseClient({
               )}
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
               <div className="bg-slate-50 p-3 rounded border">
                 <p className="text-[11px] font-bold text-slate-400 uppercase">Receiving Warehouse</p>
                 <p className="text-xs font-bold text-slate-900 mt-1">{selectedPoForDetail.warehouseName}</p>
@@ -1015,8 +1022,15 @@ export default function PurchaseClient({
 
       {/* RECEIVE GOODS MODAL */}
       {receivingPo && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded shadow-xl w-full max-w-lg overflow-hidden">
+        <div className="w-full max-w-3xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <div>
                 <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
@@ -1113,8 +1127,15 @@ export default function PurchaseClient({
 
       {/* CREATE PO MODAL */}
       {showPoForm && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden flex flex-col">
+        <div className="w-full max-w-4xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden flex flex-col">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />
@@ -1129,7 +1150,7 @@ export default function PurchaseClient({
             </div>
 
             <form onSubmit={handleCreatePo} className="p-6 space-y-4 text-xs flex-1">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Supplier / Vendor *</label>
                   <select
@@ -1163,7 +1184,7 @@ export default function PurchaseClient({
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Expected Delivery Date</label>
                   <input
@@ -1211,16 +1232,16 @@ export default function PurchaseClient({
 
                 <div className="space-y-2">
                   {poItems.map((item, idx) => (
-                    <div key={idx} className="flex items-center space-x-2 bg-slate-50 p-2 rounded border">
+                    <div key={idx} className="flex flex-wrap items-center gap-2 bg-slate-50 p-2 rounded border">
                       <ProductCombobox
-                        className="flex-1"
+                        className="w-full sm:flex-1 sm:min-w-[200px]"
                         required
                         value={item.variantId}
                         valueLabel={poVariantLabel(item.variantId)}
                         onChange={(o) => handleItemChange(idx, "variantId", o?.variantId || "", o || undefined)}
                       />
 
-                      <div className="w-24">
+                      <div className="flex-1 sm:flex-none sm:w-24">
                         <input
                           type="number"
                           min="1"
@@ -1232,7 +1253,7 @@ export default function PurchaseClient({
                         />
                       </div>
 
-                      <div className="w-28">
+                      <div className="flex-1 sm:flex-none sm:w-28">
                         <input
                           type="number"
                           min="0"
@@ -1292,8 +1313,15 @@ export default function PurchaseClient({
 
       {/* REGISTER VENDOR MODAL */}
       {showVendorForm && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden">
+        <div className="w-full max-w-3xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Users className="h-4 w-4 text-blue-600" />

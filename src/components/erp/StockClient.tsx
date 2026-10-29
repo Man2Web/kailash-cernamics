@@ -1023,8 +1023,15 @@ export default function StockClient({
 
       {/* PRODUCT QR DETAILS & LIVE STOCK MODAL */}
       {selectedProductDetails && (
-        <div className="w-full max-w-5xl mx-auto">
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 rounded-lg w-full max-w-2xl overflow-hidden flex flex-col">
+        <div className="w-full max-w-4xl space-y-3">
+          <button
+            type="button"
+            onClick={closeAllForms}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back
+          </button>
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden flex flex-col">
             {/* Modal Header */}
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <div className="flex items-center space-x-2">
