@@ -22,6 +22,7 @@ import {
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  if (session.user.roles.includes("ATTENDANCE_DISPLAY")) redirect("/attendance");
   if (!sessionCan(session, "dashboard:view")) {
     redirect(firstAllowedPath(session.user.permissions, false) || "/unauthorized");
   }

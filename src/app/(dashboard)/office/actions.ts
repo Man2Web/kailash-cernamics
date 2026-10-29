@@ -49,7 +49,7 @@ async function clearCustomPermissions(tx: any, userId: string) {
 export interface CreateUserData {
   name: string;
   employeeNo?: string;
-  role: "SUPER_ADMIN" | "SALES_PERSON" | "WAREHOUSE_MANAGER";
+  role: "SUPER_ADMIN" | "SALES_PERSON" | "WAREHOUSE_MANAGER" | "ATTENDANCE_DISPLAY";
   /** Permissions ticked by the Super Admin. When omitted the member simply gets what their role gives. */
   permissions?: string[];
   email?: string;
@@ -89,7 +89,13 @@ export async function createUserAction(data: CreateUserData) {
     if (!isAssignableRole(data.role)) {
       return { error: "Unknown user role." };
     }
-    const customPermissions = data.role !== "SUPER_ADMIN" && Array.isArray(data.permissions) ? sanitizePermissionCodes(data.permissions) : null;
+    const isDisplayAccount = data.role === "ATTENDANCE_DISPLAY";
+    // The QR-screen login never gets module permissions, whatever was ticked.
+    const customPermissions = isDisplayAccount
+      ? []
+      : data.role !== "SUPER_ADMIN" && Array.isArray(data.permissions)
+      ? sanitizePermissionCodes(data.permissions)
+      : null;
     const hasWarehouseAccess = data.role === "WAREHOUSE_MANAGER";
 
     if (hasWarehouseAccess && !data.warehouseId) {
@@ -148,8 +154,8 @@ export async function createUserAction(data: CreateUserData) {
       await tx.userRole.create({ data: { userId: newUser.id, roleId: roleRec.id } });
       if (customPermissions) await setCustomPermissions(tx, newUser.id, customPermissions);
 
-      // 3. Create Employee entry for contact and warehouse linking
-      await tx.employee.create({
+      // 3. Create Employee entry for contact and warehouse linking (the QR-screen login is not a staff member)
+      if (!isDisplayAccount) await tx.employee.create({
         data: {
           employeeNo,
           name: data.name.trim(),
@@ -257,7 +263,12 @@ export async function updateUserAccessAction(data: UpdateUserAccessData) {
       return { error: "Unknown user role." };
     }
 
-    const customPermissions = data.role !== "SUPER_ADMIN" && Array.isArray(data.permissions) ? sanitizePermissionCodes(data.permissions) : null;
+    const customPermissions =
+      data.role === "ATTENDANCE_DISPLAY"
+        ? []
+        : data.role !== "SUPER_ADMIN" && Array.isArray(data.permissions)
+        ? sanitizePermissionCodes(data.permissions)
+        : null;
     const hasWarehouseAccess = data.role === "WAREHOUSE_MANAGER";
     if (hasWarehouseAccess && !data.warehouseId) {
       return { error: "Assigned Warehouse is required for a Warehouse Manager." };

@@ -744,18 +744,11 @@ export default function AttendanceAdminClient({
           </span>
           <h2 className="text-xl font-bold text-slate-900">Live Check-in Screen</h2>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
-            The check-in QR changes every minute and is validated on the server, so a photo or printout cannot be reused. Open the live
-            screen on the office or warehouse display; employees sign in with their own account, scan it, and are recorded here.
+            The check-in QR changes every minute and is validated on the server, so a photo or printout cannot be reused. It is shown only
+            by a dedicated <span className="font-semibold">Attendance QR Screen</span> login, not by the Super Admin or any other account.
+            Create that login under Office → Create User / Employee → Role: Attendance QR Screen, then sign in with it on the office or
+            warehouse display. Employees sign in with their own account, scan the QR, and are recorded here.
           </p>
-          <a
-            href="/attendance"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded items-center gap-2 transition"
-          >
-            <QrCode className="h-4 w-4" />
-            <span>Open live check-in screen</span>
-          </a>
         </div>
       )}
 

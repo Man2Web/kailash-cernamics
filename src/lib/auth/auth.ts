@@ -269,6 +269,11 @@ export async function denyUnlessCan(code: string): Promise<{ error: string } | n
   return null;
 }
 
+/** True only for the dedicated "Attendance QR Screen" login (never for Super Admin or any other account). */
+export function isAttendanceDisplay(session: UserSession | null | undefined): boolean {
+  return !!session && session.user.roles.includes("ATTENDANCE_DISPLAY");
+}
+
 export function canManageAttendance(session: UserSession | null | undefined): boolean {
   return sessionCan(session, "attendance:manage");
 }

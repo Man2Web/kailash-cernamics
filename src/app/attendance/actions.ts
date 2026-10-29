@@ -3,7 +3,7 @@
 import { markEmployeeCheckIn, markEmployeeCheckOut } from "@/lib/attendance/attendance";
 import { generateDynamicAttendanceToken, validateAttendanceToken } from "@/lib/attendance/token";
 import { revalidatePath } from "next/cache";
-import { getSession, canManageAttendance } from "@/lib/auth/auth";
+import { getSession, canManageAttendance, isAttendanceDisplay } from "@/lib/auth/auth";
 import { normalizePhoneNumber } from "@/lib/attendance/attendance";
 
 /**
@@ -42,6 +42,11 @@ async function requireLoginAndQr(identifier: string, token?: string) {
  * Generates a fresh 60-second rotating attendance token for the QR display.
  */
 export async function getLiveAttendanceTokenAction() {
+  const session = await getSession();
+  if (!isAttendanceDisplay(session)) {
+    // Anyone else (logged out, staff, Super Admin) must not be able to mint a code remotely.
+    return { token: "", expiresInSeconds: 0, expiresAt: 0, error: "Only the attendance QR screen login can show the code." };
+  }
   return generateDynamicAttendanceToken();
 }
 

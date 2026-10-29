@@ -96,7 +96,7 @@ export function NewUserForm({ warehouses }: { warehouses: WarehouseOption[] }) {
   const [error, setError] = useState("");
   const [name, setName] = useState("");
   const [employeeNo, setEmployeeNo] = useState("");
-  const [role, setRole] = useState<"SALES_PERSON" | "WAREHOUSE_MANAGER" | "SUPER_ADMIN">("SALES_PERSON");
+  const [role, setRole] = useState<"SALES_PERSON" | "WAREHOUSE_MANAGER" | "SUPER_ADMIN" | "ATTENDANCE_DISPLAY">("SALES_PERSON");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [warehouseId, setWarehouseId] = useState("");
@@ -133,11 +133,14 @@ export function NewUserForm({ warehouses }: { warehouses: WarehouseOption[] }) {
               <option value="SALES_PERSON">Sales Person</option>
               <option value="WAREHOUSE_MANAGER">Warehouse Manager</option>
               <option value="SUPER_ADMIN">Super Admin</option>
+              <option value="ATTENDANCE_DISPLAY">Attendance QR Screen (display login)</option>
             </select>
           </Field>
-          <Field label="Employee ID">
-            <input type="text" value={employeeNo} onChange={(e) => setEmployeeNo(e.target.value)} placeholder="e.g. EMP-0001" className={inputCls} />
-          </Field>
+          {role !== "ATTENDANCE_DISPLAY" && (
+            <Field label="Employee ID">
+              <input type="text" value={employeeNo} onChange={(e) => setEmployeeNo(e.target.value)} placeholder="e.g. EMP-0001" className={inputCls} />
+            </Field>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Field label="Email Address (Optional if phone provided)">
@@ -148,7 +151,15 @@ export function NewUserForm({ warehouses }: { warehouses: WarehouseOption[] }) {
           </Field>
         </div>
 
-        <PermissionMatrix role={role} selected={permissions} onChange={setPermissions} />
+        {role === "ATTENDANCE_DISPLAY" ? (
+          <div className="p-3 rounded border border-blue-200 bg-blue-50 text-blue-800 text-xs leading-relaxed">
+            This is a dedicated login for the office attendance screen. It shows the rotating attendance QR and nothing else: it cannot open
+            sales, stock, office or any other page, and it is not a staff member. Neither the Super Admin nor any other account can open that
+            QR screen. Use the email or phone below as its username.
+          </div>
+        ) : (
+          <PermissionMatrix role={role} selected={permissions} onChange={setPermissions} />
+        )}
 
         {role === "WAREHOUSE_MANAGER" && <WarehouseSelect value={warehouseId} onChange={setWarehouseId} warehouses={warehouses} />}
 

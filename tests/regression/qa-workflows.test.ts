@@ -19,7 +19,8 @@ process.env.ATTENDANCE_QR_SECRET ||= "test-secret-not-for-production";
 import db from "../../src/lib/db/db";
 import { classifyScan } from "../../src/lib/products/qr-parse";
 import { matchesWarehouse } from "../../src/lib/inventory/warehouse-scope";
-import { warehouseScopeId, warehouseAccessError, NO_WAREHOUSE } from "../../src/lib/auth/auth";
+import { warehouseScopeId, warehouseAccessError, NO_WAREHOUSE, isAttendanceDisplay } from "../../src/lib/auth/auth";
+import { toAssignableRole, isAssignableRole } from "../../src/lib/auth/access";
 import { effectivePermissions, sanitizePermissionCodes, ROLE_PRESETS } from "../../src/lib/auth/permissions";
 import {
   reserveStock,
@@ -261,4 +262,15 @@ test("warehouse scope: the fail-closed marker is a valid UUID that Postgres acce
   assert.match(NO_WAREHOUSE, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
   assert.deepEqual(await d.stock.findMany({ where: { warehouseId: NO_WAREHOUSE } }), []);
   assert.deepEqual(await d.warehouse.findMany({ where: { id: NO_WAREHOUSE } }), []);
+});
+
+test("attendance QR screen login: only the dedicated role qualifies, it holds no permissions, Super Admin does not qualify", () => {
+  assert.equal(isAttendanceDisplay(session(["ATTENDANCE_DISPLAY"])), true);
+  assert.equal(isAttendanceDisplay(session(["SUPER_ADMIN"])), false);
+  assert.equal(isAttendanceDisplay(session(["SALES_PERSON", "ATTENDANCE_MANAGER"])), false);
+  assert.equal(isAttendanceDisplay(null), false);
+  assert.ok(isAssignableRole("ATTENDANCE_DISPLAY"));
+  assert.equal(toAssignableRole("attendance display"), "ATTENDANCE_DISPLAY");
+  assert.deepEqual(effectivePermissions(["ATTENDANCE_DISPLAY"], null), []);
+  assert.deepEqual(effectivePermissions(["ATTENDANCE_DISPLAY"], []), []);
 });

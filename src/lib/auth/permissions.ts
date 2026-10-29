@@ -119,6 +119,8 @@ export const ROLE_PRESETS: Record<string, string[]> = {
   WAREHOUSE_MANAGER: WAREHOUSE_PRESET,
   INVENTORY_STAFF: WAREHOUSE_PRESET,
   ATTENDANCE_MANAGER: ["dashboard:view", "attendance:manage"],
+  // The dedicated QR-screen login holds no module permissions at all.
+  ATTENDANCE_DISPLAY: [],
 };
 
 /** Roles that older accounts hold; they keep the dashboard only, exactly as before. */

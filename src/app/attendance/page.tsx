@@ -1,7 +1,7 @@
 import React from "react";
 import AttendancePublicClient from "@/components/erp/AttendancePublicClient";
 import Link from "next/link";
-import { getSession, canManageAttendance } from "@/lib/auth/auth";
+import { getSession, isAttendanceDisplay } from "@/lib/auth/auth";
 import { generateDynamicAttendanceToken, validateAttendanceToken } from "@/lib/attendance/token";
 
 export const dynamic = "force-dynamic";
@@ -21,9 +21,10 @@ export default async function PublicAttendancePage({ searchParams }: PublicAtten
 
   const session = await getSession();
 
-  // The live rotating QR (kiosk screen) is only shown to attendance managers / Super Admins. Everyone else must reach
-  // this page by scanning the office QR code, so the link carries a valid token.
-  if (!token && !canManageAttendance(session)) {
+  // The live rotating QR screen is shown ONLY to the dedicated "Attendance QR Screen" login: not to Super Admin or any other
+  // account. Everyone else must reach this page by scanning the office QR code, so the link carries a valid token.
+  const isDisplay = isAttendanceDisplay(session);
+  if (!token && !isDisplay) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
         <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center space-y-3">
@@ -54,8 +55,8 @@ export default async function PublicAttendancePage({ searchParams }: PublicAtten
     tokenValidationMessage = check.message || "";
   }
 
-  // Generate initial live token for kiosk display
-  const initialLiveToken = await generateDynamicAttendanceToken();
+  // Only the QR-screen login may mint a code; a scanning employee never needs one.
+  const initialLiveToken = isDisplay ? await generateDynamicAttendanceToken() : { token: "", expiresInSeconds: 0, expiresAt: 0 };
 
   const configuredAttendanceUrl =
     process.env.NEXT_PUBLIC_ATTENDANCE_URL ||
