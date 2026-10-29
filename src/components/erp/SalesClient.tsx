@@ -31,6 +31,7 @@ import ProductQrScanner from "@/components/erp/ProductQrScanner";
 import ProductCombobox from "@/components/erp/ProductCombobox";
 import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface InvoiceRow {
   id: string;
@@ -1072,35 +1073,26 @@ export default function SalesClient({
                       + New Customer
                     </button>
                   </div>
-                  <select
+                  <SearchSelect
                     value={selectedCustomerId}
-                    onChange={(e) => setSelectedCustomerId(e.target.value)}
+                    onChange={(v) => setSelectedCustomerId(v)}
                     required
+                    placeholder="Type to search customer"
+                    options={customerList.map((c) => ({ value: c.id, label: `${c.name} ${c.phone ? `(${c.phone})` : ""}` }))}
                     className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
-                  >
-                    <option value="">-- Choose Customer --</option>
-                    {customerList.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} {c.phone ? `(${c.phone})` : ""}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Warehouse (Stock Source) *</label>
-                  <select
+                  <SearchSelect
                     value={selectedWarehouseId}
-                    onChange={(e) => setSelectedWarehouseId(e.target.value)}
+                    onChange={(v) => setSelectedWarehouseId(v)}
                     required
+                    placeholder="Type to search warehouse"
+                    options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
                     className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
-                  >
-                    {warehouses.map((w) => (
-                      <option key={w.id} value={w.id}>
-                        {w.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
 

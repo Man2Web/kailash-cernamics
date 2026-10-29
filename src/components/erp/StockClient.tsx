@@ -25,6 +25,7 @@ import {
 } from "@/app/(dashboard)/stock/actions";
 import ProductQrScanner from "@/components/erp/ProductQrScanner";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface ProductRow {
   id: string;
@@ -420,50 +421,35 @@ export default function StockClient({
 
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">Category *</label>
-                  <select
-                    required
+                  <SearchSelect
                     value={pCategoryId}
-                    onChange={(e) => setPCategoryId(e.target.value)}
+                    onChange={(v) => setPCategoryId(v)}
+                    required
+                    placeholder="Type to search category"
+                    options={categories.map((c) => ({ value: c.id, label: `${c.name} (${c.code})` }))}
                     className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  >
-                    <option value="">Select Category</option>
-                    {categories.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.name} ({c.code})
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">Brand</label>
-                  <select
+                  <SearchSelect
                     value={pBrandId}
-                    onChange={(e) => setPBrandId(e.target.value)}
+                    onChange={(v) => setPBrandId(v)}
+                    placeholder="Type to search brand"
+                    options={brands.map((b) => ({ value: b.id, label: `${b.name}` }))}
                     className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  >
-                    <option value="">Select Brand</option>
-                    {brands.map((b) => (
-                      <option key={b.id} value={b.id}>
-                        {b.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">Unit of Measurement *</label>
-                  <select
-                    required
+                  <SearchSelect
                     value={pUnitId}
-                    onChange={(e) => setPUnitId(e.target.value)}
+                    onChange={(v) => setPUnitId(v)}
+                    required
+                    placeholder="Type to search unit"
+                    options={units.map((u) => ({ value: u.id, label: `${u.name} (${u.code})` }))}
                     className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  >
-                    <option value="">Select Unit</option>
-                    {units.map((u) => (
-                      <option key={u.id} value={u.id}>
-                        {u.name} ({u.code})
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">HSN/SAC Code</label>
@@ -546,18 +532,13 @@ export default function StockClient({
                 {/* Opening stock */}
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">Opening Warehouse</label>
-                  <select
+                  <SearchSelect
                     value={pWarehouseId}
-                    onChange={(e) => setPWarehouseId(e.target.value)}
+                    onChange={(v) => setPWarehouseId(v)}
+                    placeholder="Type to search warehouse"
+                    options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
                     className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  >
-                    <option value="">Select Warehouse</option>
-                    {warehouses.map((w) => (
-                      <option key={w.id} value={w.id}>
-                        {w.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">Opening Stock Qty</label>

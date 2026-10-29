@@ -15,6 +15,7 @@ import {
 import { calculateGst } from "@/lib/tax/gst";
 import { createInvoice } from "@/app/(dashboard)/sales/actions";
 import ProductCombobox from "@/components/erp/ProductCombobox";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface Address {
   id: string;
@@ -507,19 +508,14 @@ export default function InvoiceCreateClient({
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
           <div className="space-y-1">
             <label className="font-semibold text-slate-500">Customer / Company *</label>
-            <select
-              required
+            <SearchSelect
               value={selectedCustomerId}
-              onChange={(e) => setSelectedCustomerId(e.target.value)}
+              onChange={(v) => setSelectedCustomerId(v)}
+              required
+              placeholder="Type to search customer"
+              options={customers.map((c) => ({ value: c.id, label: `${c.name} (${c.code})` }))}
               className="w-full px-2.5 py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 font-medium"
-            >
-              <option value="">Select Customer</option>
-              {customers.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name} ({c.code})
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div className="space-y-1">
             <label className="font-semibold text-slate-500">GSTIN</label>
@@ -533,18 +529,14 @@ export default function InvoiceCreateClient({
           </div>
           <div className="space-y-1">
             <label className="font-semibold text-slate-500">Outlet *</label>
-            <select
-              required
+            <SearchSelect
               value={selectedOutletId}
-              onChange={(e) => setSelectedOutletId(e.target.value)}
+              onChange={(v) => setSelectedOutletId(v)}
+              required
+              placeholder="Type to search outlet"
+              options={outlets.map((o) => ({ value: o.id, label: `${o.name}` }))}
               className="w-full px-2.5 py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 font-medium"
-            >
-              {outlets.map((o) => (
-                <option key={o.id} value={o.id}>
-                  {o.name}
-                </option>
-              ))}
-            </select>
+            />
           </div>
           <div className="space-y-1">
             <label className="font-semibold text-slate-500">Doc Series</label>
@@ -968,17 +960,13 @@ export default function InvoiceCreateClient({
 
                     {/* Warehouse */}
                     <td className="px-3 py-1.5">
-                      <select
+                      <SearchSelect
                         value={item.warehouseId}
-                        onChange={(e) => handleItemWarehouseChange(idx, e.target.value)}
+                        onChange={(v) => handleItemWarehouseChange(idx, v)}
+                        placeholder="Type to search warehouse"
+                        options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
                         className="w-full px-2 py-1 border border-slate-300 bg-white rounded-sm outline-none focus:ring-1 focus:ring-blue-500"
-                      >
-                        {warehouses.map((w) => (
-                          <option key={w.id} value={w.id}>
-                            {w.name}
-                          </option>
-                        ))}
-                      </select>
+                      />
                     </td>
 
                     {/* Quantity */}
@@ -1095,17 +1083,13 @@ export default function InvoiceCreateClient({
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="text-[11px] font-bold text-slate-500 uppercase">Warehouse *</label>
-                    <select
+                    <SearchSelect
                       value={item.warehouseId}
-                      onChange={(e) => handleItemWarehouseChange(idx, e.target.value)}
+                      onChange={(v) => handleItemWarehouseChange(idx, v)}
+                      placeholder="Type to search warehouse"
+                      options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
                       className="w-full p-1.5 border border-slate-300 bg-white rounded outline-none text-xs"
-                    >
-                      {warehouses.map((w) => (
-                        <option key={w.id} value={w.id}>
-                          {w.name}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                   <div>
                     <label className="text-[11px] font-bold text-slate-500 uppercase">Quantity ({item.unitCode}) *</label>

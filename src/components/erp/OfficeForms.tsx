@@ -13,6 +13,7 @@ import {
 } from "@/app/(dashboard)/office/actions";
 import { PrimaryRoleSelect, PermissionMatrix } from "@/components/erp/AccessFields";
 import { presetFor } from "@/lib/auth/permissions";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 export interface WarehouseOption {
   id: string;
@@ -56,14 +57,12 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function WarehouseSelect({ value, onChange, warehouses }: { value: string; onChange: (v: string) => void; warehouses: WarehouseOption[] }) {
   return (
     <Field label="Assigned Warehouse *">
-      <select value={value} onChange={(e) => onChange(e.target.value)} required className={inputCls}>
-        <option value="">-- Select Warehouse --</option>
-        {warehouses.map((wh) => (
-          <option key={wh.id} value={wh.id}>
-            {wh.name} ({wh.code})
-          </option>
-        ))}
-      </select>
+      <SearchSelect
+        value={value}
+        onChange={(v) => onChange(v)} required className={inputCls}
+        placeholder="Type to search warehouse"
+        options={warehouses.map((wh) => ({ value: wh.id, label: `${wh.name} (${wh.code})` }))}
+      />
     </Field>
   );
 }

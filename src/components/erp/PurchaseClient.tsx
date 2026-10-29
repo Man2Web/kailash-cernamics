@@ -22,6 +22,7 @@ import {
 import ProductCombobox from "@/components/erp/ProductCombobox";
 import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface VendorRow {
   id: string;
@@ -1143,34 +1144,26 @@ export default function PurchaseClient({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Supplier / Vendor *</label>
-                  <select
-                    required
+                  <SearchSelect
                     value={poVendorId}
-                    onChange={(e) => setPoVendorId(e.target.value)}
+                    onChange={(v) => setPoVendorId(v)}
+                    required
+                    placeholder="Type to search supplier"
+                    options={vendors.map((v) => ({ value: v.id, label: `${v.name} (${v.code})` }))}
                     className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  >
-                    {vendors.map((v) => (
-                      <option key={v.id} value={v.id}>
-                        {v.name} ({v.code})
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Receiving Warehouse *</label>
-                  <select
-                    required
+                  <SearchSelect
                     value={poWarehouseId}
-                    onChange={(e) => setPoWarehouseId(e.target.value)}
+                    onChange={(v) => setPoWarehouseId(v)}
+                    required
+                    placeholder="Type to search warehouse"
+                    options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
                     className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  >
-                    {warehouses.map((w) => (
-                      <option key={w.id} value={w.id}>
-                        {w.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
 

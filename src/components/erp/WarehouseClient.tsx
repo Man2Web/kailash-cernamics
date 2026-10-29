@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import SearchSelect from "@/components/erp/SearchSelect";
 import {
   Warehouse as WarehouseIcon,
   Layers,
@@ -730,17 +731,13 @@ export default function WarehouseClient({
                   placeholder="Code (e.g. WH-BLR)"
                   className="w-full p-2 border rounded uppercase"
                 />
-                <select
+                <SearchSelect
                   value={wBranchId}
-                  onChange={(e) => setWBranchId(e.target.value)}
+                  onChange={(v) => setWBranchId(v)}
+                  placeholder="Type to search branch"
+                  options={branches.map((b) => ({ value: b.id, label: `Branch: ${b.name}` }))}
                   className="w-full p-2 border rounded"
-                >
-                  {branches.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      Branch: {b.name}
-                    </option>
-                  ))}
-                </select>
+                />
                 <input
                   type="text"
                   value={wAddress}
@@ -777,17 +774,13 @@ export default function WarehouseClient({
                   placeholder="Code (e.g. LOC-01)"
                   className="w-full p-2 border rounded uppercase"
                 />
-                <select
+                <SearchSelect
                   value={lWarehouseId}
-                  onChange={(e) => setLWarehouseId(e.target.value)}
+                  onChange={(v) => setLWarehouseId(v)}
+                  placeholder="Type to search warehouse"
+                  options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
                   className="w-full p-2 border rounded"
-                >
-                  {warehouses.map((w) => (
-                    <option key={w.id} value={w.id}>
-                      {w.name}
-                    </option>
-                  ))}
-                </select>
+                />
                 <button
                   type="submit"
                   className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition cursor-pointer"
@@ -817,17 +810,13 @@ export default function WarehouseClient({
                   placeholder="Code (e.g. RCK-01)"
                   className="w-full p-2 border rounded uppercase"
                 />
-                <select
+                <SearchSelect
                   value={rLocationId}
-                  onChange={(e) => setRLocationId(e.target.value)}
+                  onChange={(v) => setRLocationId(v)}
+                  placeholder="Type to search location"
+                  options={locations.map((l) => ({ value: l.id, label: `${l.warehouse?.name} - ${l.name}` }))}
                   className="w-full p-2 border rounded"
-                >
-                  {locations.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.warehouse?.name} - {l.name}
-                    </option>
-                  ))}
-                </select>
+                />
                 <button
                   type="submit"
                   className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition cursor-pointer"
@@ -857,17 +846,13 @@ export default function WarehouseClient({
                   placeholder="Code (e.g. BIN-01)"
                   className="w-full p-2 border rounded uppercase"
                 />
-                <select
+                <SearchSelect
                   value={bRackId}
-                  onChange={(e) => setBRackId(e.target.value)}
+                  onChange={(v) => setBRackId(v)}
+                  placeholder="Type to search rack"
+                  options={racks.map((r) => ({ value: r.id, label: `${r.location?.warehouse?.name} - ${r.name}` }))}
                   className="w-full p-2 border rounded"
-                >
-                  {racks.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.location?.warehouse?.name} - {r.name}
-                    </option>
-                  ))}
-                </select>
+                />
                 <button
                   type="submit"
                   className="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold transition cursor-pointer"

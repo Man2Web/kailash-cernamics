@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { createMovement, updateMovementStatus, deleteMovement } from "@/app/(dashboard)/movement/actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 export interface DeliveryItem {
   id: string;
@@ -840,17 +841,13 @@ export default function MovementClient({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Warehouse *</label>
-                  <select
+                  <SearchSelect
                     value={sourceWarehouse}
-                    onChange={(e) => setSourceWarehouse(e.target.value)}
+                    onChange={(v) => setSourceWarehouse(v)}
+                    placeholder="Type to search warehouse"
+                    options={warehouses.map((w) => ({ value: w, label: `${w}` }))}
                     className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
-                  >
-                    {warehouses.map((w) => (
-                      <option key={w} value={w}>
-                        {w}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Destination / City</label>
