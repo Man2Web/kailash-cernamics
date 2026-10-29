@@ -12,6 +12,7 @@ import {
   Users,
   Navigation,
   CalendarCheck,
+  Contact,
   X,
 } from "lucide-react";
 
@@ -44,6 +45,7 @@ export default function Sidebar({ user, isMobile = false, onClose }: SidebarProp
     { allowed: can("dashboard:view"), name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { allowed: isSuperAdmin, name: "Office", path: "/office", icon: Building2 },
     { allowed: can("attendance:manage"), name: "Employee Attendance", path: "/office/attendance", icon: CalendarCheck },
+    { allowed: can("leads:view"), name: "Leads & Enquiries", path: "/leads", icon: Contact },
     { allowed: can("sales:view"), name: "Sales Orders", path: "/sales", icon: ShoppingCart },
     { allowed: can("purchase:view"), name: purchaseLabel, path: "/purchase", icon: Users },
     { allowed: can("stock:view"), name: stockLabel, path: "/stock", icon: Box },

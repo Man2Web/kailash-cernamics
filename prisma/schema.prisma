@@ -158,6 +158,8 @@ model User {
   createdInvoices Invoice[] @relation("CreatedBy")
   updatedInvoices Invoice[] @relation("UpdatedBy")
   assignedTickets SupportTicket[] @relation("AssignedTickets")
+  assignedLeads   Lead[] @relation("LeadAssignedTo")
+  createdLeads    Lead[] @relation("LeadCreatedBy")
 
   @@map("users")
 }
@@ -1364,4 +1366,40 @@ model LoginAttempt {
 
   @@index([key, createdAt])
   @@map("login_attempts")
+}
+
+// Walk-in and phone-call enquiries, tracked until they become a customer or are dropped.
+model Lead {
+  id               String    @id @default(uuid()) @db.Uuid
+  leadNo           String    @unique @map("lead_no")
+  source           String    // WALK_IN, PHONE_CALL
+  enquiryAt        DateTime  @default(now()) @map("enquiry_at")
+  name             String
+  phone            String
+  alternatePhone   String?   @map("alternate_phone")
+  email            String?
+  city             String?
+  address          String?
+  interests        String[]  @default([]) // product category names asked about
+  requirement      String?
+  areaSqft         Decimal?  @map("area_sqft") @db.Decimal(12, 2)
+  budget           Decimal?  @db.Decimal(12, 2)
+  projectType      String?   @map("project_type") // NEW_CONSTRUCTION, RENOVATION, COMMERCIAL, OTHER
+  timeline         String?   // IMMEDIATE, WITHIN_1_MONTH, ONE_TO_THREE_MONTHS, JUST_ENQUIRING
+  heardFrom        String?   @map("heard_from") // REFERRAL, GOOGLE, SOCIAL_MEDIA, PASSING_BY, EXISTING_CUSTOMER, OTHER
+  status           String    @default("NEW") // NEW, FOLLOW_UP, CONVERTED, LOST
+  nextFollowUpDate DateTime? @map("next_follow_up_date") @db.Date
+  notes            String?
+  assignedToId     String?   @map("assigned_to_id") @db.Uuid
+  createdById      String?   @map("created_by_id") @db.Uuid
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  assignedTo       User?     @relation("LeadAssignedTo", fields: [assignedToId], references: [id])
+  createdBy        User?     @relation("LeadCreatedBy", fields: [createdById], references: [id])
+
+  @@index([status])
+  @@index([nextFollowUpDate])
+  @@index([phone])
+  @@map("leads")
 }

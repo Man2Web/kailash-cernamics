@@ -23,7 +23,7 @@ import ProductCombobox from "@/components/erp/ProductCombobox";
 import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 import SearchSelect from "@/components/erp/SearchSelect";
-import { FormPageHeader, FormSection } from "@/components/erp/FormPage";
+import { FormActions, FormPageHeader, FormSection, LineItemsTotal } from "@/components/erp/FormPage";
 
 interface VendorRow {
   id: string;
@@ -1103,22 +1103,19 @@ export default function PurchaseClient({
 
       {/* CREATE PO MODAL */}
       {showPoForm && (
-        <div className="w-full max-w-5xl space-y-5">
+        <div className="w-full space-y-5">
           <FormPageHeader
             title="Create Purchase Order"
             subtitle="Order stock from a supplier and track its delivery into your warehouse."
             icon={<ShoppingCart className="h-6 w-6 text-blue-600" />}
             onBack={closeAllForms}
-            submitLabel="Create Purchase Order"
-            formId="po-form"
-            pending={isPending}
           />
           <div className="w-full">
 
             <form onSubmit={handleCreatePo} id="po-form" className="space-y-5">
               <FormSection number={1} title="Supplier & Delivery">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Supplier / Vendor *</label>
                   <SearchSelect
                     value={poVendorId}
@@ -1126,11 +1123,11 @@ export default function PurchaseClient({
                     required
                     placeholder="Type to search supplier"
                     options={vendors.map((v) => ({ value: v.id, label: `${v.name} (${v.code})` }))}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
+                    className="w-full"
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Receiving Warehouse *</label>
                   <SearchSelect
                     value={poWarehouseId}
@@ -1138,138 +1135,144 @@ export default function PurchaseClient({
                     required
                     placeholder="Type to search warehouse"
                     options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
+                    className="w-full"
                   />
                 </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Expected Delivery Date</label>
                   <input
                     type="date"
                     value={poExpectedDate}
                     onChange={(e) => setPoExpectedDate(e.target.value)}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
+                    className="w-full"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Driver Name</label>
                   <input
                     type="text"
                     value={poDriverName}
                     onChange={(e) => setPoDriverName(e.target.value)}
                     placeholder="e.g. Inbound Driver"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
+                    className="w-full"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Vehicle / Truck No</label>
                   <input
                     type="text"
                     value={poVehicleNo}
                     onChange={(e) => setPoVehicleNo(e.target.value)}
                     placeholder="e.g. TN-23-BX-9988"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 uppercase"
+                    className="w-full uppercase"
                   />
                 </div>
               </div>
 
               </FormSection>
-              <FormSection number={2} title="Order Line Items">
-              {/* Items Section */}
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <p className="text-slate-500">Add every product you are ordering, with quantity and rate. *</p>
+              <FormSection
+                number={2}
+                title="Order Line Items"
+                description="Add every product you are ordering, with quantity and rate."
+                actions={
                   <button
                     type="button"
                     onClick={handleAddItemRow}
-                    className="text-[11px] text-blue-600 hover:text-blue-800 font-semibold flex items-center space-x-1 cursor-pointer"
+                    className="flex-1 sm:flex-none h-9 px-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-semibold transition cursor-pointer"
                   >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-4 w-4" />
                     <span>Add Item</span>
                   </button>
+                }
+              >
+              {/* Items Section */}
+              <div className="rounded-lg border border-slate-200">
+                <div className="hidden sm:grid sm:grid-cols-[2rem_minmax(0,1fr)_7rem_8rem_8rem_2.5rem] gap-3 px-3 py-2.5 bg-slate-50 border-b border-slate-200 rounded-t-lg text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                  <div>#</div>
+                  <div>Product</div>
+                  <div className="text-right">Qty</div>
+                  <div className="text-right">Rate (₹)</div>
+                  <div className="text-right">Total (₹)</div>
+                  <div />
                 </div>
+                {poItems.map((item, idx) => (
+                  <div
+                    key={idx}
+                    className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_2.5rem] sm:grid-cols-[2rem_minmax(0,1fr)_7rem_8rem_8rem_2.5rem] gap-3 items-center p-3 border-b border-slate-100 last:border-b-0"
+                  >
+                    <div className="hidden sm:block text-sm font-semibold text-slate-400">{idx + 1}</div>
+                    <ProductCombobox
+                      className="col-span-3 sm:col-span-1 min-w-0"
+                      required
+                      value={item.variantId}
+                      valueLabel={poVariantLabel(item.variantId)}
+                      onChange={(o) => handleItemChange(idx, "variantId", o?.variantId || "", o || undefined)}
+                    />
 
-                <div className="space-y-2">
-                  {poItems.map((item, idx) => (
-                    <div key={idx} className="flex flex-wrap items-center gap-2 bg-slate-50 p-2 rounded border">
-                      <ProductCombobox
-                        className="w-full sm:flex-1 sm:min-w-[200px]"
-                        required
-                        value={item.variantId}
-                        valueLabel={poVariantLabel(item.variantId)}
-                        onChange={(o) => handleItemChange(idx, "variantId", o?.variantId || "", o || undefined)}
-                      />
+                    <input
+                      type="number"
+                      min="1"
+                      required
+                      value={item.quantity}
+                      onChange={(e) => handleItemChange(idx, "quantity", e.target.value)}
+                      placeholder="Qty"
+                      aria-label="Quantity"
+                      className="w-full text-right"
+                    />
 
-                      <div className="flex-1 sm:flex-none sm:w-24">
-                        <input
-                          type="number"
-                          min="1"
-                          required
-                          value={item.quantity}
-                          onChange={(e) => handleItemChange(idx, "quantity", e.target.value)}
-                          placeholder="Qty"
-                          className="w-full p-1.5 border rounded text-right text-xs bg-white"
-                        />
-                      </div>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      required
+                      value={item.rate}
+                      onChange={(e) => handleItemChange(idx, "rate", e.target.value)}
+                      placeholder="Rate ₹"
+                      aria-label="Rate"
+                      className="w-full text-right"
+                    />
 
-                      <div className="flex-1 sm:flex-none sm:w-28">
-                        <input
-                          type="number"
-                          min="0"
-                          step="0.01"
-                          required
-                          value={item.rate}
-                          onChange={(e) => handleItemChange(idx, "rate", e.target.value)}
-                          placeholder="Rate ₹"
-                          className="w-full p-1.5 border rounded text-right text-xs bg-white"
-                        />
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveItemRow(idx)}
-                        disabled={poItems.length === 1}
-                        className="p-1 text-slate-400 hover:text-rose-600 disabled:opacity-30 cursor-pointer"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
+                    <div className="hidden sm:block text-right text-sm font-bold text-slate-800 tabular-nums">
+                      ₹{((Number(item.quantity) || 0) * (Number(item.rate) || 0)).toLocaleString("en-IN")}
                     </div>
-                  ))}
-                </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItemRow(idx)}
+                      disabled={poItems.length === 1}
+                      aria-label={`Remove item ${idx + 1}`}
+                      className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 disabled:opacity-30 disabled:hover:bg-transparent cursor-pointer transition"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                <LineItemsTotal
+                  amount={poItems.reduce((sum, item) => sum + (Number(item.quantity) || 0) * (Number(item.rate) || 0), 0)}
+                />
               </div>
 
               </FormSection>
               <FormSection number={3} title="Delivery Notes">
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <label className="font-semibold text-slate-700">Delivery Notes</label>
                 <textarea
                   value={poNotes}
                   onChange={(e) => setPoNotes(e.target.value)}
                   placeholder="Inbound shipment notes and instructions..."
-                  rows={2}
-                  className="w-full p-2 border rounded text-xs"
+                  rows={3}
+                  className="w-full"
                 />
               </div>
 
               </FormSection>
-              <div className="pt-4 border-t flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => setShowPoForm(false)}
-                  className="px-4 py-2 border rounded text-slate-600 cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold disabled:opacity-50 cursor-pointer"
-                >
-                  {isPending ? "Creating PO..." : "Create Purchase Order"}
-                </button>
-              </div>
+              <FormActions
+                submitLabel="Create Purchase Order"
+                pendingLabel="Creating PO..."
+                pending={isPending}
+                onCancel={() => setShowPoForm(false)}
+              />
             </form>
           </div>
         </div>
