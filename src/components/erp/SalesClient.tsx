@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   ShoppingCart,
   Receipt,
@@ -110,6 +111,8 @@ interface WarehouseOption {
 }
 
 interface SalesClientProps {
+  /** Set by the dedicated /sales/... pages: open this form straight away and return to /sales when it closes. */
+  startWithForm?: "order" | "customer";
   invoices?: InvoiceRow[];
   orders: OrderRow[];
   quotations?: QuotationRow[];
@@ -127,6 +130,7 @@ interface SalesClientProps {
 }
 
 export default function SalesClient({
+  startWithForm,
   invoices = [],
   orders = [],
   quotations = [],
@@ -142,13 +146,14 @@ export default function SalesClient({
   canCreate = true,
   canAddCustomer = true,
 }: SalesClientProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"orders" | "reservations">("orders");
   const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
 
   // Modals
-  const [showCreateOrderModal, setShowCreateOrderModal] = useState(false);
-  const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false);
+  const [showCreateOrderModal, setShowCreateOrderModal] = useState(startWithForm === "order");
+  const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(startWithForm === "customer");
   const [showDispatchModal, setShowDispatchModal] = useState(false);
   const [showScannerModal, setShowScannerModal] = useState(false);
   const [selectedOrderForDispatch, setSelectedOrderForDispatch] = useState<OrderRow | null>(null);
@@ -455,7 +460,12 @@ export default function SalesClient({
     setSelectedOrderForDetail(null);
     setShowScannerModal(false);
   };
-  useFullPageForm(formOpen, closeAllForms, "sales");
+  const routeMode = !!startWithForm;
+  useFullPageForm(formOpen && !routeMode, closeAllForms, "sales");
+  // On a dedicated page, closing the form (cancel or after saving) goes back to the list.
+  useEffect(() => {
+    if (routeMode && !formOpen) router.replace("/sales");
+  }, [routeMode, formOpen, router]);
 
   return (
     <div className="space-y-4">
@@ -534,7 +544,7 @@ export default function SalesClient({
             onClick={() => {
               setErrorMsg("");
               setSuccessMsg("");
-              setShowCreateCustomerModal(true);
+              router.push("/sales/customers/new");
             }}
             className="flex-1 sm:flex-none flex items-center justify-center space-x-1.5 px-3 py-2 sm:py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-sm text-xs font-semibold border border-slate-300 shadow-xs transition min-h-[36px] sm:min-h-0"
           >
@@ -548,7 +558,7 @@ export default function SalesClient({
               onClick={() => {
                 setErrorMsg("");
                 setSuccessMsg("");
-                setShowCreateOrderModal(true);
+                router.push("/sales/new");
               }}
               className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition min-h-[36px] sm:min-h-0"
             >

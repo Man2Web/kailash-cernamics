@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Truck,
   Plus,
@@ -48,6 +49,8 @@ export interface DeliveryItem {
 }
 
 interface MovementClientProps {
+  /** Set by the dedicated /movement/... pages: open this form straight away and return to /movement when it closes. */
+  startWithForm?: "dispatch";
   deliveries: DeliveryItem[];
   warehouses: string[];
   outlets: string[];
@@ -55,15 +58,17 @@ interface MovementClientProps {
 }
 
 export default function MovementClient({
+  startWithForm,
   deliveries,
   warehouses,
   outlets,
   canEditStatus = true,
 }: MovementClientProps) {
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [warehouseFilter, setWarehouseFilter] = useState("ALL");
-  const [showDispatchModal, setShowDispatchModal] = useState(false);
+  const [showDispatchModal, setShowDispatchModal] = useState(startWithForm === "dispatch");
   const [selectedDeliveryForDetail, setSelectedDeliveryForDetail] = useState<DeliveryItem | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -178,7 +183,12 @@ export default function MovementClient({
     setSelectedDeliveryForDetail(null);
     setShowDispatchModal(false);
   };
-  useFullPageForm(formOpen, closeAllForms, "movement");
+  const routeMode = !!startWithForm;
+  useFullPageForm(formOpen && !routeMode, closeAllForms, "movement");
+  // On a dedicated page, closing the form (cancel or after saving) goes back to the list.
+  useEffect(() => {
+    if (routeMode && !formOpen) router.replace("/movement");
+  }, [routeMode, formOpen, router]);
 
   return (
     <div className="space-y-4">
@@ -271,7 +281,7 @@ export default function MovementClient({
 
         {canEditStatus && (
           <button
-            onClick={() => setShowDispatchModal(true)}
+            onClick={() => router.push("/movement/new")}
             className="flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition flex-shrink-0 min-h-[36px] sm:min-h-0"
           >
             <Plus className="h-4 w-4" />

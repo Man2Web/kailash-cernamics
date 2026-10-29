@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Package,
   Plus,
@@ -50,6 +51,8 @@ interface MasterItem {
 }
 
 interface StockClientProps {
+  /** Set by the dedicated /stock/... pages: open this form straight away and return to /stock when it closes. */
+  startWithForm?: "product";
   products: ProductRow[];
   categories: MasterItem[];
   brands: MasterItem[];
@@ -59,6 +62,7 @@ interface StockClientProps {
 }
 
 export default function StockClient({
+  startWithForm,
   products,
   categories,
   brands,
@@ -66,9 +70,10 @@ export default function StockClient({
   warehouses,
   viewOnly = false,
 }: StockClientProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("products");
   const [searchQuery, setSearchQuery] = useState("");
-  const [showProductForm, setShowProductForm] = useState(false);
+  const [showProductForm, setShowProductForm] = useState(startWithForm === "product");
   const [showScannerModal, setShowScannerModal] = useState(false);
   const [selectedProductDetails, setSelectedProductDetails] = useState<any>(null);
   const [loadingDetails, setLoadingDetails] = useState(false);
@@ -233,12 +238,222 @@ export default function StockClient({
       p.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const formOpen = showScannerModal || !!selectedProductDetails;
+  const formOpen = showScannerModal || !!selectedProductDetails || (startWithForm === "product" && showProductForm);
   const closeAllForms = () => {
     setShowScannerModal(false);
     setSelectedProductDetails(null);
   };
-  useFullPageForm(formOpen, closeAllForms, "stock");
+  const routeMode = !!startWithForm;
+  useFullPageForm(formOpen && !routeMode, closeAllForms, "stock");
+  // On a dedicated page, closing the form (cancel or after saving) goes back to the list.
+  useEffect(() => {
+    if (routeMode && !formOpen) router.replace("/stock");
+  }, [routeMode, formOpen, router]);
+
+  const productForm = (
+      <form
+        onSubmit={handleCreateProduct}
+        className="space-y-4 text-xs text-slate-700 max-w-5xl"
+      >
+        <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">
+          Create New Product Master
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {/* Inputs */}
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Product Name *</label>
+            <input
+              type="text"
+              required
+              value={pName}
+              onChange={(e) => setPName(e.target.value)}
+              placeholder="e.g. Kajaria White Ceramic Tiles"
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Product SKU *</label>
+            <input
+              type="text"
+              required
+              value={pSku}
+              onChange={(e) => setPSku(e.target.value)}
+              placeholder="e.g. KA-WT-12X12"
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Product Code *</label>
+            <input
+              type="text"
+              required
+              value={pCode}
+              onChange={(e) => setPCode(e.target.value)}
+              placeholder="e.g. PRD0001"
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Barcode</label>
+            <input
+              type="text"
+              value={pBarcode}
+              onChange={(e) => setPBarcode(e.target.value)}
+              placeholder="Barcode string"
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Category *</label>
+            <SearchSelect
+              value={pCategoryId}
+              onChange={(v) => setPCategoryId(v)}
+              required
+              placeholder="Type to search category"
+              options={categories.map((c) => ({ value: c.id, label: `${c.name} (${c.code})` }))}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Brand</label>
+            <SearchSelect
+              value={pBrandId}
+              onChange={(v) => setPBrandId(v)}
+              placeholder="Type to search brand"
+              options={brands.map((b) => ({ value: b.id, label: `${b.name}` }))}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Unit of Measurement *</label>
+            <SearchSelect
+              value={pUnitId}
+              onChange={(v) => setPUnitId(v)}
+              required
+              placeholder="Type to search unit"
+              options={units.map((u) => ({ value: u.id, label: `${u.name} (${u.code})` }))}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">HSN/SAC Code</label>
+            <input
+              type="text"
+              value={pHsn}
+              onChange={(e) => setPHsn(e.target.value)}
+              placeholder="HSN Number"
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Purchase Price (₹) *</label>
+            <input
+              type="number"
+              step="0.01"
+              required
+              value={pPurchasePrice}
+              onChange={(e) => setPPurchasePrice(e.target.value)}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Selling Price (₹) *</label>
+            <input
+              type="number"
+              step="0.01"
+              required
+              value={pSellingPrice}
+              onChange={(e) => setPSellingPrice(e.target.value)}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">MRP (₹) *</label>
+            <input
+              type="number"
+              step="0.01"
+              required
+              value={pMrp}
+              onChange={(e) => setPMrp(e.target.value)}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">GST Rate (%)</label>
+            <SearchSelect
+              value={pGstRate}
+              onChange={(v) => setPGstRate(v)}
+              placeholder="Type to search"
+              options={[{ value: "0", label: "0%" }, { value: "5", label: "5%" }, { value: "12", label: "12%" }, { value: "18", label: "18%" }, { value: "28", label: "28%" }]}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Minimum Stock Threshold</label>
+            <input
+              type="number"
+              value={pMinStock}
+              onChange={(e) => setPMinStock(e.target.value)}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Reorder Alert Level</label>
+            <input
+              type="number"
+              value={pReorder}
+              onChange={(e) => setPReorder(e.target.value)}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+
+          {/* Opening stock */}
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Opening Warehouse</label>
+            <SearchSelect
+              value={pWarehouseId}
+              onChange={(v) => setPWarehouseId(v)}
+              placeholder="Type to search warehouse"
+              options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="font-semibold text-slate-600">Opening Stock Qty</label>
+            <input
+              type="number"
+              disabled={!pWarehouseId}
+              value={pOpeningStock}
+              onChange={(e) => setPOpeningStock(e.target.value)}
+              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 disabled:bg-slate-100 disabled:cursor-not-allowed"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-1 col-span-4">
+          <label className="font-semibold text-slate-600">Description</label>
+          <textarea
+            value={pDesc}
+            onChange={(e) => setPDesc(e.target.value)}
+            placeholder="Details about product..."
+            rows={2}
+            className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+          />
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-sm font-semibold transition"
+          >
+            Create Product & Record Stock
+          </button>
+        </div>
+      </form>
+  );
 
   return (
     <div className="space-y-4">
@@ -353,7 +568,7 @@ export default function StockClient({
                   </button>
 
                   <button
-                    onClick={() => setShowProductForm(!showProductForm)}
+                    onClick={() => router.push("/stock/new")}
                     className="flex items-center space-x-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold transition shadow-xs cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
@@ -364,211 +579,6 @@ export default function StockClient({
             </div>
           </div>
 
-          {/* New Product Form Panel */}
-          {!viewOnly && showProductForm && (
-            <form
-              onSubmit={handleCreateProduct}
-              className="bg-white p-6 border border-slate-200 rounded-sm shadow-sm space-y-4 text-xs text-slate-700 animate-in fade-in duration-200"
-            >
-              <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">
-                Create New Product Master
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* Inputs */}
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Product Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={pName}
-                    onChange={(e) => setPName(e.target.value)}
-                    placeholder="e.g. Kajaria White Ceramic Tiles"
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Product SKU *</label>
-                  <input
-                    type="text"
-                    required
-                    value={pSku}
-                    onChange={(e) => setPSku(e.target.value)}
-                    placeholder="e.g. KA-WT-12X12"
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Product Code *</label>
-                  <input
-                    type="text"
-                    required
-                    value={pCode}
-                    onChange={(e) => setPCode(e.target.value)}
-                    placeholder="e.g. PRD0001"
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Barcode</label>
-                  <input
-                    type="text"
-                    value={pBarcode}
-                    onChange={(e) => setPBarcode(e.target.value)}
-                    placeholder="Barcode string"
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Category *</label>
-                  <SearchSelect
-                    value={pCategoryId}
-                    onChange={(v) => setPCategoryId(v)}
-                    required
-                    placeholder="Type to search category"
-                    options={categories.map((c) => ({ value: c.id, label: `${c.name} (${c.code})` }))}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Brand</label>
-                  <SearchSelect
-                    value={pBrandId}
-                    onChange={(v) => setPBrandId(v)}
-                    placeholder="Type to search brand"
-                    options={brands.map((b) => ({ value: b.id, label: `${b.name}` }))}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Unit of Measurement *</label>
-                  <SearchSelect
-                    value={pUnitId}
-                    onChange={(v) => setPUnitId(v)}
-                    required
-                    placeholder="Type to search unit"
-                    options={units.map((u) => ({ value: u.id, label: `${u.name} (${u.code})` }))}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">HSN/SAC Code</label>
-                  <input
-                    type="text"
-                    value={pHsn}
-                    onChange={(e) => setPHsn(e.target.value)}
-                    placeholder="HSN Number"
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Purchase Price (₹) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={pPurchasePrice}
-                    onChange={(e) => setPPurchasePrice(e.target.value)}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Selling Price (₹) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={pSellingPrice}
-                    onChange={(e) => setPSellingPrice(e.target.value)}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">MRP (₹) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    required
-                    value={pMrp}
-                    onChange={(e) => setPMrp(e.target.value)}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">GST Rate (%)</label>
-                  <SearchSelect
-                    value={pGstRate}
-                    onChange={(v) => setPGstRate(v)}
-                    placeholder="Type to search"
-                    options={[{ value: "0", label: "0%" }, { value: "5", label: "5%" }, { value: "12", label: "12%" }, { value: "18", label: "18%" }, { value: "28", label: "28%" }]}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Minimum Stock Threshold</label>
-                  <input
-                    type="number"
-                    value={pMinStock}
-                    onChange={(e) => setPMinStock(e.target.value)}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Reorder Alert Level</label>
-                  <input
-                    type="number"
-                    value={pReorder}
-                    onChange={(e) => setPReorder(e.target.value)}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-
-                {/* Opening stock */}
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Opening Warehouse</label>
-                  <SearchSelect
-                    value={pWarehouseId}
-                    onChange={(v) => setPWarehouseId(v)}
-                    placeholder="Type to search warehouse"
-                    options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-600">Opening Stock Qty</label>
-                  <input
-                    type="number"
-                    disabled={!pWarehouseId}
-                    value={pOpeningStock}
-                    onChange={(e) => setPOpeningStock(e.target.value)}
-                    className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 disabled:bg-slate-100 disabled:cursor-not-allowed"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1 col-span-4">
-                <label className="font-semibold text-slate-600">Description</label>
-                <textarea
-                  value={pDesc}
-                  onChange={(e) => setPDesc(e.target.value)}
-                  placeholder="Details about product..."
-                  rows={2}
-                  className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                />
-              </div>
-
-              <div className="flex justify-end pt-2">
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-sm font-semibold transition"
-                >
-                  Create Product & Record Stock
-                </button>
-              </div>
-            </form>
-          )}
 
           {/* Products Dense Data Table (Desktop >= 768px) */}
           <div className="hidden xl:block bg-white border border-slate-200 rounded-sm shadow-xs overflow-hidden">
@@ -992,6 +1002,20 @@ export default function StockClient({
       )}
 
       </div>
+
+      {/* ADD PRODUCT (own page: /stock/new) */}
+      {startWithForm === "product" && showProductForm && !viewOnly && (
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={() => setShowProductForm(false)}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
+          >
+            <span aria-hidden="true">←</span> Back to stock
+          </button>
+          {productForm}
+        </div>
+      )}
 
       {/* QR SCANNER MODAL */}
       {showScannerModal && (

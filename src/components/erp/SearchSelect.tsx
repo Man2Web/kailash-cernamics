@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export interface SearchSelectOption {
   value: string;
@@ -38,6 +39,9 @@ export default function SearchSelect({
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(0);
   const wrapRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+  // The list is drawn on top of the page (fixed position) so no card, table or dark header can clip it.
+  const [box, setBox] = useState<{ left: number; top: number; width: number; height: number; flip: boolean } | null>(null);
 
   // Follow the chosen value when it changes from outside (a default, a reset, a QR scan).
   useEffect(() => {
@@ -53,9 +57,31 @@ export default function SearchSelect({
     return list.slice(0, MAX_SHOWN);
   }, [text, options, selected]);
 
+  useLayoutEffect(() => {
+    if (!open) return;
+    const place = () => {
+      const el = wrapRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      const below = window.innerHeight - r.bottom;
+      const width = Math.min(Math.max(r.width, 280), window.innerWidth - 16);
+      const left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8));
+      setBox({ left, top: r.bottom, width, height: r.height, flip: below < 200 && r.top > below });
+    };
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [open]);
+
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) {
+      const t = e.target as Node;
+      if (listRef.current?.contains(t)) return;
+      if (wrapRef.current && !wrapRef.current.contains(t)) {
         setOpen(false);
         setText(selected?.label ?? ""); // left with half-typed text: go back to the real choice
       }
@@ -114,31 +140,40 @@ export default function SearchSelect({
       />
       {/* Keeps native "required" validation tied to a real choice */}
       <input tabIndex={-1} aria-hidden="true" required={required} value={value} onChange={() => {}} className="absolute inset-0 opacity-0 pointer-events-none" />
-      {open && (
-        <ul
-          id={`${uid}-list`}
-          role="listbox"
-          className="absolute z-50 mt-1 w-full max-h-60 overflow-auto bg-white border border-slate-300 rounded shadow-lg text-xs"
-        >
-          {matches.length === 0 && <li className="px-2.5 py-2 text-slate-500">No matches.</li>}
-          {matches.map((o, i) => (
-            <li
-              key={o.value}
-              id={`${uid}-opt-${i}`}
-              role="option"
-              aria-selected={o.value === value}
-              onMouseDown={(e) => {
-                e.preventDefault();
-                choose(o);
-              }}
-              onMouseEnter={() => setActive(i)}
-              className={`px-2.5 py-2 cursor-pointer ${i === active ? "bg-blue-50 text-blue-800" : "text-slate-800"}`}
-            >
-              {o.label}
-            </li>
-          ))}
-        </ul>
-      )}
+      {open && box &&
+        createPortal(
+          <ul
+            ref={listRef}
+            id={`${uid}-list`}
+            role="listbox"
+            style={{
+              position: "fixed",
+              left: box.left,
+              width: box.width,
+              ...(box.flip ? { bottom: window.innerHeight - box.top + box.height + 4 } : { top: box.top + 4 }),
+            }}
+            className="z-[100] max-h-60 overflow-auto bg-white border border-slate-300 rounded shadow-lg text-xs"
+          >
+            {matches.length === 0 && <li className="px-2.5 py-2 text-slate-500">No matches.</li>}
+            {matches.map((o, i) => (
+              <li
+                key={o.value}
+                id={`${uid}-opt-${i}`}
+                role="option"
+                aria-selected={o.value === value}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  choose(o);
+                }}
+                onMouseEnter={() => setActive(i)}
+                className={`px-2.5 py-2 cursor-pointer ${i === active ? "bg-blue-50 text-blue-800" : "text-slate-800"}`}
+              >
+                {o.label}
+              </li>
+            ))}
+          </ul>,
+          document.body
+        )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   Users,
@@ -75,6 +75,8 @@ export interface PoRow {
 }
 
 interface PurchaseClientProps {
+  /** Set by the dedicated /purchase/... pages: open this form straight away and return to /purchase when it closes. */
+  startWithForm?: "po" | "vendor";
   vendors: VendorRow[];
   purchaseOrders: PoRow[];
   branches: { id: string; name: string }[];
@@ -107,6 +109,7 @@ const PO_STATUS_STEPS = [
 ];
 
 export default function PurchaseClient({
+  startWithForm,
   vendors,
   purchaseOrders,
   branches,
@@ -120,8 +123,8 @@ export default function PurchaseClient({
 }: PurchaseClientProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"pos" | "vendors">("pos");
-  const [showPoForm, setShowPoForm] = useState(false);
-  const [showVendorForm, setShowVendorForm] = useState(false);
+  const [showPoForm, setShowPoForm] = useState(startWithForm === "po");
+  const [showVendorForm, setShowVendorForm] = useState(startWithForm === "vendor");
   const [selectedPoForDetail, setSelectedPoForDetail] = useState<PoRow | null>(null);
   const [receivingPo, setReceivingPo] = useState<PoRow | null>(null);
   const [receiveQuantities, setReceiveQuantities] = useState<Record<string, number>>({});
@@ -343,7 +346,12 @@ export default function PurchaseClient({
     setShowPoForm(false);
     setShowVendorForm(false);
   };
-  useFullPageForm(formOpen, closeAllForms, "purchase");
+  const routeMode = !!startWithForm;
+  useFullPageForm(formOpen && !routeMode, closeAllForms, "purchase");
+  // On a dedicated page, closing the form (cancel or after saving) goes back to the list.
+  useEffect(() => {
+    if (routeMode && !formOpen) router.replace("/purchase");
+  }, [routeMode, formOpen, router]);
 
   return (
     <div className="space-y-4">
@@ -429,7 +437,7 @@ export default function PurchaseClient({
 
             {!isWarehouseManager && canCreatePo && (
               <button
-                onClick={() => setShowPoForm(true)}
+                onClick={() => router.push("/purchase/new")}
                 className="flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition flex-shrink-0 cursor-pointer min-h-[36px] sm:min-h-0"
               >
                 <Plus className="h-4 w-4" />
@@ -690,7 +698,7 @@ export default function PurchaseClient({
               Supplier Directory
             </h3>
             <button
-              onClick={() => setShowVendorForm(true)}
+              onClick={() => router.push("/purchase/vendors/new")}
               className="flex items-center justify-center space-x-1 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold cursor-pointer min-h-[36px] sm:min-h-0"
             >
               <Plus className="h-4 w-4" />
