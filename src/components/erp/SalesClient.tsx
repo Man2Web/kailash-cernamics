@@ -30,6 +30,7 @@ import {
 import ProductQrScanner from "@/components/erp/ProductQrScanner";
 import ProductCombobox from "@/components/erp/ProductCombobox";
 import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
+import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 
 interface InvoiceRow {
   id: string;
@@ -445,8 +446,19 @@ export default function SalesClient({
       r.status.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const formOpen = showCreateCustomerModal || showCreateOrderModal || (showDispatchModal && !!selectedOrderForDispatch) || !!selectedOrderForDetail || showScannerModal;
+  const closeAllForms = () => {
+    setShowCreateCustomerModal(false);
+    setShowCreateOrderModal(false);
+    setShowDispatchModal(false);
+    setSelectedOrderForDetail(null);
+    setShowScannerModal(false);
+  };
+  useFullPageForm(formOpen, closeAllForms, "sales");
+
   return (
     <div className="space-y-4">
+      <div className={formOpen ? "hidden" : "space-y-4"}>
       {/* Alert Banner */}
       {errorMsg && (
         <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded flex items-center space-x-2">
@@ -916,10 +928,12 @@ export default function SalesClient({
 
       {/* TAB 2: STOCK RESERVATIONS END */}
 
+      </div>
+
       {/* CREATE CUSTOMER MODAL */}
       {showCreateCustomerModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-lg overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <User className="h-4 w-4 text-blue-600" />
@@ -1026,8 +1040,8 @@ export default function SalesClient({
 
       {/* CREATE SALES ORDER MODAL */}
       {showCreateOrderModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />
@@ -1041,7 +1055,7 @@ export default function SalesClient({
               </button>
             </div>
 
-            <form onSubmit={handleCreateOrder} className="p-4 sm:p-6 space-y-4 text-xs max-h-[85vh] sm:max-h-[80vh] overflow-y-auto">
+            <form onSubmit={handleCreateOrder} className="p-4 sm:p-6 space-y-4 text-xs max-h-[85vh] sm:max-h-[80vh]">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
@@ -1302,8 +1316,8 @@ export default function SalesClient({
 
       {/* DISPATCH DELIVERY MODAL */}
       {showDispatchModal && selectedOrderForDispatch && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Truck className="h-4 w-4 text-blue-600" />
@@ -1401,8 +1415,8 @@ export default function SalesClient({
 
       {/* SALES ORDER DETAIL & AUDIT MODAL */}
       {selectedOrderForDetail && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <div className="flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />
@@ -1418,7 +1432,7 @@ export default function SalesClient({
               </button>
             </div>
 
-            <div className="p-4 sm:p-6 space-y-6 text-xs max-h-[85vh] sm:max-h-[80vh] overflow-y-auto">
+            <div className="p-4 sm:p-6 space-y-6 text-xs max-h-[85vh] sm:max-h-[80vh]">
               {/* Top Overview Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 bg-slate-50 rounded border border-slate-100">

@@ -21,6 +21,7 @@ import {
 } from "@/app/(dashboard)/purchase/actions";
 import ProductCombobox from "@/components/erp/ProductCombobox";
 import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
+import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 
 interface VendorRow {
   id: string;
@@ -334,8 +335,18 @@ export default function PurchaseClient({
     return matchesSearch && matchesStatus && matchesWarehouse;
   });
 
+  const formOpen = !!selectedPoForDetail || !!receivingPo || showPoForm || showVendorForm;
+  const closeAllForms = () => {
+    setSelectedPoForDetail(null);
+    setReceivingPo(null);
+    setShowPoForm(false);
+    setShowVendorForm(false);
+  };
+  useFullPageForm(formOpen, closeAllForms, "purchase");
+
   return (
     <div className="space-y-4">
+      <div className={formOpen ? "hidden" : "space-y-4"}>
       {message && (
         <div
           className={`p-3 rounded text-xs flex items-center space-x-2 animate-in fade-in duration-200 ${
@@ -790,10 +801,12 @@ export default function PurchaseClient({
         </div>
       )}
 
+      </div>
+
       {/* PO DETAIL & DELIVERY STATUS DRAWER */}
       {selectedPoForDetail && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-end z-50">
-          <div className="w-full max-w-xl bg-white h-full shadow-2xl flex flex-col p-6 animate-in slide-in-from-right duration-200 overflow-y-auto">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="w-full max-w-xl bg-white shadow-xs border border-slate-200 rounded-lg flex flex-col p-6">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
@@ -1002,8 +1015,8 @@ export default function PurchaseClient({
 
       {/* RECEIVE GOODS MODAL */}
       {receivingPo && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-lg overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-lg overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <div>
                 <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
@@ -1030,7 +1043,7 @@ export default function PurchaseClient({
                 </p>
               </div>
 
-              <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+              <div className="space-y-3 max-h-64 pr-1">
                 {receivingPo.items.map((item) => (
                   <div key={item.variantId} className="p-3 border rounded bg-slate-50 space-y-2">
                     <div className="flex justify-between items-start">
@@ -1100,8 +1113,8 @@ export default function PurchaseClient({
 
       {/* CREATE PO MODAL */}
       {showPoForm && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-100 max-h-[90vh] flex flex-col">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-2xl overflow-hidden flex flex-col">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />
@@ -1115,7 +1128,7 @@ export default function PurchaseClient({
               </button>
             </div>
 
-            <form onSubmit={handleCreatePo} className="p-6 space-y-4 text-xs overflow-y-auto flex-1">
+            <form onSubmit={handleCreatePo} className="p-6 space-y-4 text-xs flex-1">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Supplier / Vendor *</label>
@@ -1279,8 +1292,8 @@ export default function PurchaseClient({
 
       {/* REGISTER VENDOR MODAL */}
       {showVendorForm && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Users className="h-4 w-4 text-blue-600" />

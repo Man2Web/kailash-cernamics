@@ -24,6 +24,7 @@ import {
   backfillProductQrCodesAction,
 } from "@/app/(dashboard)/stock/actions";
 import ProductQrScanner from "@/components/erp/ProductQrScanner";
+import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 
 interface ProductRow {
   id: string;
@@ -231,8 +232,16 @@ export default function StockClient({
       p.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const formOpen = showScannerModal || !!selectedProductDetails;
+  const closeAllForms = () => {
+    setShowScannerModal(false);
+    setSelectedProductDetails(null);
+  };
+  useFullPageForm(formOpen, closeAllForms, "stock");
+
   return (
     <div className="space-y-4">
+      <div className={formOpen ? "hidden" : "space-y-4"}>
       {/* 1. Global Message Alerts */}
       {message && (
         <div
@@ -1005,6 +1014,8 @@ export default function StockClient({
         </div>
       )}
 
+      </div>
+
       {/* QR SCANNER MODAL */}
       {showScannerModal && (
         <ProductQrScanner isModal onClose={() => setShowScannerModal(false)} />
@@ -1012,8 +1023,8 @@ export default function StockClient({
 
       {/* PRODUCT QR DETAILS & LIVE STOCK MODAL */}
       {selectedProductDetails && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-50 p-4 animate-in fade-in duration-150">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded-lg shadow-xs border border-slate-200 rounded-lg w-full max-w-2xl overflow-hidden flex flex-col">
             {/* Modal Header */}
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <div className="flex items-center space-x-2">
@@ -1040,7 +1051,7 @@ export default function StockClient({
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 space-y-5 overflow-y-auto text-xs">
+            <div className="p-5 space-y-5 text-xs">
               {/* Printable QR Card */}
               <div
                 id="product-qr-card-print"

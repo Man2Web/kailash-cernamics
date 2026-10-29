@@ -18,6 +18,7 @@ import {
   Package,
 } from "lucide-react";
 import { createMovement, updateMovementStatus, deleteMovement } from "@/app/(dashboard)/movement/actions";
+import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 
 export interface DeliveryItem {
   id: string;
@@ -171,8 +172,16 @@ export default function MovementClient({
     return matchesSearch && matchesStatus && matchesWarehouse;
   });
 
+  const formOpen = !!selectedDeliveryForDetail || showDispatchModal;
+  const closeAllForms = () => {
+    setSelectedDeliveryForDetail(null);
+    setShowDispatchModal(false);
+  };
+  useFullPageForm(formOpen, closeAllForms, "movement");
+
   return (
     <div className="space-y-4">
+      <div className={formOpen ? "hidden" : "space-y-4"}>
       {/* Stats Summary */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3">
         <div className="bg-white p-3 sm:p-3.5 border border-slate-200 rounded shadow-xs flex items-center justify-between">
@@ -549,10 +558,12 @@ export default function MovementClient({
         )}
       </div>
 
+      </div>
+
       {/* DETAIL DRAWER / MODAL */}
       {selectedDeliveryForDetail && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex justify-end z-50">
-          <div className="w-full max-w-full sm:max-w-lg bg-white h-full shadow-2xl flex flex-col p-4 sm:p-6 animate-in slide-in-from-right duration-200 overflow-y-auto">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="w-full max-w-full sm:max-w-lg bg-white shadow-xs border border-slate-200 rounded-lg flex flex-col p-4 sm:p-6">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
@@ -704,8 +715,8 @@ export default function MovementClient({
 
       {/* NEW SALES DISPATCH MODAL */}
       {showDispatchModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-100">
+        <div className="w-full max-w-5xl mx-auto">
+          <div className="bg-white rounded shadow-xl w-full max-w-md overflow-hidden">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Truck className="h-4 w-4 text-blue-600" />
@@ -719,7 +730,7 @@ export default function MovementClient({
               </button>
             </div>
 
-            <form onSubmit={handleCreateDispatch} className="p-4 sm:p-6 space-y-4 text-xs max-h-[85vh] sm:max-h-[80vh] overflow-y-auto">
+            <form onSubmit={handleCreateDispatch} className="p-4 sm:p-6 space-y-4 text-xs max-h-[85vh] sm:max-h-[80vh]">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Sales Order # *</label>
