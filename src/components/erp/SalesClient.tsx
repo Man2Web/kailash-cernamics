@@ -19,6 +19,7 @@ import {
   XCircle,
   FileCheck,
   QrCode,
+  Trash2,
 } from "lucide-react";
 import {
   createSalesOrder,
@@ -33,7 +34,7 @@ import ProductCombobox from "@/components/erp/ProductCombobox";
 import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 import SearchSelect from "@/components/erp/SearchSelect";
-import { FormPageHeader, FormSection } from "@/components/erp/FormPage";
+import { FormActions, FormPageHeader, FormSection, LineItemsTotal } from "@/components/erp/FormPage";
 
 interface InvoiceRow {
   id: string;
@@ -928,34 +929,30 @@ export default function SalesClient({
 
       {/* CREATE CUSTOMER MODAL */}
       {showCreateCustomerModal && (
-        <div className="w-full max-w-5xl space-y-5">
+        <div className="w-full space-y-5">
           <FormPageHeader
             title="Add New Customer"
             subtitle="Register a customer so you can raise sales orders and invoices for them."
             icon={<User className="h-6 w-6 text-blue-600" />}
             onBack={closeAllForms}
-            submitLabel="Save Customer"
-            formId="customer-form"
-            pending={isPending}
           />
           <div className="w-full">
 
             <form onSubmit={handleCreateCustomerSubmit} id="customer-form" className="space-y-5">
               <FormSection number={1} title="Customer Details">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Customer Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={newCustName}
-                  onChange={(e) => setNewCustName(e.target.value)}
-                  placeholder="e.g. Acme Enterprises"
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="space-y-1.5 sm:col-span-2 lg:col-span-1">
+                  <label className="font-semibold text-slate-700">Customer Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newCustName}
+                    onChange={(e) => setNewCustName(e.target.value)}
+                    placeholder="e.g. Acme Enterprises"
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Phone Number *</label>
                   <input
                     type="tel"
@@ -963,71 +960,58 @@ export default function SalesClient({
                     value={newCustPhone}
                     onChange={(e) => setNewCustPhone(e.target.value)}
                     placeholder="9876543210"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
+                    className="w-full"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Alternate Phone</label>
                   <input
                     type="tel"
                     value={newCustAltPhone}
                     onChange={(e) => setNewCustAltPhone(e.target.value)}
                     placeholder="Optional"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="font-semibold text-slate-700">Email Address</label>
+                  <input
+                    type="email"
+                    value={newCustEmail}
+                    onChange={(e) => setNewCustEmail(e.target.value)}
+                    placeholder="contact@customer.com"
+                    className="w-full"
+                  />
+                </div>
+                <div className="space-y-1.5 sm:col-span-1 lg:col-span-2">
+                  <label className="font-semibold text-slate-700">Notes</label>
+                  <input
+                    type="text"
+                    value={newCustNotes}
+                    onChange={(e) => setNewCustNotes(e.target.value)}
+                    placeholder="Special preferences, landmarks, etc."
+                    className="w-full"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Email Address</label>
-                <input
-                  type="email"
-                  value={newCustEmail}
-                  onChange={(e) => setNewCustEmail(e.target.value)}
-                  placeholder="contact@customer.com"
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <label className="font-semibold text-slate-700">Delivery / Site Address</label>
                 <textarea
                   value={newCustDeliveryAddress}
                   onChange={(e) => setNewCustDeliveryAddress(e.target.value)}
                   placeholder="Street, Area, City, Pincode"
-                  rows={2}
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Notes</label>
-                <input
-                  type="text"
-                  value={newCustNotes}
-                  onChange={(e) => setNewCustNotes(e.target.value)}
-                  placeholder="Special preferences, landmarks, etc."
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
+                  rows={3}
+                  className="w-full"
                 />
               </div>
 
               </FormSection>
-              <div className="pt-4 border-t flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateCustomerModal(false)}
-                  className="px-4 py-2 border rounded text-slate-600"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold disabled:opacity-50"
-                >
-                  {isPending ? "Saving..." : "Save Customer"}
-                </button>
-              </div>
+              <FormActions
+                submitLabel="Save Customer"
+                pending={isPending}
+                onCancel={() => setShowCreateCustomerModal(false)}
+              />
             </form>
           </div>
         </div>
@@ -1035,30 +1019,28 @@ export default function SalesClient({
 
       {/* CREATE SALES ORDER MODAL */}
       {showCreateOrderModal && (
-        <div className="w-full max-w-5xl space-y-5">
+        <div className="w-full space-y-5">
           <FormPageHeader
             title="Create Sales Order &amp; Customer Requirement"
             subtitle="Pick the customer and warehouse, add the items, and reserve stock if the customer will collect later."
             icon={<ShoppingCart className="h-6 w-6 text-blue-600" />}
             onBack={closeAllForms}
-            submitLabel="Create Order"
-            formId="sales-order-form"
-            pending={isPending}
           />
           <div className="w-full">
 
             <form onSubmit={handleCreateOrder} id="sales-order-form" className="space-y-5">
               <FormSection number={1} title="Customer & Warehouse">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
                     <label className="font-semibold text-slate-700">Customer *</label>
                     <button
                       type="button"
                       onClick={() => setShowCreateCustomerModal(true)}
-                      className="text-blue-600 text-[11px] hover:underline"
+                      className="inline-flex items-center gap-1 text-blue-600 text-xs font-semibold hover:underline"
                     >
-                      + New Customer
+                      <Plus className="h-3.5 w-3.5" />
+                      New Customer
                     </button>
                   </div>
                   <SearchSelect
@@ -1067,11 +1049,11 @@ export default function SalesClient({
                     required
                     placeholder="Type to search customer"
                     options={customerList.map((c) => ({ value: c.id, label: `${c.name} ${c.phone ? `(${c.phone})` : ""}` }))}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Warehouse (Stock Source) *</label>
                   <SearchSelect
                     value={selectedWarehouseId}
@@ -1079,50 +1061,53 @@ export default function SalesClient({
                     required
                     placeholder="Type to search warehouse"
                     options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
               </div>
 
               </FormSection>
-              <FormSection number={2} title="Order Items">
-              {/* Order Items Section */}
-              <div className="space-y-2">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                  <p className="text-slate-500">Search a product, or scan its QR code, to add it to the order.</p>
-                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+              <FormSection
+                number={2}
+                title="Order Items"
+                description="Search a product, or scan its QR code, to add it to the order."
+                actions={
+                  <>
                     <button
                       type="button"
                       onClick={() => setShowScannerModal(true)}
-                      className="flex-1 sm:flex-none text-slate-700 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 border border-slate-300 px-2.5 py-1.5 rounded text-xs font-semibold flex items-center justify-center space-x-1 transition min-h-[36px] sm:min-h-0"
+                      className="flex-1 sm:flex-none h-9 px-3 inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 text-xs font-semibold transition"
                     >
-                      <QrCode className="h-3.5 w-3.5 text-blue-600" />
+                      <QrCode className="h-4 w-4 text-blue-600" />
                       <span>Scan QR</span>
                     </button>
                     <button
                       type="button"
                       onClick={handleAddItem}
-                      className="flex-1 sm:flex-none text-blue-600 bg-blue-50 sm:bg-transparent hover:bg-blue-100 sm:hover:bg-transparent px-2.5 py-1.5 sm:p-0 rounded text-xs font-semibold flex items-center justify-center space-x-1 min-h-[36px] sm:min-h-0"
+                      className="flex-1 sm:flex-none h-9 px-3 inline-flex items-center justify-center gap-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-semibold transition"
                     >
-                      <Plus className="h-3.5 w-3.5" />
+                      <Plus className="h-4 w-4" />
                       <span>Add Item</span>
                     </button>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="hidden sm:grid sm:grid-cols-12 gap-2 px-3 text-[11px] font-bold uppercase tracking-wide text-slate-400">
-                    <div className="col-span-5">Product</div>
-                    <div className="col-span-2 text-center">Qty</div>
-                    <div className="col-span-2 text-right">Rate (₹)</div>
-                    <div className="col-span-2 text-right">Total</div>
-                    <div className="col-span-1" />
+                  </>
+                }
+              >
+              {/* Order Items Section */}
+              <div className="rounded-lg border border-slate-200">
+                  <div className="hidden sm:grid sm:grid-cols-[2rem_minmax(0,1fr)_7rem_8rem_8rem_2.5rem] gap-3 px-3 py-2.5 bg-slate-50 border-b border-slate-200 rounded-t-lg text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                    <div>#</div>
+                    <div>Product</div>
+                    <div className="text-center">Qty</div>
+                    <div className="text-right">Rate (₹)</div>
+                    <div className="text-right">Total (₹)</div>
+                    <div />
                   </div>
                   {orderItems.map((item, index) => (
-                    <div key={index} className="bg-slate-50 p-3 rounded border border-slate-200/80 space-y-2">
+                    <div key={index} className="p-3 border-b border-slate-100 last:border-b-0 space-y-2">
                       {/* Desktop Grid Layout (sm+) */}
-                      <div className="hidden sm:grid sm:grid-cols-12 gap-2 items-center">
-                        <div className="col-span-5">
+                      <div className="hidden sm:grid sm:grid-cols-[2rem_minmax(0,1fr)_7rem_8rem_8rem_2.5rem] gap-3 items-center">
+                        <div className="text-sm font-semibold text-slate-400">{index + 1}</div>
+                        <div className="min-w-0">
                           <ProductCombobox
                             value={item.variantId}
                             valueLabel={variantLabel(item.variantId)}
@@ -1130,7 +1115,7 @@ export default function SalesClient({
                             onChange={(o) => handleProductChange(index, o?.variantId || "", o || undefined)}
                           />
                         </div>
-                        <div className="col-span-2">
+                        <div>
                           <input
                             type="number"
                             min={1}
@@ -1141,10 +1126,10 @@ export default function SalesClient({
                               setOrderItems(newItems);
                             }}
                             placeholder="Qty"
-                            className="w-full p-1.5 border rounded text-xs text-center"
+                            className="w-full text-center"
                           />
                         </div>
-                        <div className="col-span-2">
+                        <div>
                           <input
                             type="number"
                             value={item.rate}
@@ -1154,20 +1139,21 @@ export default function SalesClient({
                               setOrderItems(newItems);
                             }}
                             placeholder="Rate ₹"
-                            className="w-full p-1.5 border rounded text-xs text-right"
+                            className="w-full text-right"
                           />
                         </div>
-                        <div className="col-span-2 text-right font-bold text-slate-800">
+                        <div className="text-right text-sm font-bold text-slate-800 tabular-nums">
                           ₹{(item.quantity * item.rate).toLocaleString("en-IN")}
                         </div>
-                        <div className="col-span-1 text-center">
+                        <div className="text-center">
                           {orderItems.length > 1 && (
                             <button
                               type="button"
                               onClick={() => handleRemoveItem(index)}
-                              className="text-red-500 hover:text-red-700 p-1"
+                              aria-label={`Remove item ${index + 1}`}
+                              className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
                             >
-                              ✕
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           )}
                         </div>
@@ -1233,13 +1219,13 @@ export default function SalesClient({
                       </div>
                     </div>
                   ))}
-                </div>
+                  <LineItemsTotal amount={orderItems.reduce((sum, item) => sum + item.quantity * item.rate, 0)} />
               </div>
 
               </FormSection>
               <FormSection number={3} title="Reservation & Notes">
               {/* Stock Reservation Option */}
-              <div className="p-3 bg-amber-50 border border-amber-200 rounded space-y-3">
+              <div className="p-4 bg-amber-50 border border-amber-200 rounded-lg space-y-3">
                 <div className="flex items-center space-x-2">
                   <input
                     type="checkbox"
@@ -1283,28 +1269,18 @@ export default function SalesClient({
                   value={orderNotes}
                   onChange={(e) => setOrderNotes(e.target.value)}
                   placeholder="Special handling instructions or customer requests..."
-                  rows={2}
-                  className="w-full p-2 border rounded text-xs"
+                  rows={3}
+                  className="w-full"
                 />
               </div>
 
               </FormSection>
-              <div className="pt-4 border-t flex flex-col sm:flex-row justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateOrderModal(false)}
-                  className="w-full sm:w-auto px-4 py-2.5 sm:py-2 border rounded text-slate-600 font-semibold min-h-[42px] sm:min-h-0"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold disabled:opacity-50 min-h-[42px] sm:min-h-0"
-                >
-                  {isPending ? "Creating Order..." : "Confirm & Create Order"}
-                </button>
-              </div>
+              <FormActions
+                submitLabel="Confirm & Create Order"
+                pendingLabel="Creating Order..."
+                pending={isPending}
+                onCancel={() => setShowCreateOrderModal(false)}
+              />
             </form>
           </div>
         </div>

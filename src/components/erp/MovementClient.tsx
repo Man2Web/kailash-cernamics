@@ -21,7 +21,7 @@ import {
 import { createMovement, updateMovementStatus, deleteMovement } from "@/app/(dashboard)/movement/actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 import SearchSelect from "@/components/erp/SearchSelect";
-import { FormPageHeader, FormSection } from "@/components/erp/FormPage";
+import { FormActions, FormPageHeader, FormSection } from "@/components/erp/FormPage";
 
 export interface DeliveryItem {
   id: string;
@@ -704,22 +704,19 @@ export default function MovementClient({
 
       {/* NEW SALES DISPATCH MODAL */}
       {showDispatchModal && (
-        <div className="w-full max-w-5xl space-y-5">
+        <div className="w-full space-y-5">
           <FormPageHeader
             title="Schedule Sales Delivery Dispatch"
             subtitle="Schedule a vehicle to deliver a sales order from one of your warehouses."
             icon={<Truck className="h-6 w-6 text-blue-600" />}
             onBack={closeAllForms}
-            submitLabel="Schedule Dispatch"
-            formId="dispatch-form"
-            pending={isPending}
           />
           <div className="w-full">
 
             <form onSubmit={handleCreateDispatch} id="dispatch-form" className="space-y-5">
               <FormSection number={1} title="Order & Customer">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Sales Order # *</label>
                   <input
                     type="text"
@@ -727,47 +724,44 @@ export default function MovementClient({
                     value={invoiceNo}
                     onChange={(e) => setInvoiceNo(e.target.value)}
                     placeholder="e.g. SO-000125"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Customer Name</label>
                   <input
                     type="text"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     placeholder="e.g. ABC Customer"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Customer Phone</label>
                   <input
                     type="tel"
                     value={customerPhone}
                     onChange={(e) => setCustomerPhone(e.target.value)}
                     placeholder="e.g. 9876543210"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Expected Delivery Date</label>
                   <input
                     type="date"
                     value={expectedDate}
                     onChange={(e) => setExpectedDate(e.target.value)}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
               </div>
 
               </FormSection>
               <FormSection number={2} title="Driver & Vehicle">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Driver Name *</label>
                   <input
                     type="text"
@@ -775,23 +769,20 @@ export default function MovementClient({
                     value={driverName}
                     onChange={(e) => setDriverName(e.target.value)}
                     placeholder="e.g. Mani K"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Driver Phone</label>
                   <input
                     type="tel"
                     value={driverPhone}
                     onChange={(e) => setDriverPhone(e.target.value)}
                     placeholder="9876543210"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Vehicle Number *</label>
                   <input
                     type="text"
@@ -799,81 +790,71 @@ export default function MovementClient({
                     value={vehicleNo}
                     onChange={(e) => setVehicleNo(e.target.value)}
                     placeholder="TN-23-AX-1234"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 uppercase min-h-[36px] sm:min-h-0"
+                    className="w-full uppercase"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Delivery Type</label>
                   <SearchSelect
                     value={deliveryType}
                     onChange={(v) => setDeliveryType(v)}
                     placeholder="Type to search"
                     options={[{ value: "Own Vehicle", label: "Own Vehicle" }, { value: "Customer Pickup", label: "Customer Pickup" }, { value: "Transporter", label: "Transporter" }, { value: "Third Party Delivery", label: "Third Party Delivery" }]}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
               </div>
 
               </FormSection>
               <FormSection number={3} title="Delivery Details">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Warehouse *</label>
                   <SearchSelect
                     value={sourceWarehouse}
                     onChange={(v) => setSourceWarehouse(v)}
                     placeholder="Type to search warehouse"
                     options={warehouses.map((w) => ({ value: w, label: `${w}` }))}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label className="font-semibold text-slate-700">Destination / City</label>
                   <input
                     type="text"
                     value={destOutlet}
                     onChange={(e) => setDestOutlet(e.target.value)}
                     placeholder="e.g. Katpadi Customer Site"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
+                    className="w-full"
                   />
                 </div>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <label className="font-semibold text-slate-700">Notes / Instructions</label>
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Delivery handling instructions..."
-                  rows={2}
-                  className="w-full p-2 border rounded text-xs"
+                  rows={3}
+                  className="w-full"
                 />
               </div>
 
               {errorMsg && (
-                <div className="p-2.5 bg-red-50 border border-red-200 text-red-700 rounded text-xs flex items-center space-x-1">
+                <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs flex items-center space-x-1.5">
                   <AlertCircle className="h-3.5 w-3.5 flex-shrink-0" />
                   <span>{errorMsg}</span>
                 </div>
               )}
 
               </FormSection>
-              <div className="pt-4 border-t flex flex-col sm:flex-row justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowDispatchModal(false)}
-                  className="w-full sm:w-auto px-4 py-2.5 sm:py-2 border rounded text-slate-600 font-semibold min-h-[42px] sm:min-h-0"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold disabled:opacity-50 min-h-[42px] sm:min-h-0"
-                >
-                  {isPending ? "Scheduling..." : "Schedule Sales Dispatch"}
-                </button>
-              </div>
+              <FormActions
+                submitLabel="Schedule Sales Dispatch"
+                pendingLabel="Scheduling..."
+                pending={isPending}
+                onCancel={() => setShowDispatchModal(false)}
+              />
             </form>
           </div>
         </div>
