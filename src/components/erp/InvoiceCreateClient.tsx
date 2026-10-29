@@ -549,14 +549,13 @@ export default function InvoiceCreateClient({
           </div>
           <div className="space-y-1">
             <label className="font-semibold text-slate-500">Sales Ledger</label>
-            <select
+            <SearchSelect
               value={salesLedger}
-              onChange={(e) => setSalesLedger(e.target.value)}
+              onChange={(v) => setSalesLedger(v)}
+              placeholder="Type to search"
+              options={[{ value: "Sales Standard", label: "Sales Standard" }, { value: "Sales Interstate", label: "Sales Interstate" }]}
               className="w-full px-2.5 py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-            >
-              <option value="Sales Standard">Sales Standard</option>
-              <option value="Sales Interstate">Sales Interstate</option>
-            </select>
+            />
           </div>
 
           <div className="space-y-1">
@@ -608,14 +607,13 @@ export default function InvoiceCreateClient({
 
           <div className="space-y-1">
             <label className="font-semibold text-slate-500">Invoice Type</label>
-            <select
+            <SearchSelect
               value={invoiceType}
-              onChange={(e) => setInvoiceType(e.target.value)}
+              onChange={(v) => setInvoiceType(v)}
+              placeholder="Type to search"
+              options={[{ value: "TAX", label: "TAX Invoice" }, { value: "RETAIL", label: "RETAIL Bill" }]}
               className="w-full px-2.5 py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-            >
-              <option value="TAX">TAX Invoice</option>
-              <option value="RETAIL">RETAIL Bill</option>
-            </select>
+            />
           </div>
           <div className="space-y-1">
             <label className="font-semibold text-slate-500">Due Date</label>
@@ -835,16 +833,13 @@ export default function InvoiceCreateClient({
           </div>
           <div className="space-y-1">
             <label className="font-semibold text-slate-500">Transportation Mode</label>
-            <select
+            <SearchSelect
               value={transMode}
-              onChange={(e) => setTransMode(e.target.value)}
+              onChange={(v) => setTransMode(v)}
+              placeholder="Type to search"
+              options={[{ value: "ROAD", label: "ROAD" }, { value: "AIR", label: "AIR" }, { value: "RAIL", label: "RAIL" }, { value: "SHIP", label: "SHIP" }]}
               className="w-full px-2.5 py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-            >
-              <option value="ROAD">ROAD</option>
-              <option value="AIR">AIR</option>
-              <option value="RAIL">RAIL</option>
-              <option value="SHIP">SHIP</option>
-            </select>
+            />
           </div>
 
           <div className="space-y-1">

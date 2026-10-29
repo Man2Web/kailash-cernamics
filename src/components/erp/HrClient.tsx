@@ -13,6 +13,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import { createEmployee, toggleEmployeeStatus, deleteEmployee } from "@/app/(dashboard)/hr/actions";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface EmployeeRow {
   id: string;
@@ -295,18 +296,14 @@ export default function HrClient({ employees }: HrClientProps) {
                       </td>
                       <td className="px-4 py-3">{e.jobTitle}</td>
                       <td className="px-4 py-3">
-                        <select
+                        <SearchSelect
                           value={e.status}
                           disabled={isPending}
-                          onChange={(evt) => handleStatusChange(e.id, evt.target.value)}
-                          className={`px-1.5 py-0.5 border text-[11px] font-semibold rounded-sm outline-none ${getStatusColor(
-                            e.status
-                          )}`}
-                        >
-                          <option value="ACTIVE">Active</option>
-                          <option value="INACTIVE">Inactive</option>
-                          <option value="SUSPENDED">Suspended</option>
-                        </select>
+                          onChange={(v) => handleStatusChange(e.id, v)}
+                          placeholder="Type to search status"
+                          options={[{ value: "ACTIVE", label: "Active" }, { value: "INACTIVE", label: "Inactive" }, { value: "SUSPENDED", label: "Suspended" }]}
+                          className={`w-28 px-1.5 py-0.5 border text-[11px] font-semibold rounded-sm outline-none ${getStatusColor( e.status )}`}
+/>
                       </td>
                       <td className="px-4 py-3 text-slate-400">{e.joiningDate}</td>
                       <td className="px-4 py-3 text-right">
@@ -339,18 +336,14 @@ export default function HrClient({ employees }: HrClientProps) {
                       <div className="font-bold text-slate-900 text-sm">{e.name}</div>
                       <div className="text-[11px] font-mono text-slate-500">{e.employeeNo} • {e.department}</div>
                     </div>
-                    <select
+                    <SearchSelect
                       value={e.status}
                       disabled={isPending}
-                      onChange={(evt) => handleStatusChange(e.id, evt.target.value)}
-                      className={`px-2 py-0.5 border text-[11px] font-semibold rounded outline-none ${getStatusColor(
-                        e.status
-                      )}`}
-                    >
-                      <option value="ACTIVE">Active</option>
-                      <option value="INACTIVE">Inactive</option>
-                      <option value="SUSPENDED">Suspended</option>
-                    </select>
+                      onChange={(v) => handleStatusChange(e.id, v)}
+                      placeholder="Type to search status"
+                      options={[{ value: "ACTIVE", label: "Active" }, { value: "INACTIVE", label: "Inactive" }, { value: "SUSPENDED", label: "Suspended" }]}
+                      className={`w-28 px-2 py-0.5 border text-[11px] font-semibold rounded outline-none ${getStatusColor( e.status )}`}
+/>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
@@ -589,17 +582,13 @@ export default function HrClient({ employees }: HrClientProps) {
                 <label className="block text-xs font-semibold text-slate-500 uppercase">
                   Department
                 </label>
-                <select
+                <SearchSelect
                   value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
+                  onChange={(v) => setDepartment(v)}
+                  placeholder="Type to search"
+                  options={[{ value: "HR", label: "Human Resources" }, { value: "SALES", label: "Sales & Marketing" }, { value: "FINANCE", label: "Finance & General Ledger" }, { value: "WAREHOUSE", label: "Warehouse Logistics" }, { value: "SUPPORT", label: "Support & Help Desk" }]}
                   className="w-full p-2 border rounded-sm text-xs focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="HR">Human Resources</option>
-                  <option value="SALES">Sales & Marketing</option>
-                  <option value="FINANCE">Finance & General Ledger</option>
-                  <option value="WAREHOUSE">Warehouse Logistics</option>
-                  <option value="SUPPORT">Support & Help Desk</option>
-                </select>
+                />
               </div>
 
               <div className="space-y-1">

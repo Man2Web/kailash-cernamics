@@ -28,6 +28,7 @@ import {
   exportAttendanceExcelAction,
 } from "@/app/(dashboard)/office/attendance/actions";
 import { AttendanceRecord, MonthlyEmployeeSummary } from "@/lib/attendance/attendance";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface AttendanceAdminClientProps {
   initialTodaySummary: {
@@ -337,17 +338,13 @@ export default function AttendanceAdminClient({
 
               <div className="flex items-center gap-2">
                 <Filter className="h-3.5 w-3.5 text-slate-400" />
-                <select
+                <SearchSelect
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  onChange={(v) => setStatusFilter(v)}
+                  placeholder="Type to search"
+                  options={[{ value: "ALL", label: "All Statuses" }, { value: "PRESENT", label: "Present" }, { value: "LATE", label: "Late Check-in" }, { value: "HALF_DAY", label: "Half Day" }, { value: "LEAVE", label: "Leave" }]}
                   className="w-full sm:w-auto px-2.5 py-2 sm:py-1.5 bg-white border border-slate-200 rounded text-xs text-slate-700 font-medium focus:outline-none focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="ALL">All Statuses</option>
-                  <option value="PRESENT">Present</option>
-                  <option value="LATE">Late Check-in</option>
-                  <option value="HALF_DAY">Half Day</option>
-                  <option value="LEAVE">Leave</option>
-                </select>
+                />
               </div>
             </div>
 
@@ -486,30 +483,24 @@ export default function AttendanceAdminClient({
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-slate-600">Select Month:</span>
-                <select
-                  value={selectedMonth}
-                  onChange={(e) => handleLoadMonth(selectedYear, Number(e.target.value))}
-                  className="px-3 py-1.5 bg-white border border-slate-200 rounded text-xs font-medium text-slate-800 focus:ring-1 focus:ring-blue-500"
-                >
-                  {monthNames.map((m, idx) => (
-                    <option key={m} value={idx + 1}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
+                <SearchSelect
+                  value={String(selectedMonth)}
+                  onChange={(v) => handleLoadMonth(selectedYear, Number(v))}
+                  placeholder="Type to search"
+                  options={monthNames.map((m, idx) => ({ value: String(idx + 1), label: m }))}
+                  className="w-36 px-3 py-1.5 bg-white border border-slate-200 rounded text-xs font-medium text-slate-800 focus:ring-1 focus:ring-blue-500"
+                />
               </div>
 
               <div className="flex items-center gap-2">
                 <span className="text-xs font-semibold text-slate-600">Year:</span>
-                <select
-                  value={selectedYear}
-                  onChange={(e) => handleLoadMonth(Number(e.target.value), selectedMonth)}
-                  className="px-3 py-1.5 bg-white border border-slate-200 rounded text-xs font-medium text-slate-800 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value={2025}>2025</option>
-                  <option value={2026}>2026</option>
-                  <option value={2027}>2027</option>
-                </select>
+                <SearchSelect
+                  value={String(selectedYear)}
+                  onChange={(v) => handleLoadMonth(Number(v), selectedMonth)}
+                  placeholder="Type to search"
+                  options={[2025, 2026, 2027].map((y) => ({ value: String(y), label: String(y) }))}
+                  className="w-24 px-3 py-1.5 bg-white border border-slate-200 rounded text-xs font-medium text-slate-800 focus:ring-1 focus:ring-blue-500"
+                />
               </div>
             </div>
 
@@ -771,21 +762,16 @@ export default function AttendanceAdminClient({
             <form onSubmit={handleSaveCorrection} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Employee *</label>
-                <select
+                <SearchSelect
                   value={correctionForm.employeeId}
-                  onChange={(e) =>
-                    setCorrectionForm({ ...correctionForm, employeeId: e.target.value })
-                  }
+                  onChange={(v) =>
+                    setCorrectionForm({ ...correctionForm, employeeId: v })}
                   required
                   disabled={Boolean(editingRecord)}
+                  placeholder="Type to search"
+                  options={[...employees.map((emp) => ({ value: emp.id, label: `${emp.name} (${emp.employeeNo}) - ${emp.role}` }))]}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded text-xs text-slate-800 focus:bg-white"
-                >
-                  {employees.map((emp) => (
-                    <option key={emp.id} value={emp.id}>
-                      {emp.name} ({emp.employeeNo}) - {emp.role}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div>
@@ -831,22 +817,17 @@ export default function AttendanceAdminClient({
 
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">Status *</label>
-                <select
+                <SearchSelect
                   value={correctionForm.status}
-                  onChange={(e) =>
+                  onChange={(v) =>
                     setCorrectionForm({
                       ...correctionForm,
-                      status: e.target.value as any,
-                    })
-                  }
+                      status: v as any,
+                    })}
+                  placeholder="Type to search"
+                  options={[{ value: "PRESENT", label: "Present" }, { value: "LATE", label: "Late Check-in" }, { value: "HALF_DAY", label: "Half Day" }, { value: "LEAVE", label: "Leave" }, { value: "ABSENT", label: "Absent" }]}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded text-xs text-slate-800 focus:bg-white"
-                >
-                  <option value="PRESENT">Present</option>
-                  <option value="LATE">Late Check-in</option>
-                  <option value="HALF_DAY">Half Day</option>
-                  <option value="LEAVE">Leave</option>
-                  <option value="ABSENT">Absent</option>
-                </select>
+                />
               </div>
 
               <div>

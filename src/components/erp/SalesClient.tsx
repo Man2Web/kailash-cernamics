@@ -624,10 +624,12 @@ export default function SalesClient({
                             {o.status}
                           </span>
                         ) : (
-                          <select
+                          <SearchSelect
                             value={o.status}
-                            onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
+                            onChange={(v) => handleUpdateOrderStatus(o.id, v)}
                             disabled={o.status === "COMPLETED"}
+                            placeholder="Type to search"
+                            options={[{ value: "DRAFT", label: "DRAFT" }, { value: "CONFIRMED", label: "CONFIRMED" }, { value: "RESERVED", label: "RESERVED" }, { value: "READY_FOR_DELIVERY", label: "READY FOR DELIVERY" }, { value: "READY_FOR_PICKUP", label: "READY FOR PICKUP" }, { value: "DELIVERED", label: "DELIVERED" }, { value: "COMPLETED", label: "COMPLETED" }, { value: "CANCELLED", label: "CANCELLED" }, { value: "EXPIRED", label: "EXPIRED" }]}
                             className={`px-2 py-0.5 rounded text-[11px] font-bold border outline-none ${
                               o.status === "RESERVED"
                                 ? "bg-amber-50 text-amber-800 border-amber-200"
@@ -637,17 +639,7 @@ export default function SalesClient({
                                 ? "bg-rose-50 text-rose-800 border-rose-200"
                                 : "bg-blue-50 text-blue-800 border-blue-200"
                             }`}
-                          >
-                            <option value="DRAFT">DRAFT</option>
-                            <option value="CONFIRMED">CONFIRMED</option>
-                            <option value="RESERVED">RESERVED</option>
-                            <option value="READY_FOR_DELIVERY">READY FOR DELIVERY</option>
-                            <option value="READY_FOR_PICKUP">READY FOR PICKUP</option>
-                            <option value="DELIVERED">DELIVERED</option>
-                            <option value="COMPLETED">COMPLETED</option>
-                            <option value="CANCELLED">CANCELLED</option>
-                            <option value="EXPIRED">EXPIRED</option>
-                          </select>
+                          />
                         )}
                       </td>
                       <td className="px-4 py-3 text-right space-x-2">
@@ -711,10 +703,12 @@ export default function SalesClient({
                         {o.status}
                       </span>
                     ) : (
-                      <select
+                      <SearchSelect
                         value={o.status}
-                        onChange={(e) => handleUpdateOrderStatus(o.id, e.target.value)}
+                        onChange={(v) => handleUpdateOrderStatus(o.id, v)}
                         disabled={o.status === "COMPLETED"}
+                        placeholder="Type to search"
+                        options={[{ value: "DRAFT", label: "DRAFT" }, { value: "CONFIRMED", label: "CONFIRMED" }, { value: "RESERVED", label: "RESERVED" }, { value: "READY_FOR_DELIVERY", label: "READY FOR DELIVERY" }, { value: "READY_FOR_PICKUP", label: "READY FOR PICKUP" }, { value: "DELIVERED", label: "DELIVERED" }, { value: "COMPLETED", label: "COMPLETED" }, { value: "CANCELLED", label: "CANCELLED" }, { value: "EXPIRED", label: "EXPIRED" }]}
                         className={`px-2 py-1 rounded text-xs font-bold border outline-none min-h-[36px] ${
                           o.status === "RESERVED"
                             ? "bg-amber-50 text-amber-800 border-amber-200"
@@ -724,17 +718,7 @@ export default function SalesClient({
                             ? "bg-rose-50 text-rose-800 border-rose-200"
                             : "bg-blue-50 text-blue-800 border-blue-200"
                         }`}
-                      >
-                        <option value="DRAFT">DRAFT</option>
-                        <option value="CONFIRMED">CONFIRMED</option>
-                        <option value="RESERVED">RESERVED</option>
-                        <option value="READY_FOR_DELIVERY">READY FOR DELIVERY</option>
-                        <option value="READY_FOR_PICKUP">READY FOR PICKUP</option>
-                        <option value="DELIVERED">DELIVERED</option>
-                        <option value="COMPLETED">COMPLETED</option>
-                        <option value="CANCELLED">CANCELLED</option>
-                        <option value="EXPIRED">EXPIRED</option>
-                      </select>
+                      />
                     )}
                   </div>
 
@@ -1385,16 +1369,13 @@ export default function SalesClient({
 
               <div className="space-y-1">
                 <label className="font-semibold text-slate-700">Delivery Mode</label>
-                <select
+                <SearchSelect
                   value={deliveryType}
-                  onChange={(e) => setDeliveryType(e.target.value)}
+                  onChange={(v) => setDeliveryType(v)}
+                  placeholder="Type to search"
+                  options={[{ value: "Own Vehicle", label: "Own Vehicle" }, { value: "Customer Pickup", label: "Customer Pickup" }, { value: "Transporter", label: "Transporter" }, { value: "Third Party Delivery", label: "Third Party Delivery" }]}
                   className="w-full p-2 border rounded text-xs min-h-[36px] sm:min-h-0"
-                >
-                  <option value="Own Vehicle">Own Vehicle</option>
-                  <option value="Customer Pickup">Customer Pickup</option>
-                  <option value="Transporter">Transporter</option>
-                  <option value="Third Party Delivery">Third Party Delivery</option>
-                </select>
+                />
               </div>
 
               <div className="pt-4 border-t flex flex-col sm:flex-row justify-end gap-2">

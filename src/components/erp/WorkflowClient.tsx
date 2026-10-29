@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import SearchSelect from "@/components/erp/SearchSelect";
 import {
   GitCommit,
   CheckCircle,
@@ -258,14 +259,13 @@ export default function WorkflowClient({
             <form onSubmit={handleCreateWorkflow} className="space-y-3">
               <div className="space-y-1">
                 <label className="font-semibold text-slate-600">Document Type *</label>
-                <select
+                <SearchSelect
                   value={docType}
-                  onChange={(e) => setDocType(e.target.value)}
+                  onChange={(v) => setDocType(v)}
+                  placeholder="Type to search"
+                  options={[{ value: "INVOICE", label: "INVOICE" }, { value: "TRANSFER", label: "STOCK TRANSFER" }]}
                   className="w-full px-2.5 py-1.5 border border-slate-300 bg-white rounded-sm outline-none text-slate-950 font-medium"
-                >
-                  <option value="INVOICE">INVOICE</option>
-                  <option value="TRANSFER">STOCK TRANSFER</option>
-                </select>
+                />
               </div>
               <div className="space-y-1">
                 <label className="font-semibold text-slate-600">Workflow Name *</label>
@@ -285,16 +285,13 @@ export default function WorkflowClient({
                   Sequential Steps Setup
                 </label>
                 <div className="flex space-x-1.5">
-                  <select
+                  <SearchSelect
                     value={newStepRole}
-                    onChange={(e) => setNewStepRole(e.target.value)}
+                    onChange={(v) => setNewStepRole(v)}
+                    placeholder="Type to search"
+                    options={[{ value: "Sales Manager", label: "Sales Manager" }, { value: "General Manager", label: "General Manager" }, { value: "Accountant", label: "Accountant" }, { value: "Super Admin", label: "Super Admin" }]}
                     className="flex-1 px-2.5 py-1 border border-slate-300 bg-white rounded-sm outline-none text-slate-950"
-                  >
-                    <option value="Sales Manager">Sales Manager</option>
-                    <option value="General Manager">General Manager</option>
-                    <option value="Accountant">Accountant</option>
-                    <option value="Super Admin">Super Admin</option>
-                  </select>
+                  />
                   <button
                     type="button"
                     onClick={handleAddRoleStep}
@@ -473,19 +470,14 @@ export default function WorkflowClient({
             <div className="space-y-3 pt-2">
               <div className="space-y-1">
                 <label className="font-semibold text-slate-600">Acting Approver User *</label>
-                <select
-                  required
+                <SearchSelect
                   value={selectedUserId}
-                  onChange={(e) => setSelectedUserId(e.target.value)}
+                  onChange={(v) => setSelectedUserId(v)}
+                  required
+                  placeholder="Type to search user profile"
+                  options={[...users.map((u) => ({ value: u.id, label: `${u.name}` }))]}
                   className="w-full px-2.5 py-1.5 border border-slate-300 bg-white rounded-sm outline-none text-slate-950"
-                >
-                  <option value="">Select User Profile</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name}
-                    </option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div className="space-y-1">

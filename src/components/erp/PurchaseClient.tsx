@@ -407,33 +407,22 @@ export default function PurchaseClient({
               />
 
               <div className="flex gap-2">
-                <select
+                <SearchSelect
                   value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
+                  onChange={(v) => setStatusFilter(v)}
+                  placeholder="Type to search"
+                  options={[{ value: "ALL", label: "All Statuses" }, ...PO_STATUS_STEPS.map((s) => ({ value: s, label: `${s}` })), { value: "CANCELLED", label: "CANCELLED" }]}
                   className="flex-1 sm:flex-none px-2.5 py-2 sm:py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none min-h-[36px] sm:min-h-0"
-                >
-                  <option value="ALL">All Statuses</option>
-                  {PO_STATUS_STEPS.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
-                    </option>
-                  ))}
-                  <option value="CANCELLED">CANCELLED</option>
-                </select>
+                />
 
                 {!isWarehouseManager && (
-                  <select
+                  <SearchSelect
                     value={warehouseFilter}
-                    onChange={(e) => setWarehouseFilter(e.target.value)}
+                    onChange={(v) => setWarehouseFilter(v)}
+                    placeholder="Type to search"
+                    options={[{ value: "ALL", label: "All Warehouses" }, ...warehouses.map((w) => ({ value: w.name, label: `${w.name}` }))]}
                     className="flex-1 sm:flex-none px-2.5 py-2 sm:py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none min-h-[36px] sm:min-h-0"
-                  >
-                    <option value="ALL">All Warehouses</option>
-                    {warehouses.map((w) => (
-                      <option key={w.id} value={w.name}>
-                        {w.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 )}
               </div>
             </div>
@@ -519,10 +508,12 @@ export default function PurchaseClient({
                               <span>COMPLETED (LOCKED)</span>
                             </span>
                           ) : (
-                            <select
+                            <SearchSelect
                               value={po.status}
+                              onChange={(v) => handleStatusTransition(po, v)}
                               disabled={isPending}
-                              onChange={(e) => handleStatusTransition(po, e.target.value)}
+                              placeholder="Type to search"
+                              options={[{ value: "DRAFT", label: "DRAFT" }, { value: "APPROVED", label: "APPROVED" }, { value: "ORDERED", label: "ORDERED" }, { value: "IN_TRANSIT", label: "IN_TRANSIT" }, { value: "ARRIVED", label: "ARRIVED" }, { value: "RECEIVING", label: "RECEIVING" }, { value: "PARTIALLY_RECEIVED", label: "PARTIALLY_RECEIVED" }, { value: "RECEIVED", label: "RECEIVED" }, { value: "COMPLETED", label: "COMPLETED" }, { value: "CANCELLED", label: "CANCELLED" }]}
                               className={`px-2 py-0.5 rounded text-[11px] font-bold border outline-none ${
                                 po.status === "PARTIALLY_RECEIVED"
                                   ? "bg-amber-50 text-amber-800 border-amber-200"
@@ -530,18 +521,7 @@ export default function PurchaseClient({
                                   ? "bg-blue-50 text-blue-800 border-blue-200"
                                   : "bg-slate-50 text-slate-700 border-slate-200"
                               }`}
-                            >
-                              <option value="DRAFT">DRAFT</option>
-                              <option value="APPROVED">APPROVED</option>
-                              <option value="ORDERED">ORDERED</option>
-                              <option value="IN_TRANSIT">IN_TRANSIT</option>
-                              <option value="ARRIVED">ARRIVED</option>
-                              <option value="RECEIVING">RECEIVING</option>
-                              <option value="PARTIALLY_RECEIVED">PARTIALLY_RECEIVED</option>
-                              <option value="RECEIVED">RECEIVED</option>
-                              <option value="COMPLETED">COMPLETED</option>
-                              <option value="CANCELLED">CANCELLED</option>
-                            </select>
+                            />
                           )}
                         </td>
                         <td className="px-3.5 py-3">
@@ -618,10 +598,12 @@ export default function PurchaseClient({
                           <span>COMPLETED</span>
                         </span>
                       ) : (
-                        <select
+                        <SearchSelect
                           value={po.status}
+                          onChange={(v) => handleStatusTransition(po, v)}
                           disabled={isPending}
-                          onChange={(e) => handleStatusTransition(po, e.target.value)}
+                          placeholder="Type to search"
+                          options={[{ value: "DRAFT", label: "DRAFT" }, { value: "APPROVED", label: "APPROVED" }, { value: "ORDERED", label: "ORDERED" }, { value: "IN_TRANSIT", label: "IN_TRANSIT" }, { value: "ARRIVED", label: "ARRIVED" }, { value: "RECEIVING", label: "RECEIVING" }, { value: "PARTIALLY_RECEIVED", label: "PARTIALLY_RECEIVED" }, { value: "RECEIVED", label: "RECEIVED" }, { value: "COMPLETED", label: "COMPLETED" }, { value: "CANCELLED", label: "CANCELLED" }]}
                           className={`px-2 py-1 rounded text-xs font-bold border outline-none min-h-[36px] ${
                             po.status === "PARTIALLY_RECEIVED"
                               ? "bg-amber-50 text-amber-800 border-amber-200"
@@ -629,18 +611,7 @@ export default function PurchaseClient({
                               ? "bg-blue-50 text-blue-800 border-blue-200"
                               : "bg-slate-50 text-slate-700 border-slate-200"
                           }`}
-                        >
-                          <option value="DRAFT">DRAFT</option>
-                          <option value="APPROVED">APPROVED</option>
-                          <option value="ORDERED">ORDERED</option>
-                          <option value="IN_TRANSIT">IN_TRANSIT</option>
-                          <option value="ARRIVED">ARRIVED</option>
-                          <option value="RECEIVING">RECEIVING</option>
-                          <option value="PARTIALLY_RECEIVED">PARTIALLY_RECEIVED</option>
-                          <option value="RECEIVED">RECEIVED</option>
-                          <option value="COMPLETED">COMPLETED</option>
-                          <option value="CANCELLED">CANCELLED</option>
-                        </select>
+                        />
                       )}
                     </div>
 

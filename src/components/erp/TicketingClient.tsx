@@ -12,6 +12,7 @@ import {
   Filter,
 } from "lucide-react";
 import { createTicket, updateTicketStatus, deleteTicket } from "@/app/(dashboard)/ticketing/actions";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface TicketRow {
   id: string;
@@ -219,28 +220,21 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
             />
           </div>
 
-          <select
+          <SearchSelect
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(v) => setStatusFilter(v)}
+            placeholder="Type to search"
+            options={[{ value: "ALL", label: "All Statuses" }, { value: "OPEN", label: "Open" }, { value: "IN_PROGRESS", label: "In Progress" }, { value: "RESOLVED", label: "Resolved" }]}
             className="px-2.5 py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none"
-          >
-            <option value="ALL">All Statuses</option>
-            <option value="OPEN">Open</option>
-            <option value="IN_PROGRESS">In Progress</option>
-            <option value="RESOLVED">Resolved</option>
-          </select>
+          />
 
-          <select
+          <SearchSelect
             value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
+            onChange={(v) => setPriorityFilter(v)}
+            placeholder="Type to search"
+            options={[{ value: "ALL", label: "All Priorities" }, { value: "URGENT", label: "Urgent" }, { value: "HIGH", label: "High" }, { value: "MEDIUM", label: "Medium" }, { value: "LOW", label: "Low" }]}
             className="px-2.5 py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none"
-          >
-            <option value="ALL">All Priorities</option>
-            <option value="URGENT">Urgent</option>
-            <option value="HIGH">High</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="LOW">Low</option>
-          </select>
+          />
         </div>
 
         {/* Action Buttons */}
@@ -298,18 +292,16 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <select
+                    <SearchSelect
                       value={t.status}
+                      onChange={(v) => handleStatusChange(t.id, v)}
                       disabled={isPending}
-                      onChange={(e) => handleStatusChange(t.id, e.target.value)}
+                      placeholder="Type to search"
+                      options={[{ value: "OPEN", label: "Open" }, { value: "IN_PROGRESS", label: "In Progress" }, { value: "RESOLVED", label: "Resolved" }]}
                       className={`px-1.5 py-0.5 border text-[11px] font-semibold rounded-sm outline-none ${getStatusColor(
                         t.status
                       )}`}
-                    >
-                      <option value="OPEN">Open</option>
-                      <option value="IN_PROGRESS">In Progress</option>
-                      <option value="RESOLVED">Resolved</option>
-                    </select>
+                    />
                   </td>
                   <td className="px-4 py-3 text-slate-500">{t.assignedToName}</td>
                   <td className="px-4 py-3 text-slate-400">{t.date}</td>
@@ -351,18 +343,16 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
                   >
                     {t.priority}
                   </span>
-                  <select
+                  <SearchSelect
                     value={t.status}
+                    onChange={(v) => handleStatusChange(t.id, v)}
                     disabled={isPending}
-                    onChange={(e) => handleStatusChange(t.id, e.target.value)}
+                    placeholder="Type to search"
+                    options={[{ value: "OPEN", label: "Open" }, { value: "IN_PROGRESS", label: "In Progress" }, { value: "RESOLVED", label: "Resolved" }]}
                     className={`px-1.5 py-0.5 border text-[11px] font-semibold rounded outline-none ${getStatusColor(
                       t.status
                     )}`}
-                  >
-                    <option value="OPEN">Open</option>
-                    <option value="IN_PROGRESS">In Progress</option>
-                    <option value="RESOLVED">Resolved</option>
-                  </select>
+                  />
                 </div>
               </div>
 
@@ -427,19 +417,14 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
                 <label className="block text-xs font-semibold text-slate-500 uppercase">
                   Select Customer *
                 </label>
-                <select
+                <SearchSelect
                   value={customerId}
-                  onChange={(e) => setCustomerId(e.target.value)}
-                  className="w-full p-2 border rounded-sm text-xs focus:ring-1 focus:ring-blue-500"
+                  onChange={(v) => setCustomerId(v)}
                   required
-                >
-                  <option value="">-- Choose Customer --</option>
-                  {customers.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
+                  placeholder="Type to search customer"
+                  options={[...customers.map((c) => ({ value: c.id, label: `${c.name}` }))]}
+                  className="w-full p-2 border rounded-sm text-xs focus:ring-1 focus:ring-blue-500"
+                />
               </div>
 
               <div className="space-y-1">
@@ -473,16 +458,13 @@ export default function TicketingClient({ tickets, customers }: TicketingClientP
                 <label className="block text-xs font-semibold text-slate-500 uppercase">
                   Priority
                 </label>
-                <select
+                <SearchSelect
                   value={priority}
-                  onChange={(e) => setPriority(e.target.value)}
+                  onChange={(v) => setPriority(v)}
+                  placeholder="Type to search"
+                  options={[{ value: "URGENT", label: "Urgent" }, { value: "HIGH", label: "High" }, { value: "MEDIUM", label: "Medium" }, { value: "LOW", label: "Low" }]}
                   className="w-full p-2 border rounded-sm text-xs focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="URGENT">Urgent</option>
-                  <option value="HIGH">High</option>
-                  <option value="MEDIUM">Medium</option>
-                  <option value="LOW">Low</option>
-                </select>
+                />
               </div>
 
               <div className="pt-4 border-t flex space-x-2">

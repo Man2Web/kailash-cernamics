@@ -497,17 +497,13 @@ export default function StockClient({
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">GST Rate (%)</label>
-                  <select
+                  <SearchSelect
                     value={pGstRate}
-                    onChange={(e) => setPGstRate(e.target.value)}
+                    onChange={(v) => setPGstRate(v)}
+                    placeholder="Type to search"
+                    options={[{ value: "0", label: "0%" }, { value: "5", label: "5%" }, { value: "12", label: "12%" }, { value: "18", label: "18%" }, { value: "28", label: "28%" }]}
                     className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
-                  >
-                    <option value="0">0%</option>
-                    <option value="5">5%</option>
-                    <option value="12">12%</option>
-                    <option value="18">18%</option>
-                    <option value="28">28%</option>
-                  </select>
+                  />
                 </div>
 
                 <div className="space-y-1">

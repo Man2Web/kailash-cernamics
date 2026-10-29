@@ -3,6 +3,7 @@
 import React from "react";
 import { PRIMARY_ROLE_OPTIONS, roleLabel } from "@/lib/auth/access";
 import { PERMISSION_GROUPS } from "@/lib/auth/permissions";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface RoleBadgesProps {
   role: string;
@@ -49,17 +50,13 @@ interface PrimaryRoleSelectProps {
 
 export function PrimaryRoleSelect({ value, onChange }: PrimaryRoleSelectProps) {
   return (
-    <select
+    <SearchSelect
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(v) => onChange(v)}
+      placeholder="Type to search"
+      options={[...PRIMARY_ROLE_OPTIONS.map((o) => ({ value: o.value, label: `${o.label}` }))]}
       className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 font-medium"
-    >
-      {PRIMARY_ROLE_OPTIONS.map((o) => (
-        <option key={o.value} value={o.value}>
-          {o.label}
-        </option>
-      ))}
-    </select>
+    />
   );
 }
 

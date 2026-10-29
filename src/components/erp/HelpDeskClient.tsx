@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { createHelpArticle, deleteHelpArticle } from "@/app/(dashboard)/helpdesk/actions";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface Article {
   id: string;
@@ -246,16 +247,13 @@ export default function HelpDeskClient({ articles }: HelpDeskClientProps) {
                 <label className="block text-xs font-semibold text-slate-500 uppercase">
                   Article Category
                 </label>
-                <select
+                <SearchSelect
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(v) => setCategory(v)}
+                  placeholder="Type to search"
+                  options={[{ value: "INVENTORY", label: "Inventory & Warehouses" }, { value: "SALES", label: "Sales & Billing Processes" }, { value: "FINANCE", label: "Finance & Accounting ledgers" }, { value: "SYSTEM", label: "System Administration guides" }]}
                   className="w-full p-2 border rounded-sm text-xs focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="INVENTORY">Inventory & Warehouses</option>
-                  <option value="SALES">Sales & Billing Processes</option>
-                  <option value="FINANCE">Finance & Accounting ledgers</option>
-                  <option value="SYSTEM">System Administration guides</option>
-                </select>
+                />
               </div>
 
               <div className="space-y-1">

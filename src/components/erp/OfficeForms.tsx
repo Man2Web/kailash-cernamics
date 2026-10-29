@@ -121,19 +121,16 @@ export function NewUserForm({ warehouses }: { warehouses: WarehouseOption[] }) {
         </Field>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Field label="Role *">
-            <select
+            <SearchSelect
               value={role}
-              onChange={(e) => {
-                setRole(e.target.value as typeof role);
-                setPermissions(presetFor(e.target.value));
+              onChange={(v) => {
+                setRole(v as typeof role);
+                setPermissions(presetFor(v));
               }}
+              placeholder="Type to search"
+              options={[{ value: "SALES_PERSON", label: "Sales Person" }, { value: "WAREHOUSE_MANAGER", label: "Warehouse Manager" }, { value: "SUPER_ADMIN", label: "Super Admin" }, { value: "ATTENDANCE_DISPLAY", label: "Attendance QR Screen (display login)" }]}
               className={`${inputCls} font-medium`}
-            >
-              <option value="SALES_PERSON">Sales Person</option>
-              <option value="WAREHOUSE_MANAGER">Warehouse Manager</option>
-              <option value="SUPER_ADMIN">Super Admin</option>
-              <option value="ATTENDANCE_DISPLAY">Attendance QR Screen (display login)</option>
-            </select>
+            />
           </Field>
           {role !== "ATTENDANCE_DISPLAY" && (
             <Field label="Employee ID">
@@ -167,10 +164,13 @@ export function NewUserForm({ warehouses }: { warehouses: WarehouseOption[] }) {
             <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" className={inputCls} />
           </Field>
           <Field label="Status">
-            <select value={status} onChange={(e) => setStatus(e.target.value as typeof status)} className={`${inputCls} font-medium`}>
-              <option value="ACTIVE">Active</option>
-              <option value="INACTIVE">Inactive</option>
-            </select>
+            <SearchSelect
+              value={status}
+              onChange={(v) => setStatus(v as typeof status)}
+              placeholder="Type to search"
+              options={[{ value: "ACTIVE", label: "Active" }, { value: "INACTIVE", label: "Inactive" }]}
+              className={`${inputCls} font-medium`}
+            />
           </Field>
         </div>
 

@@ -251,35 +251,21 @@ export default function MovementClient({
           </div>
 
           <div className="flex gap-2">
-            <select
+            <SearchSelect
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(v) => setStatusFilter(v)}
+              placeholder="Type to search"
+              options={[{ value: "ALL", label: "All Statuses" }, { value: "DRAFT", label: "DRAFT" }, { value: "READY_FOR_DISPATCH", label: "READY FOR DISPATCH" }, { value: "DISPATCHED", label: "DISPATCHED" }, { value: "OUT_FOR_DELIVERY", label: "OUT FOR DELIVERY" }, { value: "DELIVERED", label: "DELIVERED" }, { value: "COMPLETED", label: "COMPLETED" }, { value: "DELIVERY_FAILED", label: "DELIVERY FAILED" }, { value: "RESCHEDULED", label: "RESCHEDULED" }, { value: "CANCELLED", label: "CANCELLED" }]}
               className="flex-1 sm:flex-none px-2.5 py-2 sm:py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none min-h-[36px] sm:min-h-0"
-            >
-              <option value="ALL">All Statuses</option>
-              <option value="DRAFT">DRAFT</option>
-              <option value="READY_FOR_DISPATCH">READY FOR DISPATCH</option>
-              <option value="DISPATCHED">DISPATCHED</option>
-              <option value="OUT_FOR_DELIVERY">OUT FOR DELIVERY</option>
-              <option value="DELIVERED">DELIVERED</option>
-              <option value="COMPLETED">COMPLETED</option>
-              <option value="DELIVERY_FAILED">DELIVERY FAILED</option>
-              <option value="RESCHEDULED">RESCHEDULED</option>
-              <option value="CANCELLED">CANCELLED</option>
-            </select>
+            />
 
-            <select
+            <SearchSelect
               value={warehouseFilter}
-              onChange={(e) => setWarehouseFilter(e.target.value)}
+              onChange={(v) => setWarehouseFilter(v)}
+              placeholder="Type to search"
+              options={[{ value: "ALL", label: "All Warehouses" }, ...warehouses.map((w) => ({ value: w, label: `${w}` }))]}
               className="flex-1 sm:flex-none px-2.5 py-2 sm:py-1.5 border border-slate-200 rounded-sm text-xs text-slate-700 bg-slate-50 focus:outline-none min-h-[36px] sm:min-h-0"
-            >
-              <option value="ALL">All Warehouses</option>
-              {warehouses.map((w) => (
-                <option key={w} value={w}>
-                  {w}
-                </option>
-              ))}
-            </select>
+            />
           </div>
         </div>
 
@@ -373,10 +359,12 @@ export default function MovementClient({
                           {d.status}
                         </span>
                       ) : (
-                        <select
+                        <SearchSelect
                           value={d.status}
+                          onChange={(v) => handleStatusChange(d, v)}
                           disabled={isPending}
-                          onChange={(e) => handleStatusChange(d, e.target.value)}
+                          placeholder="Type to search"
+                          options={[{ value: "DRAFT", label: "DRAFT" }, { value: "READY_FOR_DISPATCH", label: "READY_FOR_DISPATCH" }, { value: "DISPATCHED", label: "DISPATCHED" }, { value: "OUT_FOR_DELIVERY", label: "OUT_FOR_DELIVERY" }, { value: "DELIVERED", label: "DELIVERED" }, { value: "COMPLETED", label: "COMPLETED" }, { value: "DELIVERY_FAILED", label: "DELIVERY_FAILED" }, { value: "RESCHEDULED", label: "RESCHEDULED" }, { value: "CANCELLED", label: "CANCELLED" }]}
                           className={`px-2 py-0.5 rounded text-[11px] font-bold border outline-none ${
                             d.status === "DELIVERED"
                               ? "bg-teal-50 text-teal-800 border-teal-200"
@@ -384,17 +372,7 @@ export default function MovementClient({
                               ? "bg-blue-50 text-blue-800 border-blue-200"
                               : "bg-slate-50 text-slate-700 border-slate-200"
                           }`}
-                        >
-                          <option value="DRAFT">DRAFT</option>
-                          <option value="READY_FOR_DISPATCH">READY_FOR_DISPATCH</option>
-                          <option value="DISPATCHED">DISPATCHED</option>
-                          <option value="OUT_FOR_DELIVERY">OUT_FOR_DELIVERY</option>
-                          <option value="DELIVERED">DELIVERED</option>
-                          <option value="COMPLETED">COMPLETED</option>
-                          <option value="DELIVERY_FAILED">DELIVERY_FAILED</option>
-                          <option value="RESCHEDULED">RESCHEDULED</option>
-                          <option value="CANCELLED">CANCELLED</option>
-                        </select>
+                        />
                       )}
                     </td>
                     <td className="px-3.5 py-3">
@@ -477,10 +455,12 @@ export default function MovementClient({
                       {d.status}
                     </span>
                   ) : (
-                    <select
+                    <SearchSelect
                       value={d.status}
+                      onChange={(v) => handleStatusChange(d, v)}
                       disabled={isPending}
-                      onChange={(e) => handleStatusChange(d, e.target.value)}
+                      placeholder="Type to search"
+                      options={[{ value: "DRAFT", label: "DRAFT" }, { value: "READY_FOR_DISPATCH", label: "READY_FOR_DISPATCH" }, { value: "DISPATCHED", label: "DISPATCHED" }, { value: "OUT_FOR_DELIVERY", label: "OUT_FOR_DELIVERY" }, { value: "DELIVERED", label: "DELIVERED" }, { value: "COMPLETED", label: "COMPLETED" }, { value: "DELIVERY_FAILED", label: "DELIVERY_FAILED" }, { value: "RESCHEDULED", label: "RESCHEDULED" }, { value: "CANCELLED", label: "CANCELLED" }]}
                       className={`px-2 py-1 rounded text-xs font-bold border outline-none min-h-[36px] ${
                         d.status === "DELIVERED"
                           ? "bg-teal-50 text-teal-800 border-teal-200"
@@ -488,17 +468,7 @@ export default function MovementClient({
                           ? "bg-blue-50 text-blue-800 border-blue-200"
                           : "bg-slate-50 text-slate-700 border-slate-200"
                       }`}
-                    >
-                      <option value="DRAFT">DRAFT</option>
-                      <option value="READY_FOR_DISPATCH">READY_FOR_DISPATCH</option>
-                      <option value="DISPATCHED">DISPATCHED</option>
-                      <option value="OUT_FOR_DELIVERY">OUT_FOR_DELIVERY</option>
-                      <option value="DELIVERED">DELIVERED</option>
-                      <option value="COMPLETED">COMPLETED</option>
-                      <option value="DELIVERY_FAILED">DELIVERY_FAILED</option>
-                      <option value="RESCHEDULED">RESCHEDULED</option>
-                      <option value="CANCELLED">CANCELLED</option>
-                    </select>
+                    />
                   )}
                 </div>
 
@@ -825,16 +795,13 @@ export default function MovementClient({
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Delivery Type</label>
-                  <select
+                  <SearchSelect
                     value={deliveryType}
-                    onChange={(e) => setDeliveryType(e.target.value)}
+                    onChange={(v) => setDeliveryType(v)}
+                    placeholder="Type to search"
+                    options={[{ value: "Own Vehicle", label: "Own Vehicle" }, { value: "Customer Pickup", label: "Customer Pickup" }, { value: "Transporter", label: "Transporter" }, { value: "Third Party Delivery", label: "Third Party Delivery" }]}
                     className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 min-h-[36px] sm:min-h-0"
-                  >
-                    <option value="Own Vehicle">Own Vehicle</option>
-                    <option value="Customer Pickup">Customer Pickup</option>
-                    <option value="Transporter">Transporter</option>
-                    <option value="Third Party Delivery">Third Party Delivery</option>
-                  </select>
+                  />
                 </div>
               </div>
 

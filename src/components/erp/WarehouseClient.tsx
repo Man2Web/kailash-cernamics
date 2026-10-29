@@ -309,18 +309,13 @@ export default function WarehouseClient({
             <label className="text-[11px] sm:text-xs text-slate-300 font-medium whitespace-nowrap">
               Select Facility:
             </label>
-            <select
+            <SearchSelect
               value={selectedWarehouseFilter}
-              onChange={(e) => setSelectedWarehouseFilter(e.target.value)}
+              onChange={(v) => setSelectedWarehouseFilter(v)}
+              placeholder="Type to search"
+              options={[{ value: "ALL", label: "All Warehouses" }, ...warehouses.map((w) => ({ value: w.id, label: `${w.name} (${w.code})` }))]}
               className="w-full sm:w-auto max-w-full px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
-            >
-              <option value="ALL">All Warehouses</option>
-              {warehouses.map((w) => (
-                <option key={w.id} value={w.id}>
-                  {w.name} ({w.code})
-                </option>
-              ))}
-            </select>
+            />
           </div>
         )}
       </div>

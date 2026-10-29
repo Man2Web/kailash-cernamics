@@ -14,6 +14,7 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import { logoutAction } from "@/app/(auth)/logout-action";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface TopHeaderProps {
   user: {
@@ -75,21 +76,13 @@ export default function TopHeader({ user, onMenuToggle }: TopHeaderProps) {
       <div className="flex items-center space-x-2 sm:space-x-3 md:space-x-4 ml-auto">
         {/* A. Outlet Selector (Hidden on very small mobile if tight, visible on sm+) */}
         <div className="relative hidden sm:block">
-          <select
+          <SearchSelect
             value={selectedOutlet}
-            suppressHydrationWarning
-            onChange={(e) => setSelectedOutlet(e.target.value)}
-            className="appearance-none pr-7 pl-2.5 py-1.5 border border-slate-200 rounded-sm bg-slate-50 text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs font-semibold cursor-pointer transition-all max-w-[140px] truncate"
-          >
-            {outlets.map((outlet) => (
-              <option key={outlet} value={outlet}>
-                {outlet}
-              </option>
-            ))}
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1.5 text-slate-500">
-            <ChevronDown className="h-3 w-3" />
-          </div>
+            onChange={(v) => setSelectedOutlet(v)}
+            placeholder="Search outlet"
+            options={outlets.map((outlet) => ({ value: outlet, label: outlet }))}
+            className="w-44 pl-2.5 pr-2.5 py-1.5 border border-slate-200 rounded-sm bg-slate-50 text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-1 focus:ring-blue-500 text-xs font-medium"
+          />
         </div>
 
         {/* B. Icon Actions (Desktop / Tablet only) */}

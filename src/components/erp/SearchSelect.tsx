@@ -21,7 +21,7 @@ const MAX_SHOWN = 50;
 
 /**
  * A text box with suggestions instead of a dropdown: click or type and the matching entries appear; pick one with the mouse,
- * or with the arrow keys and Enter. The real id is stored (never the label). Typing again clears the previous choice.
+ * or with the arrow keys and Enter. The real id is stored (never the label). Typing only filters the list: the current choice changes only when you pick another entry.
  */
 export default function SearchSelect({
   value,
@@ -108,7 +108,6 @@ export default function SearchSelect({
           setText(e.target.value);
           setOpen(true);
           setActive(0);
-          if (value) onChange("");
         }}
         onKeyDown={onKeyDown}
         className={className}

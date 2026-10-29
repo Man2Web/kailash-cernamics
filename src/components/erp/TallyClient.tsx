@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import SearchSelect from "@/components/erp/SearchSelect";
 import {
   RefreshCw,
   Server,
@@ -705,33 +706,20 @@ export default function TallyClient({ initialData, currentUser }: TallyClientPro
               onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500"
             />
-            <select
+            <SearchSelect
               value={filterEntityType}
-              onChange={(e) => setFilterEntityType(e.target.value)}
+              onChange={(v) => setFilterEntityType(v)}
+              placeholder="Type to search"
+              options={[{ value: "ALL", label: "All Entity Types" }, { value: "CUSTOMER", label: "Customers" }, { value: "VENDOR", label: "Vendors" }, { value: "PRODUCT", label: "Products" }, { value: "SALES_INVOICE", label: "Sales Invoices" }, { value: "PURCHASE_BILL", label: "Purchase Bills" }, { value: "PAYMENT", label: "Payments" }, { value: "RECEIPT", label: "Receipts" }]}
               className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
-            >
-              <option value="ALL">All Entity Types</option>
-              <option value="CUSTOMER">Customers</option>
-              <option value="VENDOR">Vendors</option>
-              <option value="PRODUCT">Products</option>
-              <option value="SALES_INVOICE">Sales Invoices</option>
-              <option value="PURCHASE_BILL">Purchase Bills</option>
-              <option value="PAYMENT">Payments</option>
-              <option value="RECEIPT">Receipts</option>
-            </select>
-            <select
+            />
+            <SearchSelect
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
+              onChange={(v) => setFilterStatus(v)}
+              placeholder="Type to search"
+              options={[{ value: "ALL", label: "All Statuses" }, { value: "PENDING", label: "Pending" }, { value: "PROCESSING", label: "Processing" }, { value: "SYNCED", label: "Synced" }, { value: "FAILED", label: "Failed" }, { value: "RETRYING", label: "Retrying" }, { value: "CANCELLED", label: "Cancelled" }]}
               className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white"
-            >
-              <option value="ALL">All Statuses</option>
-              <option value="PENDING">Pending</option>
-              <option value="PROCESSING">Processing</option>
-              <option value="SYNCED">Synced</option>
-              <option value="FAILED">Failed</option>
-              <option value="RETRYING">Retrying</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
+            />
           </div>
 
           {/* Table (Desktop >= 768px) */}

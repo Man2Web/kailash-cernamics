@@ -13,6 +13,7 @@ import {
   Lock,
 } from "lucide-react";
 import { createAnnouncement, toggleAnnouncementActive, deleteAnnouncement } from "@/app/(dashboard)/portal/actions";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface Announcement {
   id: string;
@@ -419,16 +420,13 @@ export default function PortalClient({ announcements, users }: PortalClientProps
                 <label className="block text-xs font-semibold text-slate-500 uppercase">
                   Notice Category
                 </label>
-                <select
+                <SearchSelect
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
+                  onChange={(v) => setCategory(v)}
+                  placeholder="Type to search"
+                  options={[{ value: "GENERAL", label: "General Notice" }, { value: "ANNOUNCEMENT", label: "Official Announcement" }, { value: "UPDATE", label: "System Update" }, { value: "MAINTENANCE", label: "Scheduled Maintenance" }]}
                   className="w-full p-2 border rounded-sm text-xs focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="GENERAL">General Notice</option>
-                  <option value="ANNOUNCEMENT">Official Announcement</option>
-                  <option value="UPDATE">System Update</option>
-                  <option value="MAINTENANCE">Scheduled Maintenance</option>
-                </select>
+                />
               </div>
 
               <div className="space-y-1">

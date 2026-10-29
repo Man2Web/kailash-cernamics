@@ -11,6 +11,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { createCustomer, createCustomerGroup } from "@/app/(dashboard)/sales/customers/actions";
+import SearchSelect from "@/components/erp/SearchSelect";
 
 interface CustomerRow {
   id: string;
@@ -262,34 +263,24 @@ export default function CustomerClient({
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">Customer Group *</label>
-                  <select
-                    required
+                  <SearchSelect
                     value={cGroupId}
-                    onChange={(e) => setCGroupId(e.target.value)}
+                    onChange={(v) => setCGroupId(v)}
+                    required
+                    placeholder="Type to search group"
+                    options={[...customerGroups.map((g) => ({ value: g.id, label: `${g.name}` }))]}
                     className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
-                  >
-                    <option value="">Select Group</option>
-                    {customerGroups.map((g) => (
-                      <option key={g.id} value={g.id}>
-                        {g.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-600">Price List</label>
-                  <select
+                  <SearchSelect
                     value={cPriceListId}
-                    onChange={(e) => setCPriceListId(e.target.value)}
+                    onChange={(v) => setCPriceListId(v)}
+                    placeholder="Type to search default price list"
+                    options={[...priceLists.map((p) => ({ value: p.id, label: `${p.name}` }))]}
                     className="w-full px-2.5 py-2 sm:py-1.5 border border-slate-300 bg-white rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 min-h-[36px] sm:min-h-0"
-                  >
-                    <option value="">Default Price List</option>
-                    {priceLists.map((p) => (
-                      <option key={p.id} value={p.id}>
-                        {p.name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
 
                 <div className="space-y-1">
