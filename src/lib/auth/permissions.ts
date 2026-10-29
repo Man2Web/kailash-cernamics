@@ -31,6 +31,15 @@ export const PERMISSION_GROUPS: PermissionGroup[] = [
     ],
   },
   {
+    key: "leads",
+    title: "Leads and Enquiries",
+    permissions: [
+      { code: "leads:view", label: "View Leads", help: "See walk-in and phone enquiries and the follow-ups due" },
+      { code: "leads:create", label: "Record Enquiries", help: "Add walk-in and phone-call enquiries" },
+      { code: "leads:update", label: "Update Leads", help: "Change a lead's status, follow-up date and salesperson" },
+    ],
+  },
+  {
     key: "sales",
     title: "Sales and Customers",
     permissions: [
@@ -86,6 +95,9 @@ export const ASSIGNABLE_PERMISSION_CODES: string[] = PERMISSION_GROUPS.flatMap((
 
 const SALES_PRESET = [
   "dashboard:view",
+  "leads:view",
+  "leads:create",
+  "leads:update",
   "sales:view",
   "sales:create",
   "invoices:create",
@@ -169,6 +181,7 @@ export function firstAllowedPath(permissions: string[], isSuperAdmin: boolean): 
   const order: Array<[string, string]> = [
     ["dashboard:view", "/dashboard"],
     ["sales:view", "/sales"],
+    ["leads:view", "/leads"],
     ["stock:view", "/stock"],
     ["warehouse:view", "/warehouse"],
     ["purchase:view", "/purchase"],
