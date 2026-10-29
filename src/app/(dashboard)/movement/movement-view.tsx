@@ -107,7 +107,7 @@ export default async function MovementView({ startWithForm }: { startWithForm?: 
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className={startWithForm ? "hidden" : undefined}>
         <h1 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 tracking-tight leading-snug">
           Daily Movement Tracking
         </h1>

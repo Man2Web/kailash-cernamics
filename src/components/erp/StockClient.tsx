@@ -27,6 +27,7 @@ import {
 import ProductQrScanner from "@/components/erp/ProductQrScanner";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 import SearchSelect from "@/components/erp/SearchSelect";
+import { FormPageHeader, FormSection } from "@/components/erp/FormPage";
 
 interface ProductRow {
   id: string;
@@ -251,15 +252,9 @@ export default function StockClient({
   }, [routeMode, formOpen, router]);
 
   const productForm = (
-      <form
-        onSubmit={handleCreateProduct}
-        className="space-y-4 text-xs text-slate-700 max-w-5xl"
-      >
-        <h3 className="text-sm font-bold text-slate-800 border-b border-slate-100 pb-2">
-          Create New Product Master
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Inputs */}
+      <form id="product-form" onSubmit={handleCreateProduct} className="space-y-5">
+        <FormSection number={1} title="Product Details">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="font-semibold text-slate-600">Product Name *</label>
             <input
@@ -347,6 +342,10 @@ export default function StockClient({
             />
           </div>
 
+          </div>
+        </FormSection>
+        <FormSection number={2} title="Pricing & Tax">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="font-semibold text-slate-600">Purchase Price (₹) *</label>
             <input
@@ -391,6 +390,10 @@ export default function StockClient({
             />
           </div>
 
+          </div>
+        </FormSection>
+        <FormSection number={3} title="Stock Levels & Description">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="font-semibold text-slate-600">Minimum Stock Threshold</label>
             <input
@@ -431,9 +434,8 @@ export default function StockClient({
               className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 disabled:bg-slate-100 disabled:cursor-not-allowed"
             />
           </div>
-        </div>
-
-        <div className="space-y-1 col-span-4">
+          </div>
+        <div className="space-y-1">
           <label className="font-semibold text-slate-600">Description</label>
           <textarea
             value={pDesc}
@@ -444,14 +446,7 @@ export default function StockClient({
           />
         </div>
 
-        <div className="flex justify-end pt-2">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-sm font-semibold transition"
-          >
-            Create Product & Record Stock
-          </button>
-        </div>
+        </FormSection>
       </form>
   );
 
@@ -1005,14 +1000,16 @@ export default function StockClient({
 
       {/* ADD PRODUCT (own page: /stock/new) */}
       {startWithForm === "product" && showProductForm && !viewOnly && (
-        <div className="space-y-3">
-          <button
-            type="button"
-            onClick={() => setShowProductForm(false)}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
-          >
-            <span aria-hidden="true">←</span> Back to stock
-          </button>
+        <div className="w-full max-w-5xl space-y-5">
+          <FormPageHeader
+            title="Add Product"
+            subtitle="Create the product master and record its opening stock in a warehouse."
+            icon={<Package className="h-6 w-6 text-blue-600" />}
+            onBack={() => setShowProductForm(false)}
+            submitLabel="Create Product"
+            formId="product-form"
+            pending={isPending}
+          />
           {productForm}
         </div>
       )}

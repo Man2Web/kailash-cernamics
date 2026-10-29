@@ -67,8 +67,8 @@ export default async function StockView({ startWithForm }: { startWithForm?: "pr
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex justify-between items-center">
+      {/* Page Header (hidden on the dedicated add page, which has its own header) */}
+      <div className={startWithForm ? "hidden" : "flex justify-between items-center"}>
         <div>
           <h1 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 tracking-tight leading-snug">
             {isSalesOnlyRole ? "Stock & Product Availability" : isWarehouseMgrRole ? "Warehouse Stock Inventory" : "Stock & Product Master"}

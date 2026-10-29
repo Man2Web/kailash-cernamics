@@ -33,6 +33,7 @@ import ProductCombobox from "@/components/erp/ProductCombobox";
 import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 import SearchSelect from "@/components/erp/SearchSelect";
+import { FormPageHeader, FormSection } from "@/components/erp/FormPage";
 
 interface InvoiceRow {
   id: string;
@@ -927,24 +928,20 @@ export default function SalesClient({
 
       {/* CREATE CUSTOMER MODAL */}
       {showCreateCustomerModal && (
-        <div className="w-full max-w-3xl space-y-3">
-          <button
-            type="button"
-            onClick={closeAllForms}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
-          >
-            <span aria-hidden="true">←</span> Back
-          </button>
+        <div className="w-full max-w-5xl space-y-5">
+          <FormPageHeader
+            title="Add New Customer"
+            subtitle="Register a customer so you can raise sales orders and invoices for them."
+            icon={<User className="h-6 w-6 text-blue-600" />}
+            onBack={closeAllForms}
+            submitLabel="Save Customer"
+            formId="customer-form"
+            pending={isPending}
+          />
           <div className="w-full">
-            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-                <User className="h-4 w-4 text-blue-600" />
-                <span>Add New Customer</span>
-              </h3>
-            
-            </div>
 
-            <form onSubmit={handleCreateCustomerSubmit} className="pt-3 space-y-4 text-xs">
+            <form onSubmit={handleCreateCustomerSubmit} id="customer-form" className="space-y-5">
+              <FormSection number={1} title="Customer Details">
               <div className="space-y-1">
                 <label className="font-semibold text-slate-700">Customer Name *</label>
                 <input
@@ -1014,6 +1011,7 @@ export default function SalesClient({
                 />
               </div>
 
+              </FormSection>
               <div className="pt-4 border-t flex justify-end space-x-2">
                 <button
                   type="button"
@@ -1037,24 +1035,20 @@ export default function SalesClient({
 
       {/* CREATE SALES ORDER MODAL */}
       {showCreateOrderModal && (
-        <div className="w-full max-w-4xl space-y-3">
-          <button
-            type="button"
-            onClick={closeAllForms}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
-          >
-            <span aria-hidden="true">←</span> Back
-          </button>
+        <div className="w-full max-w-5xl space-y-5">
+          <FormPageHeader
+            title="Create Sales Order &amp; Customer Requirement"
+            subtitle="Pick the customer and warehouse, add the items, and reserve stock if the customer will collect later."
+            icon={<ShoppingCart className="h-6 w-6 text-blue-600" />}
+            onBack={closeAllForms}
+            submitLabel="Create Order"
+            formId="sales-order-form"
+            pending={isPending}
+          />
           <div className="w-full">
-            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-                <ShoppingCart className="h-4 w-4 text-blue-600" />
-                <span>Create Sales Order & Customer Requirement</span>
-              </h3>
-            
-            </div>
 
-            <form onSubmit={handleCreateOrder} className="pt-3 space-y-4 text-xs">
+            <form onSubmit={handleCreateOrder} id="sales-order-form" className="space-y-5">
+              <FormSection number={1} title="Customer & Warehouse">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
@@ -1090,10 +1084,12 @@ export default function SalesClient({
                 </div>
               </div>
 
+              </FormSection>
+              <FormSection number={2} title="Order Items">
               {/* Order Items Section */}
-              <div className="space-y-2 border-t pt-3">
+              <div className="space-y-2">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                  <h4 className="font-bold text-slate-800">Order Items</h4>
+                  <p className="text-slate-500">Search a product, or scan its QR code, to add it to the order.</p>
                   <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <button
                       type="button"
@@ -1240,6 +1236,8 @@ export default function SalesClient({
                 </div>
               </div>
 
+              </FormSection>
+              <FormSection number={3} title="Reservation & Notes">
               {/* Stock Reservation Option */}
               <div className="p-3 bg-amber-50 border border-amber-200 rounded space-y-3">
                 <div className="flex items-center space-x-2">
@@ -1290,6 +1288,7 @@ export default function SalesClient({
                 />
               </div>
 
+              </FormSection>
               <div className="pt-4 border-t flex flex-col sm:flex-row justify-end gap-2">
                 <button
                   type="button"

@@ -23,6 +23,7 @@ import ProductCombobox from "@/components/erp/ProductCombobox";
 import type { ProductSearchOption } from "@/app/(dashboard)/products/search-actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 import SearchSelect from "@/components/erp/SearchSelect";
+import { FormPageHeader, FormSection } from "@/components/erp/FormPage";
 
 interface VendorRow {
   id: string;
@@ -1102,24 +1103,20 @@ export default function PurchaseClient({
 
       {/* CREATE PO MODAL */}
       {showPoForm && (
-        <div className="w-full max-w-4xl space-y-3">
-          <button
-            type="button"
-            onClick={closeAllForms}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
-          >
-            <span aria-hidden="true">←</span> Back
-          </button>
-          <div className="w-full flex flex-col">
-            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-                <ShoppingCart className="h-4 w-4 text-blue-600" />
-                <span>Create Purchase Order</span>
-              </h3>
-            
-            </div>
+        <div className="w-full max-w-5xl space-y-5">
+          <FormPageHeader
+            title="Create Purchase Order"
+            subtitle="Order stock from a supplier and track its delivery into your warehouse."
+            icon={<ShoppingCart className="h-6 w-6 text-blue-600" />}
+            onBack={closeAllForms}
+            submitLabel="Create Purchase Order"
+            formId="po-form"
+            pending={isPending}
+          />
+          <div className="w-full">
 
-            <form onSubmit={handleCreatePo} className="pt-3 space-y-4 text-xs flex-1">
+            <form onSubmit={handleCreatePo} id="po-form" className="space-y-5">
+              <FormSection number={1} title="Supplier & Delivery">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Supplier / Vendor *</label>
@@ -1178,10 +1175,12 @@ export default function PurchaseClient({
                 </div>
               </div>
 
+              </FormSection>
+              <FormSection number={2} title="Order Line Items">
               {/* Items Section */}
-              <div className="space-y-2 pt-2 border-t">
+              <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="font-bold text-slate-800">Order Line Items *</label>
+                  <p className="text-slate-500">Add every product you are ordering, with quantity and rate. *</p>
                   <button
                     type="button"
                     onClick={handleAddItemRow}
@@ -1241,6 +1240,8 @@ export default function PurchaseClient({
                 </div>
               </div>
 
+              </FormSection>
+              <FormSection number={3} title="Delivery Notes">
               <div className="space-y-1">
                 <label className="font-semibold text-slate-700">Delivery Notes</label>
                 <textarea
@@ -1252,6 +1253,7 @@ export default function PurchaseClient({
                 />
               </div>
 
+              </FormSection>
               <div className="pt-4 border-t flex justify-end space-x-2">
                 <button
                   type="button"
@@ -1275,24 +1277,20 @@ export default function PurchaseClient({
 
       {/* REGISTER VENDOR MODAL */}
       {showVendorForm && (
-        <div className="w-full max-w-3xl space-y-3">
-          <button
-            type="button"
-            onClick={closeAllForms}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
-          >
-            <span aria-hidden="true">←</span> Back
-          </button>
+        <div className="w-full max-w-5xl space-y-5">
+          <FormPageHeader
+            title="Register Supplier / Vendor"
+            subtitle="Add a supplier to the directory so you can raise purchase orders for them."
+            icon={<Users className="h-6 w-6 text-blue-600" />}
+            onBack={closeAllForms}
+            submitLabel="Save Supplier"
+            formId="vendor-form"
+            pending={isPending}
+          />
           <div className="w-full">
-            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-                <Users className="h-4 w-4 text-blue-600" />
-                <span>Register Supplier / Vendor</span>
-              </h3>
-            
-            </div>
 
-            <form onSubmit={handleCreateVendor} className="pt-3 space-y-3 text-xs">
+            <form onSubmit={handleCreateVendor} id="vendor-form" className="space-y-5">
+              <FormSection number={1} title="Supplier Details">
               <div>
                 <label className="font-semibold text-slate-700">Supplier Name *</label>
                 <input
@@ -1378,6 +1376,7 @@ export default function PurchaseClient({
                   Save Supplier
                 </button>
               </div>
+              </FormSection>
             </form>
           </div>
         </div>

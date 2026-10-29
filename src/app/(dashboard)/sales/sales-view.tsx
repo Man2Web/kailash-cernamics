@@ -168,8 +168,8 @@ export default async function SalesView({ startWithForm }: { startWithForm?: "or
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex justify-between items-center">
+      {/* Page Header (hidden on the dedicated create pages, which have their own header) */}
+      <div className={startWithForm ? "hidden" : "flex justify-between items-center"}>
         <div>
           <h1 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 tracking-tight leading-snug">
             {isWarehouseMgrRole ? "Warehouse Sales Orders & Dispatch" : "Sales Orders & Reservations"}

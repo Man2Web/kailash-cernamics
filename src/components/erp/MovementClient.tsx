@@ -21,6 +21,7 @@ import {
 import { createMovement, updateMovementStatus, deleteMovement } from "@/app/(dashboard)/movement/actions";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 import SearchSelect from "@/components/erp/SearchSelect";
+import { FormPageHeader, FormSection } from "@/components/erp/FormPage";
 
 export interface DeliveryItem {
   id: string;
@@ -703,24 +704,20 @@ export default function MovementClient({
 
       {/* NEW SALES DISPATCH MODAL */}
       {showDispatchModal && (
-        <div className="w-full max-w-3xl space-y-3">
-          <button
-            type="button"
-            onClick={closeAllForms}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 min-h-[32px]"
-          >
-            <span aria-hidden="true">←</span> Back
-          </button>
+        <div className="w-full max-w-5xl space-y-5">
+          <FormPageHeader
+            title="Schedule Sales Delivery Dispatch"
+            subtitle="Schedule a vehicle to deliver a sales order from one of your warehouses."
+            icon={<Truck className="h-6 w-6 text-blue-600" />}
+            onBack={closeAllForms}
+            submitLabel="Schedule Dispatch"
+            formId="dispatch-form"
+            pending={isPending}
+          />
           <div className="w-full">
-            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-                <Truck className="h-4 w-4 text-blue-600" />
-                <span>Schedule Sales Delivery Dispatch</span>
-              </h3>
-            
-            </div>
 
-            <form onSubmit={handleCreateDispatch} className="pt-3 space-y-4 text-xs">
+            <form onSubmit={handleCreateDispatch} id="dispatch-form" className="space-y-5">
+              <FormSection number={1} title="Order & Customer">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Sales Order # *</label>
@@ -767,6 +764,8 @@ export default function MovementClient({
                 </div>
               </div>
 
+              </FormSection>
+              <FormSection number={2} title="Driver & Vehicle">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Driver Name *</label>
@@ -815,6 +814,8 @@ export default function MovementClient({
                 </div>
               </div>
 
+              </FormSection>
+              <FormSection number={3} title="Delivery Details">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Warehouse *</label>
@@ -856,6 +857,7 @@ export default function MovementClient({
                 </div>
               )}
 
+              </FormSection>
               <div className="pt-4 border-t flex flex-col sm:flex-row justify-end gap-2">
                 <button
                   type="button"
