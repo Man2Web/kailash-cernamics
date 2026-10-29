@@ -1031,7 +1031,7 @@ export default function StockClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden flex flex-col">
+          <div className="w-full flex flex-col">
             {/* Modal Header */}
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <div className="flex items-center space-x-2">
@@ -1058,7 +1058,7 @@ export default function StockClient({
             </div>
 
             {/* Modal Body */}
-            <div className="p-5 space-y-5 text-xs">
+            <div className="pt-3 space-y-5 text-xs">
               {/* Printable QR Card */}
               <div
                 id="product-qr-card-print"

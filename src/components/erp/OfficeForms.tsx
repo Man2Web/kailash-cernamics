@@ -39,7 +39,7 @@ function PageShell({ tab, title, subtitle, children }: { tab: string; title: str
         </h1>
         {subtitle && <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">{subtitle}</p>}
       </div>
-      <div className="bg-white border border-slate-200 rounded-lg shadow-xs p-4 sm:p-6">{children}</div>
+      <div className="pt-4 border-t border-slate-200">{children}</div>
     </div>
   );
 }

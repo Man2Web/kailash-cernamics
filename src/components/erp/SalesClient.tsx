@@ -940,21 +940,16 @@ export default function SalesClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div className="w-full">
+            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <User className="h-4 w-4 text-blue-600" />
                 <span>Add New Customer</span>
               </h3>
-              <button
-                onClick={() => setShowCreateCustomerModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-xs"
-              >
-                ✕
-              </button>
+            
             </div>
 
-            <form onSubmit={handleCreateCustomerSubmit} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleCreateCustomerSubmit} className="pt-3 space-y-4 text-xs">
               <div className="space-y-1">
                 <label className="font-semibold text-slate-700">Customer Name *</label>
                 <input
@@ -1055,21 +1050,16 @@ export default function SalesClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div className="w-full">
+            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />
                 <span>Create Sales Order & Customer Requirement</span>
               </h3>
-              <button
-                onClick={() => setShowCreateOrderModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-xs"
-              >
-                ✕
-              </button>
+            
             </div>
 
-            <form onSubmit={handleCreateOrder} className="p-4 sm:p-6 space-y-4 text-xs max-h-[85vh] sm:max-h-[80vh]">
+            <form onSubmit={handleCreateOrder} className="pt-3 space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <div className="flex justify-between items-center">
@@ -1345,21 +1335,16 @@ export default function SalesClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div className="w-full">
+            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Truck className="h-4 w-4 text-blue-600" />
                 <span>Dispatch Order {selectedOrderForDispatch.orderNo}</span>
               </h3>
-              <button
-                onClick={() => setShowDispatchModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-xs"
-              >
-                ✕
-              </button>
+            
             </div>
 
-            <form onSubmit={handleCreateDispatchSubmit} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleCreateDispatchSubmit} className="pt-3 space-y-4 text-xs">
               <div className="space-y-1">
                 <label className="font-semibold text-slate-700">Driver Name *</label>
                 <input
@@ -1451,23 +1436,18 @@ export default function SalesClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div className="w-full">
+            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
               <div className="flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />
                 <h3 className="font-bold text-slate-900 text-sm">
                   Sales Order Details — <span className="font-mono text-blue-600">{selectedOrderForDetail.orderNo}</span>
                 </h3>
               </div>
-              <button
-                onClick={() => setSelectedOrderForDetail(null)}
-                className="text-slate-400 hover:text-slate-600 text-xs"
-              >
-                ✕
-              </button>
+            
             </div>
 
-            <div className="p-4 sm:p-6 space-y-6 text-xs max-h-[85vh] sm:max-h-[80vh]">
+            <div className="pt-3 space-y-6 text-xs">
               {/* Top Overview Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 bg-slate-50 rounded border border-slate-100">

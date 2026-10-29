@@ -813,7 +813,7 @@ export default function PurchaseClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="w-full bg-white shadow-xs border border-slate-200 rounded-lg flex flex-col p-6">
+          <div className="w-full flex flex-col">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
@@ -1030,8 +1030,8 @@ export default function PurchaseClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div className="w-full">
+            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
               <div>
                 <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                   <Warehouse className="h-4 w-4 text-emerald-600" />
@@ -1041,15 +1041,10 @@ export default function PurchaseClient({
                   Target Warehouse: {receivingPo.warehouseName}
                 </p>
               </div>
-              <button
-                onClick={() => setReceivingPo(null)}
-                className="text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
-              >
-                ✕
-              </button>
+            
             </div>
 
-            <form onSubmit={handleSubmitReceiving} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleSubmitReceiving} className="pt-3 space-y-4 text-xs">
               <div className="bg-blue-50 border border-blue-200 rounded p-3 text-blue-900">
                 <p className="font-semibold text-xs mb-1">Inbound Stock Confirmation</p>
                 <p className="text-[11px] text-blue-700">
@@ -1135,21 +1130,16 @@ export default function PurchaseClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden flex flex-col">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div className="w-full flex flex-col">
+            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <ShoppingCart className="h-4 w-4 text-blue-600" />
                 <span>Create Purchase Order</span>
               </h3>
-              <button
-                onClick={() => setShowPoForm(false)}
-                className="text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
-              >
-                ✕
-              </button>
+            
             </div>
 
-            <form onSubmit={handleCreatePo} className="p-6 space-y-4 text-xs flex-1">
+            <form onSubmit={handleCreatePo} className="pt-3 space-y-4 text-xs flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Supplier / Vendor *</label>
@@ -1321,21 +1311,16 @@ export default function PurchaseClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div className="w-full">
+            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Users className="h-4 w-4 text-blue-600" />
                 <span>Register Supplier / Vendor</span>
               </h3>
-              <button
-                onClick={() => setShowVendorForm(false)}
-                className="text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
-              >
-                ✕
-              </button>
+            
             </div>
 
-            <form onSubmit={handleCreateVendor} className="p-6 space-y-3 text-xs">
+            <form onSubmit={handleCreateVendor} className="pt-3 space-y-3 text-xs">
               <div>
                 <label className="font-semibold text-slate-700">Supplier Name *</label>
                 <input

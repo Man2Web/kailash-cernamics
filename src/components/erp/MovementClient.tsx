@@ -570,7 +570,7 @@ export default function MovementClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="w-full bg-white shadow-xs border border-slate-200 rounded-lg flex flex-col p-4 sm:p-6">
+          <div className="w-full flex flex-col">
             <div className="flex justify-between items-center border-b pb-4 mb-4">
               <div>
                 <h3 className="text-base font-bold text-slate-900">
@@ -730,21 +730,16 @@ export default function MovementClient({
           >
             <span aria-hidden="true">←</span> Back
           </button>
-          <div className="bg-white rounded-lg shadow-xs border border-slate-200 w-full overflow-hidden">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+          <div className="w-full">
+            <div className="pb-3 mb-1 border-b border-slate-200 flex items-center">
               <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
                 <Truck className="h-4 w-4 text-blue-600" />
                 <span>Schedule Sales Delivery Dispatch</span>
               </h3>
-              <button
-                onClick={() => setShowDispatchModal(false)}
-                className="text-slate-400 hover:text-slate-600 text-xs"
-              >
-                ✕
-              </button>
+            
             </div>
 
-            <form onSubmit={handleCreateDispatch} className="p-4 sm:p-6 space-y-4 text-xs max-h-[85vh] sm:max-h-[80vh]">
+            <form onSubmit={handleCreateDispatch} className="pt-3 space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-semibold text-slate-700">Sales Order # *</label>
