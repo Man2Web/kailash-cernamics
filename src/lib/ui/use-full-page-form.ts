@@ -9,7 +9,10 @@ import { useEffect, useRef } from "react";
 export function useFullPageForm(open: boolean, close: () => void, name: string) {
   const pushed = useRef(false);
   const closeRef = useRef(close);
-  closeRef.current = close;
+
+  useEffect(() => {
+    closeRef.current = close;
+  });
 
   useEffect(() => {
     if (open && !pushed.current) {
