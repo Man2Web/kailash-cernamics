@@ -4,33 +4,20 @@ import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import {
   Users,
-  Building2,
   ShieldCheck,
   Plus,
   Search,
   CheckCircle2,
   XCircle,
   KeyRound,
-  Edit2,
   Truck,
   Warehouse as WarehouseIcon,
   Phone,
   Mail,
-  Lock,
   Calendar,
 } from "lucide-react";
-import {
-  createUserAction,
-  updateUserAction,
-  updateUserAccessAction,
-  toggleUserStatusAction,
-  resetUserPasswordAction,
-  createCustomerAction,
-  createSupplierAction,
-} from "@/app/(dashboard)/office/actions";
-import { RoleBadges, PrimaryRoleSelect, PermissionMatrix } from "@/components/erp/AccessFields";
-import { splitRoles } from "@/lib/auth/access";
-import { presetFor, effectivePermissions } from "@/lib/auth/permissions";
+import { toggleUserStatusAction } from "@/app/(dashboard)/office/actions";
+import { RoleBadges } from "@/components/erp/AccessFields";
 
 interface OfficeUser {
   id: string;
@@ -82,6 +69,8 @@ interface OfficeClientProps {
   suppliers: OfficeSupplier[];
   warehouses: OfficeWarehouse[];
   isSuperAdminUser: boolean;
+  initialTab?: "users" | "customers" | "suppliers" | "warehouses";
+  flashMessage?: string;
 }
 
 export default function OfficeClient({
@@ -90,126 +79,16 @@ export default function OfficeClient({
   suppliers,
   warehouses,
   isSuperAdminUser,
+  initialTab = "users",
+  flashMessage = "",
 }: OfficeClientProps) {
-  const [activeTab, setActiveTab] = useState<"users" | "customers" | "suppliers" | "warehouses">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "customers" | "suppliers" | "warehouses">(initialTab);
   const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
 
-  // Modals
-  const [showCreateUserModal, setShowCreateUserModal] = useState(false);
-  const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
-  const [selectedUserForPassword, setSelectedUserForPassword] = useState<OfficeUser | null>(null);
-  const [showCreateCustomerModal, setShowCreateCustomerModal] = useState(false);
-  const [showCreateSupplierModal, setShowCreateSupplierModal] = useState(false);
-
-  // User form state
-  const [userName, setUserName] = useState("");
-  const [userEmployeeNo, setUserEmployeeNo] = useState("");
-  const [userRole, setUserRole] = useState<"SALES_PERSON" | "WAREHOUSE_MANAGER" | "SUPER_ADMIN">("SALES_PERSON");
-  const [userEmail, setUserEmail] = useState("");
-  const [userPhone, setUserPhone] = useState("");
-  const [userWarehouseId, setUserWarehouseId] = useState("");
-  const [userPassword, setUserPassword] = useState("Inventory@123");
-  const [userStatus, setUserStatus] = useState<"ACTIVE" | "INACTIVE">("ACTIVE");
-  const [userPermissions, setUserPermissions] = useState<string[]>(presetFor("SALES_PERSON"));
-
-  // Manage-access modal state
-  const [showAccessModal, setShowAccessModal] = useState(false);
-  const [selectedUserForAccess, setSelectedUserForAccess] = useState<OfficeUser | null>(null);
-  const [accessRole, setAccessRole] = useState<string>("SALES_PERSON");
-  const [accessPermissions, setAccessPermissions] = useState<string[]>([]);
-  const [accessWarehouseId, setAccessWarehouseId] = useState("");
-
-  // Reset password state
-  const [newPassword, setNewPassword] = useState("");
-
-  // Customer form state
-  const [custName, setCustName] = useState("");
-  const [custPhone, setCustPhone] = useState("");
-  const [custEmail, setCustEmail] = useState("");
-  const [custGstin, setCustGstin] = useState("");
-  const [custAddress, setCustAddress] = useState("");
-  const [custCreditLimit, setCustCreditLimit] = useState(0);
-
-  // Supplier form state
-  const [supName, setSupName] = useState("");
-  const [supPhone, setSupPhone] = useState("");
-  const [supEmail, setSupEmail] = useState("");
-  const [supGstin, setSupGstin] = useState("");
-  const [supAddress, setSupAddress] = useState("");
-
   // Messages
-  const [errorMsg, setErrorMsg] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-
-  // Handlers
-  const handleCreateUser = (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setSuccessMsg("");
-
-    startTransition(async () => {
-      const res = await createUserAction({
-        name: userName,
-        employeeNo: userEmployeeNo,
-        role: userRole,
-        permissions: userPermissions,
-        email: userEmail,
-        phone: userPhone,
-        warehouseId: userWarehouseId,
-        password: userPassword,
-        status: userStatus,
-      });
-
-      if (res.success) {
-        setSuccessMsg("User created successfully!");
-        setShowCreateUserModal(false);
-        setUserName("");
-        setUserEmail("");
-        setUserPhone("");
-        setUserEmployeeNo("");
-        setUserWarehouseId("");
-        setUserPermissions(presetFor(userRole));
-      } else {
-        setErrorMsg(res.error || "Failed to create user.");
-      }
-    });
-  };
-
-  const toggleIn = (list: string[], value: string) => (list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
-
-  const openAccessModal = (user: OfficeUser) => {
-    const heldRoles = user.roles && user.roles.length ? user.roles : [user.role];
-    const { primary } = splitRoles(heldRoles, user.role);
-    setSelectedUserForAccess(user);
-    setAccessRole(primary);
-    setAccessPermissions(user.customPermissions ?? effectivePermissions(heldRoles, null));
-    setAccessWarehouseId(user.warehouseId || "");
-    setErrorMsg("");
-    setShowAccessModal(true);
-  };
-
-  const handleSaveAccess = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedUserForAccess) return;
-    setErrorMsg("");
-    setSuccessMsg("");
-    startTransition(async () => {
-      const res = await updateUserAccessAction({
-        userId: selectedUserForAccess.id,
-        role: accessRole,
-        permissions: accessPermissions,
-        warehouseId: accessWarehouseId || undefined,
-      });
-      if (res.success) {
-        setSuccessMsg(`Access updated for ${selectedUserForAccess.name}.`);
-        setShowAccessModal(false);
-        setSelectedUserForAccess(null);
-      } else {
-        setErrorMsg(res.error || "Failed to update access.");
-      }
-    });
-  };
+  const [errorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState(flashMessage || "");
 
   const handleToggleStatus = (user: OfficeUser) => {
     if (!confirm(`Are you sure you want to ${user.status === "ACTIVE" ? "deactivate" : "activate"} user ${user.name}?`)) {
@@ -219,82 +98,6 @@ export default function OfficeClient({
       const res = await toggleUserStatusAction(user.id, user.status);
       if (!res.success) {
         alert(res.error || "Failed to toggle user status.");
-      }
-    });
-  };
-
-  const handleResetPassword = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedUserForPassword) return;
-    setErrorMsg("");
-    setSuccessMsg("");
-
-    startTransition(async () => {
-      const res = await resetUserPasswordAction(selectedUserForPassword.id, newPassword);
-      if (res.success) {
-        setSuccessMsg(`Password reset successfully for ${selectedUserForPassword.name}.`);
-        setShowResetPasswordModal(false);
-        setNewPassword("");
-        setSelectedUserForPassword(null);
-      } else {
-        setErrorMsg(res.error || "Failed to reset password.");
-      }
-    });
-  };
-
-  const handleCreateCustomer = (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setSuccessMsg("");
-
-    startTransition(async () => {
-      const res = await createCustomerAction({
-        name: custName,
-        phone: custPhone,
-        email: custEmail,
-        gstin: custGstin,
-        address: custAddress,
-        creditLimit: Number(custCreditLimit),
-      });
-
-      if (res.success) {
-        setSuccessMsg("Customer created successfully!");
-        setShowCreateCustomerModal(false);
-        setCustName("");
-        setCustPhone("");
-        setCustEmail("");
-        setCustGstin("");
-        setCustAddress("");
-      } else {
-        setErrorMsg(res.error || "Failed to create customer.");
-      }
-    });
-  };
-
-  const handleCreateSupplier = (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg("");
-    setSuccessMsg("");
-
-    startTransition(async () => {
-      const res = await createSupplierAction({
-        name: supName,
-        phone: supPhone,
-        email: supEmail,
-        gstin: supGstin,
-        address: supAddress,
-      });
-
-      if (res.success) {
-        setSuccessMsg("Supplier created successfully!");
-        setShowCreateSupplierModal(false);
-        setSupName("");
-        setSupPhone("");
-        setSupEmail("");
-        setSupGstin("");
-        setSupAddress("");
-      } else {
-        setErrorMsg(res.error || "Failed to create supplier.");
       }
     });
   };
@@ -423,45 +226,33 @@ export default function OfficeClient({
 
         <div className="w-full sm:w-auto">
           {activeTab === "users" && isSuperAdminUser && (
-            <button
-              onClick={() => {
-                setErrorMsg("");
-                setSuccessMsg("");
-                setShowCreateUserModal(true);
-              }}
+            <Link
+              href="/office/users/new"
               className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Create User / Employee</span>
-            </button>
+            </Link>
           )}
 
           {activeTab === "customers" && (
-            <button
-              onClick={() => {
-                setErrorMsg("");
-                setSuccessMsg("");
-                setShowCreateCustomerModal(true);
-              }}
+            <Link
+              href="/office/customers/new"
               className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Customer</span>
-            </button>
+            </Link>
           )}
 
           {activeTab === "suppliers" && (
-            <button
-              onClick={() => {
-                setErrorMsg("");
-                setSuccessMsg("");
-                setShowCreateSupplierModal(true);
-              }}
+            <Link
+              href="/office/suppliers/new"
               className="w-full sm:w-auto flex items-center justify-center space-x-1.5 px-3.5 py-2 sm:py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-sm text-xs font-semibold shadow-xs transition"
             >
               <Plus className="h-3.5 w-3.5" />
               <span>Add Supplier</span>
-            </button>
+            </Link>
           )}
         </div>
       </div>
@@ -530,23 +321,20 @@ export default function OfficeClient({
 
                   {isSuperAdminUser && (
                     <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
-                      <button
-                        onClick={() => openAccessModal(u)}
+                      <Link
+                        href={`/office/users/${u.id}/access`}
                         className="flex items-center space-x-1 px-2.5 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded"
                       >
                         <ShieldCheck className="h-3.5 w-3.5" />
                         <span>Access</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedUserForPassword(u);
-                          setShowResetPasswordModal(true);
-                        }}
+                      </Link>
+                      <Link
+                        href={`/office/users/${u.id}/password`}
                         className="flex items-center space-x-1 px-2.5 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded"
                       >
                         <KeyRound className="h-3.5 w-3.5" />
                         <span>Reset Password</span>
-                      </button>
+                      </Link>
                       <button
                         onClick={() => handleToggleStatus(u)}
                         disabled={isPending}
@@ -646,23 +434,20 @@ export default function OfficeClient({
                       <td className="px-4 py-3 text-right space-x-2">
                         {isSuperAdminUser && (
                           <>
-                            <button
-                              onClick={() => openAccessModal(u)}
+                            <Link
+                              href={`/office/users/${u.id}/access`}
                               title="Manage Access"
                               className="p-1 text-slate-400 hover:text-blue-700 transition"
                             >
                               <ShieldCheck className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedUserForPassword(u);
-                                setShowResetPasswordModal(true);
-                              }}
+                            </Link>
+                            <Link
+                              href={`/office/users/${u.id}/password`}
                               title="Reset Password"
                               className="p-1 text-slate-400 hover:text-slate-800 transition"
                             >
                               <KeyRound className="h-4 w-4" />
-                            </button>
+                            </Link>
                             <button
                               onClick={() => handleToggleStatus(u)}
                               title={u.status === "ACTIVE" ? "Deactivate User" : "Activate User"}
@@ -897,483 +682,6 @@ export default function OfficeClient({
         </div>
       )}
 
-      {/* CREATE USER MODAL */}
-      {showAccessModal && selectedUserForAccess && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-                <ShieldCheck className="h-4 w-4 text-blue-600" />
-                <span>Manage access: {selectedUserForAccess.name}</span>
-              </h3>
-              <button onClick={() => setShowAccessModal(false)} className="text-slate-400 hover:text-slate-600 text-xs">
-                ✕
-              </button>
-            </div>
-            <form onSubmit={handleSaveAccess} className="p-4 sm:p-6 space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Main role *</label>
-                <PrimaryRoleSelect
-                  value={accessRole}
-                  onChange={(v) => {
-                    setAccessRole(v);
-                    setAccessPermissions(presetFor(v));
-                  }}
-                />
-              </div>
-
-              <PermissionMatrix role={accessRole} selected={accessPermissions} onChange={setAccessPermissions} />
-
-              {accessRole === "WAREHOUSE_MANAGER" && (
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Assigned Warehouse *</label>
-                  <select
-                    value={accessWarehouseId}
-                    onChange={(e) => setAccessWarehouseId(e.target.value)}
-                    required
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  >
-                    <option value="">-- Select Warehouse --</option>
-                    {warehouses.map((wh) => (
-                      <option key={wh.id} value={wh.id}>
-                        {wh.name} ({wh.code})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <p className="text-[11px] text-slate-500">
-                Saving replaces this member&apos;s role and permissions with the selection above. It takes effect the next time they open a page.
-              </p>
-
-              {errorMsg && <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 rounded">{errorMsg}</div>}
-
-              <div className="flex justify-end space-x-2 pt-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setShowAccessModal(false)}
-                  className="px-3.5 py-2 text-xs font-semibold text-slate-600 border border-slate-200 rounded hover:bg-slate-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="px-3.5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-60"
-                >
-                  {isPending ? "Saving..." : "Save access"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {showCreateUserModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
-              <h3 className="font-bold text-slate-900 text-sm flex items-center space-x-2">
-                <ShieldCheck className="h-4 w-4 text-blue-600" />
-                <span>Create New User / Employee</span>
-              </h3>
-              <button
-                onClick={() => setShowCreateUserModal(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 text-xs rounded hover:bg-slate-200"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateUser} className="p-4 sm:p-6 space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Full Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  placeholder="e.g. Ramesh Kumar"
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Role *</label>
-                  <select
-                    value={userRole}
-                    onChange={(e) => {
-                      setUserRole(e.target.value as any);
-                      setUserPermissions(presetFor(e.target.value));
-                    }}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 font-medium"
-                  >
-                    <option value="SALES_PERSON">Sales Person</option>
-                    <option value="WAREHOUSE_MANAGER">Warehouse Manager</option>
-                    <option value="SUPER_ADMIN">Super Admin</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Employee ID</label>
-                  <input
-                    type="text"
-                    value={userEmployeeNo}
-                    onChange={(e) => setUserEmployeeNo(e.target.value)}
-                    placeholder="e.g. EMP-0001"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">
-                    Email Address (Optional if phone provided)
-                  </label>
-                  <input
-                    type="email"
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
-                    placeholder="e.g. ramesh@inventory.com"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">
-                    Phone Number (Optional if email provided)
-                  </label>
-                  <input
-                    type="tel"
-                    value={userPhone}
-                    onChange={(e) => setUserPhone(e.target.value)}
-                    placeholder="e.g. 9876543210"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <PermissionMatrix role={userRole} selected={userPermissions} onChange={setUserPermissions} />
-
-              {userRole === "WAREHOUSE_MANAGER" && (
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Assigned Warehouse *</label>
-                  <select
-                    value={userWarehouseId}
-                    onChange={(e) => setUserWarehouseId(e.target.value)}
-                    required
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  >
-                    <option value="">-- Select Warehouse --</option>
-                    {warehouses.map((wh) => (
-                      <option key={wh.id} value={wh.id}>
-                        {wh.name} ({wh.code})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Initial Password *</label>
-                  <input
-                    type="password"
-                    required
-                    value={userPassword}
-                    onChange={(e) => setUserPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Status</label>
-                  <select
-                    value={userStatus}
-                    onChange={(e) => setUserStatus(e.target.value as any)}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 font-medium"
-                  >
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t flex flex-col-reverse sm:flex-row justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateUserModal(false)}
-                  className="w-full sm:w-auto px-4 py-2 border rounded text-slate-600 hover:bg-slate-50 font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold disabled:opacity-50"
-                >
-                  {isPending ? "Creating..." : "Create User"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* RESET PASSWORD MODAL */}
-      {showResetPasswordModal && selectedUserForPassword && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in-95 duration-100">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-              <h3 className="font-bold text-slate-900 text-sm">
-                Reset Password for {selectedUserForPassword.name}
-              </h3>
-              <button
-                onClick={() => setShowResetPasswordModal(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 text-xs rounded hover:bg-slate-200"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleResetPassword} className="p-4 sm:p-6 space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">New Password *</label>
-                <input
-                  type="password"
-                  required
-                  minLength={6}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Min 6 characters"
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="pt-4 border-t flex flex-col-reverse sm:flex-row justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowResetPasswordModal(false)}
-                  className="w-full sm:w-auto px-3 py-2 border rounded text-slate-600 font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold disabled:opacity-50"
-                >
-                  {isPending ? "Resetting..." : "Save Password"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE CUSTOMER MODAL */}
-      {showCreateCustomerModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
-              <h3 className="font-bold text-slate-900 text-sm">Add New Customer</h3>
-              <button
-                onClick={() => setShowCreateCustomerModal(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 text-xs rounded hover:bg-slate-200"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateCustomer} className="p-4 sm:p-6 space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Customer Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={custName}
-                  onChange={(e) => setCustName(e.target.value)}
-                  placeholder="e.g. Aditi Tiles & Interiors"
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Phone</label>
-                  <input
-                    type="tel"
-                    value={custPhone}
-                    onChange={(e) => setCustPhone(e.target.value)}
-                    placeholder="e.g. 9876543210"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Email</label>
-                  <input
-                    type="email"
-                    value={custEmail}
-                    onChange={(e) => setCustEmail(e.target.value)}
-                    placeholder="e.g. aditi@gmail.com"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">GSTIN</label>
-                  <input
-                    type="text"
-                    value={custGstin}
-                    onChange={(e) => setCustGstin(e.target.value)}
-                    placeholder="e.g. 33AABCU9603R1ZM"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 uppercase"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Credit Limit (₹)</label>
-                  <input
-                    type="number"
-                    value={custCreditLimit}
-                    onChange={(e) => setCustCreditLimit(Number(e.target.value))}
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Billing Address</label>
-                <textarea
-                  value={custAddress}
-                  onChange={(e) => setCustAddress(e.target.value)}
-                  placeholder="Street, City, State, Pincode"
-                  rows={2}
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="pt-4 border-t flex flex-col-reverse sm:flex-row justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateCustomerModal(false)}
-                  className="w-full sm:w-auto px-4 py-2 border rounded text-slate-600 font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold disabled:opacity-50"
-                >
-                  {isPending ? "Saving..." : "Save Customer"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE SUPPLIER MODAL */}
-      {showCreateSupplierModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-3 sm:p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-100">
-            <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50 sticky top-0 z-10">
-              <h3 className="font-bold text-slate-900 text-sm">Add New Supplier</h3>
-              <button
-                onClick={() => setShowCreateSupplierModal(false)}
-                className="p-1 text-slate-400 hover:text-slate-600 text-xs rounded hover:bg-slate-200"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleCreateSupplier} className="p-4 sm:p-6 space-y-4 text-xs">
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Supplier Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={supName}
-                  onChange={(e) => setSupName(e.target.value)}
-                  placeholder="e.g. Kajaria Ceramics Ltd"
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Phone</label>
-                  <input
-                    type="tel"
-                    value={supPhone}
-                    onChange={(e) => setSupPhone(e.target.value)}
-                    placeholder="e.g. 044-24567890"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-slate-700">Email</label>
-                  <input
-                    type="email"
-                    value={supEmail}
-                    onChange={(e) => setSupEmail(e.target.value)}
-                    placeholder="e.g. vendor@kajaria.com"
-                    className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">GSTIN</label>
-                <input
-                  type="text"
-                  value={supGstin}
-                  onChange={(e) => setSupGstin(e.target.value)}
-                  placeholder="e.g. 33AAACK1234F1Z8"
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500 uppercase"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-semibold text-slate-700">Address</label>
-                <textarea
-                  value={supAddress}
-                  onChange={(e) => setSupAddress(e.target.value)}
-                  placeholder="Vendor facility address"
-                  rows={2}
-                  className="w-full p-2 border rounded text-xs focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
-
-              <div className="pt-4 border-t flex flex-col-reverse sm:flex-row justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreateSupplierModal(false)}
-                  className="w-full sm:w-auto px-4 py-2 border rounded text-slate-600 font-medium"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-semibold disabled:opacity-50"
-                >
-                  {isPending ? "Saving..." : "Save Supplier"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
