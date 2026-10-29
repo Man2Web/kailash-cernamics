@@ -27,7 +27,7 @@ import {
 import ProductQrScanner from "@/components/erp/ProductQrScanner";
 import { useFullPageForm } from "@/lib/ui/use-full-page-form";
 import SearchSelect from "@/components/erp/SearchSelect";
-import { FormPageHeader, FormSection } from "@/components/erp/FormPage";
+import { FormActions, FormPageHeader, FormSection } from "@/components/erp/FormPage";
 
 interface ProductRow {
   id: string;
@@ -254,199 +254,205 @@ export default function StockClient({
   const productForm = (
       <form id="product-form" onSubmit={handleCreateProduct} className="space-y-5">
         <FormSection number={1} title="Product Details">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Product Name *</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Product Name *</label>
             <input
               type="text"
               required
               value={pName}
               onChange={(e) => setPName(e.target.value)}
               placeholder="e.g. Kajaria White Ceramic Tiles"
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Product SKU *</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Product SKU *</label>
             <input
               type="text"
               required
               value={pSku}
               onChange={(e) => setPSku(e.target.value)}
               placeholder="e.g. KA-WT-12X12"
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Product Code *</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Product Code *</label>
             <input
               type="text"
               required
               value={pCode}
               onChange={(e) => setPCode(e.target.value)}
               placeholder="e.g. PRD0001"
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Barcode</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Barcode</label>
             <input
               type="text"
               value={pBarcode}
               onChange={(e) => setPBarcode(e.target.value)}
               placeholder="Barcode string"
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
 
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Category *</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Category *</label>
             <SearchSelect
               value={pCategoryId}
               onChange={(v) => setPCategoryId(v)}
               required
               placeholder="Type to search category"
               options={categories.map((c) => ({ value: c.id, label: `${c.name} (${c.code})` }))}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Brand</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Brand</label>
             <SearchSelect
               value={pBrandId}
               onChange={(v) => setPBrandId(v)}
               placeholder="Type to search brand"
               options={brands.map((b) => ({ value: b.id, label: `${b.name}` }))}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Unit of Measurement *</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Unit of Measurement *</label>
             <SearchSelect
               value={pUnitId}
               onChange={(v) => setPUnitId(v)}
               required
               placeholder="Type to search unit"
               options={units.map((u) => ({ value: u.id, label: `${u.name} (${u.code})` }))}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">HSN/SAC Code</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">HSN/SAC Code</label>
             <input
               type="text"
               value={pHsn}
               onChange={(e) => setPHsn(e.target.value)}
               placeholder="HSN Number"
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
 
           </div>
         </FormSection>
         <FormSection number={2} title="Pricing & Tax">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Purchase Price (₹) *</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Purchase Price (₹) *</label>
             <input
               type="number"
               step="0.01"
               required
               value={pPurchasePrice}
               onChange={(e) => setPPurchasePrice(e.target.value)}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Selling Price (₹) *</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Selling Price (₹) *</label>
             <input
               type="number"
               step="0.01"
               required
               value={pSellingPrice}
               onChange={(e) => setPSellingPrice(e.target.value)}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">MRP (₹) *</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">MRP (₹) *</label>
             <input
               type="number"
               step="0.01"
               required
               value={pMrp}
               onChange={(e) => setPMrp(e.target.value)}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">GST Rate (%)</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">GST Rate (%)</label>
             <SearchSelect
               value={pGstRate}
               onChange={(v) => setPGstRate(v)}
               placeholder="Type to search"
               options={[{ value: "0", label: "0%" }, { value: "5", label: "5%" }, { value: "12", label: "12%" }, { value: "18", label: "18%" }, { value: "28", label: "28%" }]}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
 
           </div>
         </FormSection>
         <FormSection number={3} title="Stock Levels & Description">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Minimum Stock Threshold</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Minimum Stock Threshold</label>
             <input
               type="number"
               value={pMinStock}
               onChange={(e) => setPMinStock(e.target.value)}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Reorder Alert Level</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Reorder Alert Level</label>
             <input
               type="number"
               value={pReorder}
               onChange={(e) => setPReorder(e.target.value)}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
 
           {/* Opening stock */}
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Opening Warehouse</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Opening Warehouse</label>
             <SearchSelect
               value={pWarehouseId}
               onChange={(v) => setPWarehouseId(v)}
               placeholder="Type to search warehouse"
               options={warehouses.map((w) => ({ value: w.id, label: `${w.name}` }))}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm bg-white focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+              className="w-full"
             />
           </div>
-          <div className="space-y-1">
-            <label className="font-semibold text-slate-600">Opening Stock Qty</label>
+          <div className="space-y-1.5">
+            <label className="font-semibold text-slate-700">Opening Stock Qty</label>
             <input
               type="number"
               disabled={!pWarehouseId}
               value={pOpeningStock}
               onChange={(e) => setPOpeningStock(e.target.value)}
-              className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900 disabled:bg-slate-100 disabled:cursor-not-allowed"
+              className="w-full"
             />
           </div>
           </div>
-        <div className="space-y-1">
-          <label className="font-semibold text-slate-600">Description</label>
+        <div className="space-y-1.5">
+          <label className="font-semibold text-slate-700">Description</label>
           <textarea
             value={pDesc}
             onChange={(e) => setPDesc(e.target.value)}
             placeholder="Details about product..."
-            rows={2}
-            className="w-full px-2.5 py-1.5 border border-slate-300 rounded-sm focus:ring-1 focus:ring-blue-500 outline-none text-slate-900"
+            rows={3}
+            className="w-full"
           />
         </div>
 
         </FormSection>
+        <FormActions
+          submitLabel="Create Product"
+          pendingLabel="Creating..."
+          pending={isPending}
+          onCancel={() => setShowProductForm(false)}
+        />
       </form>
   );
 
@@ -1000,15 +1006,12 @@ export default function StockClient({
 
       {/* ADD PRODUCT (own page: /stock/new) */}
       {startWithForm === "product" && showProductForm && !viewOnly && (
-        <div className="w-full max-w-5xl space-y-5">
+        <div className="w-full space-y-5">
           <FormPageHeader
             title="Add Product"
             subtitle="Create the product master and record its opening stock in a warehouse."
             icon={<Package className="h-6 w-6 text-blue-600" />}
             onBack={() => setShowProductForm(false)}
-            submitLabel="Create Product"
-            formId="product-form"
-            pending={isPending}
           />
           {productForm}
         </div>
