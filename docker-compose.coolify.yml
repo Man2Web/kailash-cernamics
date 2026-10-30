@@ -1,0 +1,147 @@
+# Production stack for Coolify on the shared Hostinger KVM 4 VPS (Docker Compose build pack).
+# In Coolify: Docker Compose Location = /docker-compose.coolify.yml, then set the domain of the
+# "web" service to https://<domain>:3000 (the :3000 tells Coolify the container port).
+#
+# Only "web" is public. The browser talks to one origin; Next.js forwards /api/* to the "api"
+# service on the internal network, so the API, database and Redis have no public ports.
+# Uploaded files live on the kailash-ceramics-files volume (MinIO no longer ships images).
+#
+# Secrets are Coolify "magic" variables: Coolify generates them once, keeps them, and shows them
+# under Environment Variables. SERVICE_PASSWORD_OWNER is the owner's first login password
+# (admin@kailashceramics.com); change it in My account after the first sign-in.
+#
+# SEED_DEMO=true loads demo tiles/stock/invoices for showing the client; set it to "false" before
+# go-live (the demo data must then be cleared). SEED_DEMO_USERS=false keeps the demo role logins
+# disabled, so only the owner can sign in.
+#
+# CPU/memory limits keep the other projects on this VPS (e.g. Geetha Timbers) from being starved.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: erp
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+      POSTGRES_DB: kailash_erp
+      TZ: UTC
+    volumes:
+      - kailash-ceramics-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U erp -d kailash_erp"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    cpus: "1.0"
+    mem_limit: 1g
+    shm_size: 128m
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "200mb", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - kailash-ceramics-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    cpus: "0.25"
+    mem_limit: 256m
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    restart: unless-stopped
+    expose:
+      - "4000"
+    environment:
+      NODE_ENV: production
+      TZ: Asia/Kolkata
+      PORT: "4000"
+      APP_URL: ${APP_URL:-https://kailash-ceramics.82.29.165.177.sslip.io}
+      DATABASE_URL: postgresql://erp:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/kailash_erp?schema=public
+      REDIS_URL: redis://redis:6379
+      JWT_ACCESS_SECRET: ${SERVICE_PASSWORD_64_JWTACCESS}
+      JWT_REFRESH_SECRET: ${SERVICE_PASSWORD_64_JWTREFRESH}
+      JWT_ACCESS_TTL: 15m
+      JWT_REFRESH_TTL: 7d
+      # uploads (product images, breakage/POD photos) on a persistent volume; set S3_ENDPOINT,
+      # S3_BUCKET, S3_ACCESS_KEY and S3_SECRET_KEY in Coolify to use S3-compatible storage instead
+      UPLOAD_DIR: /data/uploads
+      OWNER_PASSWORD: ${SERVICE_PASSWORD_OWNER}
+      SEED_DEMO: ${SEED_DEMO:-true}
+      SEED_DEMO_USERS: ${SEED_DEMO_USERS:-false}
+      # Traefik + Next.js sit in front of the API
+      TRUST_PROXY: "2"
+      COOKIE_SECURE: ${COOKIE_SECURE:-auto}
+      LOGIN_RATE_LIMIT: "5"
+      GSP_PROVIDER: ${GSP_PROVIDER:-}
+    # migrations and the idempotent seed run before every start
+    command: ["sh", "-c", "cd /app && node_modules/.bin/prisma migrate deploy && node_modules/.bin/tsx prisma/seed.ts && cd apps/api && node dist/main"]
+    volumes:
+      - kailash-ceramics-files:/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:4000/api/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 120s
+      retries: 3
+    cpus: "1.0"
+    mem_limit: 1g
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      TZ: Asia/Kolkata
+      DATABASE_URL: postgresql://erp:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/kailash_erp?schema=public
+      REDIS_URL: redis://redis:6379
+    command: ["node", "dist/worker"]
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      disable: true
+    cpus: "0.5"
+    mem_limit: 512m
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.web
+      args:
+        API_URL: http://api:4000
+    restart: unless-stopped
+    expose:
+      - "3000"
+    environment:
+      NODE_ENV: production
+      TZ: Asia/Kolkata
+      API_URL: http://api:4000
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 40s
+      retries: 3
+    cpus: "1.0"
+    mem_limit: 768m
+
+volumes:
+  kailash-ceramics-pgdata:
+  kailash-ceramics-redis:
+  kailash-ceramics-files:

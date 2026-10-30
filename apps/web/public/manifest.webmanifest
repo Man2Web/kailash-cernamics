@@ -1,0 +1,21 @@
+{
+  "name": "Kailash Ceramics ERP",
+  "short_name": "Kailash ERP",
+  "description": "Tiles & sanitaryware ERP: quotes, stock, follow-ups and site visits.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f2f7",
+  "theme_color": "#1d6a86",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "New lead", "url": "/crm/leads/new" },
+    { "name": "Today's follow-ups", "url": "/crm/followups" },
+    { "name": "Stock", "url": "/inventory/stock" }
+  ]
+}

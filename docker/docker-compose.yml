@@ -1,0 +1,73 @@
+# Local development infrastructure (Postgres 16, Redis 7, MinIO). Apps run with `pnpm dev`.
+#   docker compose -f docker/docker-compose.yml up -d postgres redis minio
+# The full stack (api, worker, web) is under the "app" profile:
+#   docker compose -f docker/docker-compose.yml --profile app up -d --build
+# Without Docker, `pnpm db:start` runs an embedded Postgres on the same port (5442).
+name: kailash-erp
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: erp
+      POSTGRES_PASSWORD: erp
+      POSTGRES_DB: kailash_erp
+      TZ: UTC
+    ports: ["127.0.0.1:5442:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U erp -d kailash_erp"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["127.0.0.1:6379:6379"]
+    volumes: [redisdata:/data]
+
+  minio:
+    image: minio/minio
+    command: ["server", "/data", "--console-address", ":9001"]
+    environment:
+      MINIO_ROOT_USER: ${S3_ACCESS_KEY:-kailash}
+      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY:-kailash-dev-secret}
+    ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
+    volumes: [miniodata:/data]
+
+  api:
+    profiles: [app]
+    build: { context: .., dockerfile: docker/Dockerfile.api }
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgresql://erp:erp@postgres:5432/kailash_erp
+      REDIS_URL: redis://redis:6379
+      S3_ENDPOINT: http://minio:9000
+    depends_on:
+      postgres: { condition: service_healthy }
+    command: ["sh", "-c", "cd /app && pnpm exec prisma migrate deploy && cd apps/api && node dist/main"]
+    ports: ["127.0.0.1:4000:4000"]
+
+  worker:
+    profiles: [app]
+    build: { context: .., dockerfile: docker/Dockerfile.api }
+    env_file: ../.env
+    environment:
+      DATABASE_URL: postgresql://erp:erp@postgres:5432/kailash_erp
+      REDIS_URL: redis://redis:6379
+    depends_on: [api, redis]
+    command: ["node", "dist/worker"]
+
+  web:
+    profiles: [app]
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+      args: { API_URL: "http://api:4000" }
+    depends_on: [api]
+    ports: ["127.0.0.1:3000:3000"]
+
+volumes:
+  pgdata:
+  redisdata:
+  miniodata:
