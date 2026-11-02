@@ -17,6 +17,8 @@ import { z } from "zod";
 import { listQuerySchema } from "@gc/shared";
 import { PrismaService } from "../prisma/prisma.service";
 import { CurrentUser, Perm, Public } from "../common/decorators";
+import { assertSuperAdmin } from "../common/super-admin";
+import { FEATURE_KEYS, type FeatureFlags, type FeatureKey } from "@gc/shared";
 import type { AuthUser } from "../common/context";
 import { ZodPipe } from "../common/zod.pipe";
 import { paginate, pickFilters } from "../common/pagination";
@@ -106,9 +108,31 @@ export class CoreController {
   @Perm("org.write")
   async saveSettings(@Body(new ZodPipe(z.record(z.string(), z.unknown()))) body: Record<string, unknown>) {
     const before = await this.settings.all();
-    for (const [k, v] of Object.entries(body)) await this.settings.set(k, v);
+    // Module on/off switches are the Super Admin's alone and have their own endpoint, so they are never taken from here.
+    for (const [k, v] of Object.entries(body)) if (!k.startsWith("feature.")) await this.settings.set(k, v);
     const after = await this.settings.all();
     await this.audit.log({ entity: "setting", entityId: "settings", action: "update", before, after });
+    return after;
+  }
+
+  // ---- module on/off switches
+  /** Which modules are switched on. Open to every signed-in user so menus and the dashboard can hide what is off. */
+  @Get("features")
+  features() {
+    return this.settings.features();
+  }
+
+  /** Turn whole modules on or off for the company, including for the Super Admin. Super Admin only. */
+  @Put("features")
+  async setFeatures(
+    @Body(new ZodPipe(z.object(Object.fromEntries(FEATURE_KEYS.map((k) => [k, z.boolean().optional()])) as Record<FeatureKey, z.ZodOptional<z.ZodBoolean>>))) body: Partial<FeatureFlags>,
+    @CurrentUser() me: AuthUser,
+  ) {
+    assertSuperAdmin(me);
+    const before = await this.settings.features();
+    await this.settings.setFeatures(body);
+    const after = await this.settings.features();
+    await this.audit.log({ entity: "setting", entityId: "features", action: "set_features", before, after });
     return after;
   }
 

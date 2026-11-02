@@ -10,6 +10,7 @@ import {
   usersRoleSchema,
   usersUpdateSchema,
 } from "@gc/shared";
+import { assertSuperAdmin } from "../../common/super-admin";
 import { PrismaService, Tx } from "../../prisma/prisma.service";
 import { AuditService } from "../../core/audit.service";
 import { CurrentUser, Perm } from "../../common/decorators";
@@ -35,10 +36,7 @@ const userSelect = {
   branches: { select: { branchId: true, branch: { select: { id: true, code: true, name: true } } } },
 } as const;
 
-/** Deciding who can see and do what (roles, the permission matrix, per-person access, Tally) belongs to the Super Admin alone. */
-export function assertSuperAdmin(me: AuthUser) {
-  if (me.roleCode !== "OWNER") throw new ForbiddenException("Only the Super Admin can change who can see and do what.");
-}
+export { assertSuperAdmin };
 
 @Controller()
 export class UsersController {

@@ -22,3 +22,4 @@ export * from "./schemas/inventory-lots";
 export * from "./schemas/inventory-ops";
 export * from "./schemas/inventory-samples";
 export * from "./schemas/office";
+export * from "./features";

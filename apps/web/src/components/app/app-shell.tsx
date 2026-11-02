@@ -34,7 +34,8 @@ import { cn } from "@/lib/utils";
 import { api, apiGet } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { CommandMenu, useCommandMenu } from "./command-menu";
-import { isActive, navGroups } from "./nav";
+import { FEATURES } from "@gc/shared";
+import { featureOf, isActive, navGroups, navVisible } from "./nav";
 
 export function BrandMark({ size = 28 }: { size?: number }) {
   // Four-tile mark drawn in CSS so it follows the theme colour; swap for the client logo later.
@@ -145,12 +146,13 @@ function UserMenu() {
 
 function SideNav() {
   const pathname = usePathname();
-  const { can } = useSession();
+  const { can, on, user: me } = useSession();
+  const isOwner = me.role.code === "OWNER";
   const { setOpenMobile } = useSidebar();
   return (
     <>
       {navGroups.map((g) => {
-        const items = g.items.filter((i) => !i.perm || can(i.perm));
+        const items = g.items.filter((i) => navVisible(i, can, on, isOwner));
         if (!items.length) return null;
         return (
           <SidebarGroup key={g.label || "main"} className="py-1">
@@ -207,6 +209,29 @@ function TopBar() {
   );
 }
 
+/** A page of a module the Super Admin has switched off: a plain explanation instead of broken screens. */
+function ModuleGate({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const { on, user } = useSession();
+  const feature = featureOf(pathname);
+  if (!feature || on(feature)) return <>{children}</>;
+  const label = FEATURES.find((f) => f.key === feature)?.label ?? feature;
+  return (
+    <div className="mx-auto max-w-md py-16 text-center">
+      <h1 className="text-[22px] font-bold">{label} is turned off</h1>
+      <p className="mt-2 text-[14px] text-muted-foreground">
+        {user.role.code === "OWNER" ? "You switched this module off. Nothing was deleted, and you can turn it back on at any time." : "The Super Admin has switched this module off for the company."}
+      </p>
+      <div className="mt-5 flex justify-center gap-3">
+        <Link href="/" className="rounded-lg bg-fill px-4 py-2 text-[14px] font-medium hover:bg-fill-strong">Back to dashboard</Link>
+        {user.role.code === "OWNER" && (
+          <Link href="/settings/modules" className="rounded-lg bg-tint px-4 py-2 text-[14px] font-medium text-white">Open modules on/off</Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <SidebarProvider>
@@ -228,7 +253,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </Sidebar>
         <SidebarInset className="min-w-0 bg-background">
           <TopBar />
-          <main className="mx-auto w-full max-w-[1400px] min-w-0 px-3 py-4 md:px-6 md:py-6">{children}</main>
+          <main className="mx-auto w-full max-w-[1400px] min-w-0 px-3 py-4 md:px-6 md:py-6">
+            <ModuleGate>{children}</ModuleGate>
+          </main>
         </SidebarInset>
       </CommandMenu>
     </SidebarProvider>

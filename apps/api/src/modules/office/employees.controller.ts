@@ -10,7 +10,7 @@ import { ZodPipe } from "../../common/zod.pipe";
 import { paginate, searchWhere } from "../../common/pagination";
 import { hashPassword } from "../../auth/auth.service";
 import { ATTENDANCE_DISPLAY_ROLE } from "./attendance.controller";
-import { assertSuperAdmin } from "../users/users.controller";
+import { assertSuperAdmin } from "../../common/super-admin";
 
 const include = {
   branch: { select: { id: true, code: true, name: true } },

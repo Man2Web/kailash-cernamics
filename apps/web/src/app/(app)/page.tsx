@@ -51,7 +51,7 @@ function short(paise: number) {
 }
 
 export default function DashboardPage() {
-  const { user, branch, can } = useSession();
+  const { user, branch, can, on } = useSession();
   const q = useApi<Dashboard>("/dashboard", undefined, { refetchInterval: 120_000 });
   const greeting = (() => {
     const h = Number(new Intl.DateTimeFormat("en-IN", { hour: "numeric", hour12: false, timeZone: "Asia/Kolkata" }).format(new Date()));
@@ -60,24 +60,24 @@ export default function DashboardPage() {
 
   const actions = (
     <>
-      {can("quotation.write") && (
+      {on("sales") && can("quotation.write") && (
         <Button asChild size="sm">
           <Link href="/sales/quotations/new">
             <FilePlus2 className="size-4" /> New quotation
           </Link>
         </Button>
       )}
-      {can("invoice.write") && (
+      {on("sales") && can("invoice.write") && (
         <Button asChild size="sm" variant="secondary">
           <Link href="/sales/invoices/new">New invoice</Link>
         </Button>
       )}
-      {can("receipt.write") && (
+      {on("accounts") && can("receipt.write") && (
         <Button asChild size="sm" variant="secondary">
           <Link href="/accounts/receipts/new">New receipt</Link>
         </Button>
       )}
-      {can("crm.write") && (
+      {on("crm") && can("crm.write") && (
         <Button asChild size="sm" variant="secondary">
           <Link href="/crm/leads/new">
             <UserPlus className="size-4" /> New lead
@@ -97,10 +97,10 @@ export default function DashboardPage() {
       <PageHeader title={`${greeting}, ${user.name.split(" ")[0]}`} description={branch ? `${branch.name} (${branch.code})` : undefined} actions={actions} />
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <KpiTile label="Sales today" value={short(d.salesTodayPaise)} sub={`${d.invoicesToday} invoice${d.invoicesToday === 1 ? "" : "s"} · collected ${short(d.receiptsTodayPaise)}`} icon={IndianRupee} tone="green" href="/sales/invoices" />
-        <KpiTile label="Sales this month" value={short(d.salesMonthPaise)} sub={`${d.invoicesMonth} invoices`} icon={TrendingUp} tone="blue" href="/reports" />
-        <KpiTile label="Outstanding" value={short(d.outstandingPaise)} sub={<span className={d.overduePaise ? "text-ios-red" : undefined}>{short(d.overduePaise)} overdue</span>} icon={HandCoins} tone={d.overduePaise ? "orange" : "teal"} href="/accounts/outstanding" />
-        {d.stockValuePaise !== null ? (
+        {on("sales") && <KpiTile label="Sales today" value={short(d.salesTodayPaise)} sub={`${d.invoicesToday} invoice${d.invoicesToday === 1 ? "" : "s"} · collected ${short(d.receiptsTodayPaise)}`} icon={IndianRupee} tone="green" href="/sales/invoices" />}
+        {on("sales") && <KpiTile label="Sales this month" value={short(d.salesMonthPaise)} sub={`${d.invoicesMonth} invoices`} icon={TrendingUp} tone="blue" href="/reports" />}
+        {on("accounts") && <KpiTile label="Outstanding" value={short(d.outstandingPaise)} sub={<span className={d.overduePaise ? "text-ios-red" : undefined}>{short(d.overduePaise)} overdue</span>} icon={HandCoins} tone={d.overduePaise ? "orange" : "teal"} href="/accounts/outstanding" />}
+        {!on("inventory") ? null : d.stockValuePaise !== null ? (
           <KpiTile label="Stock value (landed)" value={short(d.stockValuePaise)} sub={`${d.lowStockCount} items low`} icon={Boxes} tone="indigo" href="/inventory/stock" />
         ) : (
           <KpiTile label="Low stock items" value={d.lowStockCount} sub="at or below reorder level" icon={PackageX} tone="orange" href="/inventory/low-stock" />
@@ -116,17 +116,17 @@ export default function DashboardPage() {
             href="/settings/tally"
           />
         )}
-        <KpiTile label="Follow-ups due" value={d.followups.length} sub="today and overdue" icon={CalendarClock} tone={d.followups.length ? "blue" : "gray"} href="/crm/followups" />
-        <KpiTile label="Receipts today" value={short(d.receiptsTodayPaise)} icon={ReceiptIndianRupee} tone="teal" href="/accounts/receipts" />
+        {on("crm") && <KpiTile label="Follow-ups due" value={d.followups.length} sub="today and overdue" icon={CalendarClock} tone={d.followups.length ? "blue" : "gray"} href="/crm/followups" />}
+        {on("accounts") && <KpiTile label="Receipts today" value={short(d.receiptsTodayPaise)} icon={ReceiptIndianRupee} tone="teal" href="/accounts/receipts" />}
       </div>
 
-      <AttendanceTodayCard />
+      {on("office") && <AttendanceTodayCard />}
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <Section title="Top brands this month">
+        {on("sales") && <Section title="Top brands this month">
           {d.topBrands.length ? <BarList items={d.topBrands.map((b) => ({ name: b.name, value: b.valuePaise }))} format={short} /> : <EmptyState title="No sales yet this month" className="py-6" />}
-        </Section>
-        <Section title="Low stock" actions={<Link href="/inventory/low-stock" className="text-[13px] text-tint hover:underline">View all</Link>}>
+        </Section>}
+        {on("inventory") && <Section title="Low stock" actions={<Link href="/inventory/low-stock" className="text-[13px] text-tint hover:underline">View all</Link>}>
           {d.lowStock.length ? (
             <ul className="divide-y divide-border">
               {d.lowStock.map((p) => (
@@ -145,8 +145,8 @@ export default function DashboardPage() {
           ) : (
             <EmptyState title="Stock is healthy" className="py-6" />
           )}
-        </Section>
-        <Section title="Today's follow-ups" actions={<Link href="/crm/followups" className="text-[13px] text-tint hover:underline">Open</Link>}>
+        </Section>}
+        {on("crm") && <Section title="Today's follow-ups" actions={<Link href="/crm/followups" className="text-[13px] text-tint hover:underline">Open</Link>}>
           {d.followups.length ? (
             <ul className="divide-y divide-border">
               {d.followups.map((f) => {
@@ -172,7 +172,7 @@ export default function DashboardPage() {
           ) : (
             <EmptyState title="No follow-ups due" className="py-6" />
           )}
-        </Section>
+        </Section>}
       </div>
       <p className="mt-4 text-[12px] text-muted-foreground">{labelOf(user.role.code)} view · figures for the selected branch · refreshed every 2 minutes</p>
     </>

@@ -36,6 +36,7 @@ import {
   SlidersHorizontal,
   Store,
   Tags,
+  ToggleRight,
   Truck,
   Undo2,
   Upload,
@@ -44,13 +45,15 @@ import {
   Wallet,
   Warehouse,
 } from "lucide-react";
-import type { PermissionCode } from "@gc/shared";
+import type { FeatureKey, PermissionCode } from "@gc/shared";
 
 export interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
   perm?: PermissionCode;
+  /** Only the Super Admin sees this entry. */
+  ownerOnly?: boolean;
 }
 
 export interface NavGroup {
@@ -153,6 +156,7 @@ export const navGroups: NavGroup[] = [
     items: [
       { href: "/settings", label: "General", icon: Settings, perm: "org.read" },
       { href: "/settings/branches", label: "Branches & godowns", icon: Building2, perm: "org.read" },
+      { href: "/settings/modules", label: "Modules on/off", icon: ToggleRight, ownerOnly: true },
       { href: "/settings/users", label: "Users", icon: UserCog, perm: "user.read" },
       { href: "/settings/roles", label: "Roles & permissions", icon: ShieldCheck, perm: "user.read" },
       { href: "/settings/vehicles", label: "Vehicles", icon: Truck, perm: "org.read" },
@@ -163,6 +167,21 @@ export const navGroups: NavGroup[] = [
     ],
   },
 ];
+
+/** Which company module a menu entry belongs to, by its address. The Super Admin can switch each module off. */
+export function featureOf(href: string): FeatureKey | undefined {
+  if (href === "/settings/tally") return "tally";
+  const first = href.split("/")[1];
+  return ({ sales: "sales", purchase: "purchase", inventory: "inventory", accounts: "accounts", crm: "crm", reports: "reports", office: "office" } as Record<string, FeatureKey>)[first];
+}
+
+/** Shown only if the person may use it and its module is switched on. */
+export function navVisible(i: NavItem, can: (...p: PermissionCode[]) => boolean, on: (f: FeatureKey) => boolean, isOwner: boolean): boolean {
+  if (i.ownerOnly && !isOwner) return false;
+  const f = featureOf(i.href);
+  if (f && !on(f)) return false;
+  return !i.perm || can(i.perm);
+}
 
 export function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";

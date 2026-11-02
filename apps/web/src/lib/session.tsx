@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { PermissionCode, SessionUser } from "@gc/shared";
+import type { FeatureFlags, FeatureKey, PermissionCode, SessionUser } from "@gc/shared";
 import { apiGet, getBranchId, setBranchId } from "./api";
 
 interface SessionCtx {
@@ -11,6 +11,8 @@ interface SessionCtx {
   branch: SessionUser["branches"][number] | undefined;
   setBranch: (id: string) => void;
   can: (...perms: PermissionCode[]) => boolean;
+  /** Is this module switched on for the company? (The Super Admin turns modules on and off.) */
+  on: (feature: FeatureKey) => boolean;
 }
 
 const Ctx = createContext<SessionCtx | null>(null);
@@ -18,6 +20,7 @@ const Ctx = createContext<SessionCtx | null>(null);
 export function SessionProvider({ children, fallback }: { children: React.ReactNode; fallback: React.ReactNode }) {
   const qc = useQueryClient();
   const me = useQuery({ queryKey: ["/auth/me"], queryFn: () => apiGet<SessionUser>("/auth/me"), staleTime: 60_000 });
+  const features = useQuery({ queryKey: ["/features"], queryFn: () => apiGet<FeatureFlags>("/features"), staleTime: 30_000 });
   const [branchId, setBranchState] = useState<string>("");
 
   useEffect(() => {
@@ -33,8 +36,9 @@ export function SessionProvider({ children, fallback }: { children: React.ReactN
   }, [me.data]);
 
   const value = useMemo<SessionCtx | null>(() => {
-    if (!me.data || !branchId) return null;
+    if (!me.data || !branchId || !features.data) return null;
     const perms = new Set(me.data.permissions);
+    const flags = features.data;
     return {
       user: me.data,
       branchId,
@@ -45,8 +49,9 @@ export function SessionProvider({ children, fallback }: { children: React.ReactN
         qc.invalidateQueries();
       },
       can: (...p) => p.every((x) => perms.has(x)),
+      on: (f) => flags[f] !== false,
     };
-  }, [me.data, branchId, qc]);
+  }, [me.data, branchId, qc, features.data]);
 
   // Signed in but with no branch: say so, rather than showing the loading screen forever.
   if (!value && me.data && me.data.role.code !== "ATTENDANCE_DISPLAY" && me.data.branches.length === 0) {

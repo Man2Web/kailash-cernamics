@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable } from "@nestjs/com
 import { Prisma } from "@prisma/client";
 import { ageingBucket, daysBetween } from "@gc/shared";
 import { PrismaService } from "../../prisma/prisma.service";
+import { SettingsService } from "../../core/settings.service";
 import type { AuthUser } from "../../common/context";
 
 const n = (v: bigint | number | null | undefined) => Number(v ?? 0);
@@ -40,7 +41,10 @@ export const REPORTS: { key: string; title: string; perm?: "cost.read" }[] = [
 
 @Injectable()
 export class ReportsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly settings: SettingsService,
+  ) {}
 
   // ------------------------------------------------------------------ dashboard
 
@@ -49,6 +53,7 @@ export class ReportsService {
     const month = istStartOfMonth();
     const posted = { status: "POSTED" as const, deletedAt: null, branchId };
     const canCost = user.permissions.has("cost.read");
+    const tallyOn = await this.settings.isFeatureOn("tally");
     const tomorrow = new Date(today.getTime() + 86_400_000);
 
     const [salesToday, salesMonth, openInv, pendingApprovals, queuePending, queueFailed, agents, monthLines, products, balances, followups, receiptsToday] = await Promise.all([
@@ -113,7 +118,7 @@ export class ReportsService {
       overduePaise: overdue,
       stockValuePaise,
       pendingApprovals,
-      tally: !user.permissions.has("tally.read") ? null : { pending: queuePending, failed: queueFailed, agents: agents.length, silentAgents: silentAgents.map((a) => a.name), lastSeenAt: agents.map((a) => a.lastSeenAt).filter(Boolean).sort().pop() ?? null },
+      tally: !user.permissions.has("tally.read") || !tallyOn ? null : { pending: queuePending, failed: queueFailed, agents: agents.length, silentAgents: silentAgents.map((a) => a.name), lastSeenAt: agents.map((a) => a.lastSeenAt).filter(Boolean).sort().pop() ?? null },
       topBrands,
       lowStockCount: lowStock.length,
       lowStock: lowStock.slice(0, 8),

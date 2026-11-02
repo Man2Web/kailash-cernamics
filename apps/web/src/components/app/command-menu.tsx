@@ -7,7 +7,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { apiGet } from "@/lib/api";
 import { useSession } from "@/lib/session";
-import { navGroups } from "./nav";
+import { navGroups, navVisible } from "./nav";
 
 const Ctx = createContext<{ open: () => void }>({ open: () => undefined });
 export const useCommandMenu = () => useContext(Ctx);
@@ -24,7 +24,7 @@ export function CommandMenu({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const router = useRouter();
-  const { can } = useSession();
+  const { can, on, user } = useSession();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -55,7 +55,7 @@ export function CommandMenu({ children }: { children: React.ReactNode }) {
     router.push(href);
   };
 
-  const pages = navGroups.flatMap((g) => g.items.filter((i) => !i.perm || can(i.perm)).map((i) => ({ ...i, group: g.label })));
+  const pages = navGroups.flatMap((g) => g.items.filter((i) => navVisible(i, can, on, user.role.code === "OWNER")).map((i) => ({ ...i, group: g.label })));
 
   return (
     <Ctx.Provider value={{ open: () => setOpen(true) }}>
