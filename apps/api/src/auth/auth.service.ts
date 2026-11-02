@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { hash, verify } from "@node-rs/argon2";
+import bcrypt from "bcryptjs";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import type { LoginInput, SessionUser } from "@gc/shared";
 import { PrismaService } from "../prisma/prisma.service";
@@ -52,8 +53,12 @@ export class AuthService {
       throw new UnauthorizedException("Email, mobile number or password is wrong");
     };
     if (!user || user.deletedAt || !user.isActive) return fail("unknown or inactive user", user?.id);
-    const ok = await verify(user.passwordHash, input.password).catch(() => false);
+    // Accounts moved over from the previous Kailash app still hold bcrypt hashes. They are accepted once, then upgraded
+    // to argon2 straight away, so employees keep their passwords and the old format disappears with use.
+    const legacy = /^\$2[aby]\$/.test(user.passwordHash);
+    const ok = legacy ? await bcrypt.compare(input.password, user.passwordHash).catch(() => false) : await verify(user.passwordHash, input.password).catch(() => false);
     if (!ok) return fail("bad password", user.id);
+    if (legacy) await this.prisma.user.update({ where: { id: user.id }, data: { passwordHash: await hashPassword(input.password) } });
     if (user.totpEnabled && user.totpSecret) {
       if (!input.totp) throw new UnauthorizedException({ message: "Enter the 6-digit code from your authenticator app", code: "TOTP_REQUIRED" });
       if (!verifyTotp(user.totpSecret, input.totp)) return fail("bad totp", user.id);

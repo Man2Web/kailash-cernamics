@@ -10,8 +10,7 @@
 # under Environment Variables. SERVICE_PASSWORD_OWNER is the owner's first login password
 # (admin@kailashceramics.com); change it in My account after the first sign-in.
 #
-# SEED_DEMO=true loads demo tiles/stock/invoices for showing the client; set it to "false" before
-# go-live (the demo data must then be cleared). SEED_DEMO_USERS=false keeps the demo role logins
+# SEED_DEMO defaults to false (no demo data). Set it to true in Coolify only for a showcase copy. SEED_DEMO_USERS=false keeps the demo role logins
 # disabled, so only the owner can sign in.
 #
 # CPU/memory limits keep the other projects on this VPS (e.g. Geetha Timbers) from being starved.
@@ -72,7 +71,8 @@ services:
       # S3_BUCKET, S3_ACCESS_KEY and S3_SECRET_KEY in Coolify to use S3-compatible storage instead
       UPLOAD_DIR: /data/uploads
       OWNER_PASSWORD: ${SERVICE_PASSWORD_OWNER}
-      SEED_DEMO: ${SEED_DEMO:-true}
+      # Real company: no demo products, stock or invoices. Set SEED_DEMO=true in Coolify only for a showcase copy.
+      SEED_DEMO: ${SEED_DEMO:-false}
       SEED_DEMO_USERS: ${SEED_DEMO_USERS:-false}
       # Traefik + Next.js sit in front of the API
       TRUST_PROXY: "2"
