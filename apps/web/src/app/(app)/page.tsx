@@ -21,6 +21,7 @@ import { EmptyState, ErrorState, LoadingPage } from "@/components/common/states"
 import { StatusBadge } from "@/components/common/status-badge";
 import { Button } from "@/components/ui/button";
 import { BarList, KpiTile } from "@/components/dashboard/kpi";
+import { AttendanceTodayCard } from "@/components/office/attendance-today-card";
 import { useApi } from "@/lib/api";
 import { useSession } from "@/lib/session";
 
@@ -116,6 +117,8 @@ export default function DashboardPage() {
         <KpiTile label="Follow-ups due" value={d.followups.length} sub="today and overdue" icon={CalendarClock} tone={d.followups.length ? "blue" : "gray"} href="/crm/followups" />
         <KpiTile label="Receipts today" value={short(d.receiptsTodayPaise)} icon={ReceiptIndianRupee} tone="teal" href="/accounts/receipts" />
       </div>
+
+      <AttendanceTodayCard />
 
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
         <Section title="Top brands this month">
