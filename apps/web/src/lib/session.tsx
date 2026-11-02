@@ -48,6 +48,17 @@ export function SessionProvider({ children, fallback }: { children: React.ReactN
     };
   }, [me.data, branchId, qc]);
 
+  // Signed in but with no branch: say so, rather than showing the loading screen forever.
+  if (!value && me.data && me.data.role.code !== "ATTENDANCE_DISPLAY" && me.data.branches.length === 0) {
+    return (
+      <div className="grid min-h-dvh place-items-center p-6 text-center">
+        <div className="max-w-sm space-y-2">
+          <h1 className="text-[20px] font-bold">No branch access yet</h1>
+          <p className="text-[14px] text-muted-foreground">Your login is not linked to a branch. Please ask the Super Admin to give you branch access.</p>
+        </div>
+      </div>
+    );
+  }
   if (!value) return <>{fallback}</>;
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

@@ -1,8 +1,9 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Query } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Put, Query } from "@nestjs/common";
 import { z } from "zod";
 import {
   listQuerySchema,
   PERMISSION_CODES,
+  userAccessSchema,
   usersCreateSchema,
   usersResetPasswordSchema,
   usersRolePermissionsSchema,
@@ -33,6 +34,11 @@ const userSelect = {
   role: { select: { id: true, code: true, name: true } },
   branches: { select: { branchId: true, branch: { select: { id: true, code: true, name: true } } } },
 } as const;
+
+/** Deciding who can see and do what (roles, the permission matrix, per-person access, Tally) belongs to the Super Admin alone. */
+export function assertSuperAdmin(me: AuthUser) {
+  if (me.roleCode !== "OWNER") throw new ForbiddenException("Only the Super Admin can change who can see and do what.");
+}
 
 @Controller()
 export class UsersController {
@@ -115,6 +121,55 @@ export class UsersController {
     return { ok: true };
   }
 
+  // ---- per-person access (Super Admin only)
+  private async accessOf(id: string) {
+    const u = await this.prisma.user.findFirst({
+      where: { id, deletedAt: null },
+      include: { role: { include: { permissions: { include: { permission: { select: { code: true } } } } } } },
+    });
+    if (!u) throw new NotFoundException();
+    const rolePermissions = u.role.permissions.map((p) => p.permission.code).sort();
+    const customPermissions = [...u.customPermissions].sort();
+    return {
+      userId: u.id,
+      roleCode: u.role.code,
+      roleName: u.role.name,
+      useCustomAccess: u.useCustomAccess,
+      rolePermissions,
+      customPermissions,
+      effective: u.useCustomAccess ? customPermissions : rolePermissions,
+    };
+  }
+
+  @Get("users/:id/access")
+  @Perm("user.read")
+  async getAccess(@Param("id") id: string, @CurrentUser() me: AuthUser) {
+    assertSuperAdmin(me);
+    return this.accessOf(id);
+  }
+
+  /** Give one person exactly the access chosen, or put them back on their role's defaults. */
+  @Put("users/:id/access")
+  @Perm("user.write")
+  async setAccess(@Param("id") id: string, @Body(new ZodPipe(userAccessSchema)) body: z.infer<typeof userAccessSchema>, @CurrentUser() me: AuthUser) {
+    assertSuperAdmin(me);
+    const unknown = body.codes.filter((c) => !(PERMISSION_CODES as string[]).includes(c));
+    if (unknown.length) throw new BadRequestException(`Unknown permissions: ${unknown.join(", ")}`);
+    const out = await this.prisma.tx(async (tx) => {
+      const target = await tx.user.findFirst({ where: { id, deletedAt: null }, include: { role: true } });
+      if (!target) throw new NotFoundException();
+      if (target.role.code === "OWNER") throw new BadRequestException("The Super Admin always has full access.");
+      const before = { useCustomAccess: target.useCustomAccess, codes: [...target.customPermissions].sort() };
+      const codes = [...new Set(body.codes)].sort();
+      await tx.user.update({ where: { id }, data: { useCustomAccess: body.useCustomAccess, customPermissions: codes, ...stampUpdate() } });
+      await this.audit.log({ entity: "user", entityId: id, action: "set_access", before, after: { useCustomAccess: body.useCustomAccess, codes } }, tx);
+      return true;
+    });
+    void out;
+    invalidateUserCache(id);
+    return this.accessOf(id);
+  }
+
   @Delete("users/:id")
   @Perm("user.write")
   async remove(@Param("id") id: string, @CurrentUser() me: AuthUser) {
@@ -159,7 +214,8 @@ export class UsersController {
 
   @Post("roles")
   @Perm("user.write")
-  async createRole(@Body(new ZodPipe(usersRoleSchema)) body: z.infer<typeof usersRoleSchema>) {
+  async createRole(@Body(new ZodPipe(usersRoleSchema)) body: z.infer<typeof usersRoleSchema>, @CurrentUser() me: AuthUser) {
+    assertSuperAdmin(me);
     return this.prisma.tx(async (tx) => {
       const r = await tx.role.create({ data: { ...body, ...stampCreate() } });
       await this.audit.log({ entity: "role", entityId: r.id, action: "create", after: r }, tx);
@@ -169,7 +225,8 @@ export class UsersController {
 
   @Patch("roles/:id")
   @Perm("user.write")
-  async updateRole(@Param("id") id: string, @Body(new ZodPipe(usersRoleSchema.partial())) body: Partial<z.infer<typeof usersRoleSchema>>) {
+  async updateRole(@Param("id") id: string, @Body(new ZodPipe(usersRoleSchema.partial())) body: Partial<z.infer<typeof usersRoleSchema>>, @CurrentUser() me: AuthUser) {
+    assertSuperAdmin(me);
     const out = await this.prisma.tx(async (tx) => {
       const before = await tx.role.findFirst({ where: { id, deletedAt: null } });
       if (!before) throw new NotFoundException();
@@ -184,7 +241,8 @@ export class UsersController {
 
   @Put("roles/:id/permissions")
   @Perm("user.write")
-  async setPermissions(@Param("id") id: string, @Body(new ZodPipe(usersRolePermissionsSchema)) body: { codes: string[] }) {
+  async setPermissions(@Param("id") id: string, @Body(new ZodPipe(usersRolePermissionsSchema)) body: { codes: string[] }, @CurrentUser() me: AuthUser) {
+    assertSuperAdmin(me);
     const unknown = body.codes.filter((c) => !(PERMISSION_CODES as string[]).includes(c));
     if (unknown.length) throw new BadRequestException(`Unknown permissions: ${unknown.join(", ")}`);
     const out = await this.prisma.tx(async (tx) => {
@@ -205,7 +263,8 @@ export class UsersController {
 
   @Delete("roles/:id")
   @Perm("user.write")
-  async removeRole(@Param("id") id: string) {
+  async removeRole(@Param("id") id: string, @CurrentUser() me: AuthUser) {
+    assertSuperAdmin(me);
     return this.prisma.tx(async (tx) => {
       const before = await tx.role.findFirst({ where: { id, deletedAt: null } });
       if (!before) throw new NotFoundException();

@@ -310,6 +310,9 @@ model User {
   isActive           Boolean           @default(true)
   totpSecret         String?
   totpEnabled        Boolean           @default(false)
+  /// When true, this person gets exactly customPermissions instead of their role's permissions (set by the Super Admin only).
+  useCustomAccess    Boolean           @default(false)
+  customPermissions  String[]          @default([])
   defaultBranchId    String?
   lastLoginAt        DateTime?
   branches           UserBranch[]

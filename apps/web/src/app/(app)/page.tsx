@@ -35,7 +35,7 @@ interface Dashboard {
   overduePaise: number;
   stockValuePaise: number | null;
   pendingApprovals: number;
-  tally: { pending: number; failed: number; agents: number; silentAgents: string[]; lastSeenAt: string | null };
+  tally: { pending: number; failed: number; agents: number; silentAgents: string[]; lastSeenAt: string | null } | null;
   topBrands: { name: string; valuePaise: number }[];
   lowStockCount: number;
   lowStock: { id: string; sku: string; name: string; reorderLevelPcs: number; availablePcs: number; pcsPerBox: number | null }[];
@@ -90,7 +90,7 @@ export default function DashboardPage() {
   if (q.isLoading) return <LoadingPage />;
   if (q.isError || !q.data) return <ErrorState error={q.error} retry={() => q.refetch()} />;
   const d = q.data;
-  const tallyTone = d.tally.failed > 0 || d.tally.silentAgents.length ? "red" : d.tally.pending > 0 ? "orange" : "green";
+  const tallyTone = !d.tally ? "gray" : d.tally.failed > 0 || d.tally.silentAgents.length ? "red" : d.tally.pending > 0 ? "orange" : "green";
 
   return (
     <>
@@ -106,14 +106,16 @@ export default function DashboardPage() {
           <KpiTile label="Low stock items" value={d.lowStockCount} sub="at or below reorder level" icon={PackageX} tone="orange" href="/inventory/low-stock" />
         )}
         <KpiTile label="Pending approvals" value={d.pendingApprovals} sub="discount, credit, stock" icon={CheckCheck} tone={d.pendingApprovals ? "orange" : "gray"} href="/approvals" />
-        <KpiTile
-          label="Tally sync"
-          value={d.tally.failed ? `${d.tally.failed} failed` : d.tally.pending ? `${d.tally.pending} pending` : "Up to date"}
-          sub={d.tally.agents ? (d.tally.silentAgents.length ? `Agent silent: ${d.tally.silentAgents.join(", ")}` : `Agent seen ${formatDateTime(d.tally.lastSeenAt)}`) : "No agent set up"}
-          icon={RefreshCcw}
-          tone={tallyTone}
-          href="/settings/tally"
-        />
+        {d.tally && (
+          <KpiTile
+            label="Tally sync"
+            value={d.tally.failed ? `${d.tally.failed} failed` : d.tally.pending ? `${d.tally.pending} pending` : "Up to date"}
+            sub={d.tally.agents ? (d.tally.silentAgents.length ? `Agent silent: ${d.tally.silentAgents.join(", ")}` : `Agent seen ${formatDateTime(d.tally.lastSeenAt)}`) : "No agent set up"}
+            icon={RefreshCcw}
+            tone={tallyTone}
+            href="/settings/tally"
+          />
+        )}
         <KpiTile label="Follow-ups due" value={d.followups.length} sub="today and overdue" icon={CalendarClock} tone={d.followups.length ? "blue" : "gray"} href="/crm/followups" />
         <KpiTile label="Receipts today" value={short(d.receiptsTodayPaise)} icon={ReceiptIndianRupee} tone="teal" href="/accounts/receipts" />
       </div>

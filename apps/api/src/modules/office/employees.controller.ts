@@ -1,6 +1,6 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, NotFoundException, Param, Patch, Post, Query } from "@nestjs/common";
 import { z } from "zod";
-import { employeeCreateSchema, employeeUpdateSchema, employeeWithLoginSchema, listQuerySchema } from "@gc/shared";
+import { employeeCreateSchema, employeeUpdateSchema, employeeWithLoginSchema, listQuerySchema, PERMISSION_CODES } from "@gc/shared";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AuditService } from "../../core/audit.service";
 import { CurrentUser, Perm } from "../../common/decorators";
@@ -10,6 +10,7 @@ import { ZodPipe } from "../../common/zod.pipe";
 import { paginate, searchWhere } from "../../common/pagination";
 import { hashPassword } from "../../auth/auth.service";
 import { ATTENDANCE_DISPLAY_ROLE } from "./attendance.controller";
+import { assertSuperAdmin } from "../users/users.controller";
 
 const include = {
   branch: { select: { id: true, code: true, name: true } },
@@ -77,8 +78,15 @@ export class EmployeesController {
     if (!role) throw new BadRequestException("Role not found");
     if (role.code === ATTENDANCE_DISPLAY_ROLE) throw new BadRequestException("The attendance screen login is not an employee. Create it under Users.");
     if (role.code === "OWNER" && me.roleCode !== "OWNER") throw new ForbiddenException("Only an owner can create another owner.");
+    // Choosing exactly what this person can see (Tally, finance, ...) is the Super Admin's decision alone.
+    if (body.access) {
+      assertSuperAdmin(me);
+      const unknown = body.access.codes.filter((c) => !(PERMISSION_CODES as string[]).includes(c));
+      if (unknown.length) throw new BadRequestException(`Unknown permissions: ${unknown.join(", ")}`);
+      if (role.code === "OWNER") throw new BadRequestException("The Super Admin always has full access.");
+    }
     const passwordHash = await hashPassword(body.password);
-    const { password: _p, roleId, branchIds, ...emp } = body;
+    const { password: _p, roleId, branchIds, access, ...emp } = body;
     return this.prisma.tx(async (tx) => {
       const user = await tx.user.create({
         data: {
@@ -88,10 +96,17 @@ export class EmployeesController {
           roleId,
           passwordHash,
           defaultBranchId: body.branchId ?? branchIds[0] ?? null,
+          useCustomAccess: !!access?.useCustomAccess,
+          customPermissions: access?.useCustomAccess ? [...new Set(access.codes)].sort() : [],
           ...stampCreate(),
         },
       });
-      const ids = branchIds.length ? branchIds : body.branchId ? [body.branchId] : [];
+      // "All branches" means every active branch. A login with no branch could not open the app at all.
+      const ids = branchIds.length
+        ? branchIds
+        : body.branchId
+          ? [body.branchId]
+          : (await tx.branch.findMany({ where: { deletedAt: null, isActive: true }, select: { id: true } })).map((b) => b.id);
       if (ids.length) await tx.userBranch.createMany({ data: ids.map((branchId) => ({ userId: user.id, branchId })), skipDuplicates: true });
       const e = await tx.employee.create({ data: { ...emp, branchId: body.branchId || null, userId: user.id, ...stampCreate() }, include });
       await this.audit.log({ entity: "employee", entityId: e.id, action: "create", after: { ...e, loginCreated: true } }, tx);

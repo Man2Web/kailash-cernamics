@@ -69,7 +69,7 @@ export function permissionModule(code: string): string {
 }
 
 const ALL = PERMISSION_CODES;
-const READS = ALL.filter((c) => c.endsWith(".read") && c !== "cost.read" && c !== "audit.read" && c !== "employee.read" && c !== "attendance.read");
+const READS = ALL.filter((c) => c.endsWith(".read") && c !== "cost.read" && c !== "audit.read" && c !== "employee.read" && c !== "attendance.read" && c !== "tally.read");
 
 /** Default roles and their permissions; the role matrix UI can change these later. */
 export const DEFAULT_ROLES: { code: string; name: string; discountLimitPct: number; permissions: PermissionCode[] }[] = [
@@ -78,7 +78,8 @@ export const DEFAULT_ROLES: { code: string; name: string; discountLimitPct: numb
     code: "BRANCH_MANAGER",
     name: "Branch manager",
     discountLimitPct: 15,
-    permissions: ALL.filter((c) => !["user.write", "org.write", "tally.write"].includes(c)),
+    // Tally stays with the Super Admin unless they choose to give it to a person.
+    permissions: ALL.filter((c) => !["user.write", "org.write", "tally.read", "tally.write"].includes(c)),
   },
   {
     code: "SALES",

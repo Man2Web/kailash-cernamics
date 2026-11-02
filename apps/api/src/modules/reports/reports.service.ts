@@ -113,7 +113,7 @@ export class ReportsService {
       overduePaise: overdue,
       stockValuePaise,
       pendingApprovals,
-      tally: { pending: queuePending, failed: queueFailed, agents: agents.length, silentAgents: silentAgents.map((a) => a.name), lastSeenAt: agents.map((a) => a.lastSeenAt).filter(Boolean).sort().pop() ?? null },
+      tally: !user.permissions.has("tally.read") ? null : { pending: queuePending, failed: queueFailed, agents: agents.length, silentAgents: silentAgents.map((a) => a.name), lastSeenAt: agents.map((a) => a.lastSeenAt).filter(Boolean).sort().pop() ?? null },
       topBrands,
       lowStockCount: lowStock.length,
       lowStock: lowStock.slice(0, 8),

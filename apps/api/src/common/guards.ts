@@ -36,7 +36,8 @@ export async function loadAuthUser(prisma: PrismaService, userId: string): Promi
     roleId: u.roleId,
     roleCode: u.role.code,
     discountLimitPct: u.role.discountLimitPct,
-    permissions: new Set(u.role.permissions.map((p) => p.permission.code)),
+    // The Super Admin can give one person exactly the access they choose instead of the role's defaults.
+    permissions: new Set(u.useCustomAccess ? u.customPermissions : u.role.permissions.map((p) => p.permission.code)),
     branchIds,
     defaultBranchId: u.defaultBranchId ?? branchIds[0] ?? null,
   };

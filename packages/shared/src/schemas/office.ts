@@ -32,6 +32,8 @@ export const employeeWithLoginSchema = employeeCreateSchema.omit({ userId: true 
   roleId: z.string().min(1, "Role is required"),
   password: z.string().min(8, "At least 8 characters"),
   branchIds: z.array(z.string()).default([]),
+  /** Super Admin only: pick exactly what this employee can see and do. Omit to use the role defaults. */
+  access: z.object({ useCustomAccess: z.boolean(), codes: z.array(z.string()).default([]) }).optional(),
 });
 
 export const attendanceCheckSchema = z.object({
@@ -63,3 +65,12 @@ export const attendancePublicSchema = z.object({
 export const attendanceTodayQuery = z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD").optional() });
 
 export const attendanceVerifySchema = z.object({ token: z.string().trim().max(200) });
+
+/**
+ * What one person can see and do. `useCustomAccess: false` means "whatever their role gives"; true means exactly `codes`.
+ * Only the Super Admin may send this.
+ */
+export const userAccessSchema = z.object({
+  useCustomAccess: z.boolean(),
+  codes: z.array(z.string()).default([]),
+});

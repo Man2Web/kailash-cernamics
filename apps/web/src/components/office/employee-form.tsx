@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { api, ApiError, useApi, useApiMutation } from "@/lib/api";
 import { useFormKeys } from "@/hooks/use-form-keys";
 import { useSession } from "@/lib/session";
+import { AccessPicker, type AccessValue } from "@/components/office/access-picker";
 
 export interface EmployeeRow {
   id: string;
@@ -45,11 +47,26 @@ const toDateInput = (iso?: string) => (iso ? iso.slice(0, 10) : new Date().toISO
 
 export function EmployeeForm({ employee }: { employee?: EmployeeRow }) {
   const router = useRouter();
-  const { can } = useSession();
+  const { can, user } = useSession();
   const editing = !!employee;
   const branches = useApi<{ items: { id: string; code: string; name: string }[] }>("/branches", { pageSize: 100 });
-  const roles = useApi<{ items: { id: string; name: string; code: string }[] }>(can("user.read") ? "/roles" : null, { pageSize: 100 });
+  const roles = useApi<{ items: { id: string; name: string; code: string; permissions: string[] }[] }>(can("user.read") ? "/roles" : null, { pageSize: 100 });
   const canLogin = !editing && can("user.write");
+  // Deciding what each person can see (Tally included) is the Super Admin's alone; others never see this section.
+  const isSuperAdmin = user.role.code === "OWNER";
+  const [access, setAccess] = useState<AccessValue>({ useCustomAccess: false, codes: [] });
+  const [savedAccess, setSavedAccess] = useState<string>("");
+  const loginUserId = employee?.user?.id ?? null;
+  const currentAccess = useApi<{ useCustomAccess: boolean; customPermissions: string[]; rolePermissions: string[]; roleName: string }>(
+    isSuperAdmin && loginUserId ? `/users/${loginUserId}/access` : null,
+  );
+  useEffect(() => {
+    const d = currentAccess.data;
+    if (!d) return;
+    const v = { useCustomAccess: d.useCustomAccess, codes: d.useCustomAccess ? d.customPermissions : d.rolePermissions };
+    setAccess(v);
+    setSavedAccess(JSON.stringify({ u: v.useCustomAccess, c: [...v.codes].sort() }));
+  }, [currentAccess.data]);
 
   const form = useForm<Values>({
     resolver: zodResolver(formSchema) as unknown as Resolver<Values>,
@@ -70,13 +87,23 @@ export function EmployeeForm({ employee }: { employee?: EmployeeRow }) {
   });
   const createLogin = form.watch("createLogin");
 
-  const save = useApiMutation((v: Values) => {
+  const save = useApiMutation(async (v: Values) => {
     const { createLogin: login, roleId, password, ...rest } = v;
     const body = { ...rest, branchId: rest.branchId || null, email: rest.email || null, phone: rest.phone || null };
-    if (editing) return api(`/employees/${employee!.id}`, { method: "PATCH", body });
-    if (login) return api("/employees/with-login", { method: "POST", body: { ...body, roleId, password, branchIds: body.branchId ? [body.branchId] : [] } });
+    if (editing) {
+      const out = await api(`/employees/${employee!.id}`, { method: "PATCH", body });
+      const now = JSON.stringify({ u: access.useCustomAccess, c: [...access.codes].sort() });
+      if (isSuperAdmin && loginUserId && now !== savedAccess) {
+        await api(`/users/${loginUserId}/access`, { method: "PUT", body: { useCustomAccess: access.useCustomAccess, codes: access.codes } });
+      }
+      return out;
+    }
+    if (login) {
+      const extra = isSuperAdmin && access.useCustomAccess ? { access: { useCustomAccess: true, codes: access.codes } } : {};
+      return api("/employees/with-login", { method: "POST", body: { ...body, roleId, password, branchIds: body.branchId ? [body.branchId] : [], ...extra } });
+    }
     return api("/employees", { method: "POST", body });
-  }, ["/employees", "/users", "/attendance"]);
+  }, ["/employees", "/users", "/attendance", "/auth/me"]);
 
   const submit = form.handleSubmit((v) =>
     save.mutate(v, {
@@ -162,6 +189,15 @@ export function EmployeeForm({ employee }: { employee?: EmployeeRow }) {
             <p className="text-[13.5px] text-muted-foreground">You can add the employee record. A login needs the user-management permission.</p>
           )}
         </Section>
+
+        {isSuperAdmin && ((!editing && canLogin && createLogin) || (editing && employee!.user)) && (
+          <AccessPicker
+            value={access}
+            onChange={setAccess}
+            roleName={editing ? employee!.user!.role.name : roles.data?.items.find((r) => r.id === form.watch("roleId"))?.name}
+            roleDefaults={editing ? (currentAccess.data?.rolePermissions ?? []) : (roles.data?.items.find((r) => r.id === form.watch("roleId"))?.permissions ?? [])}
+          />
+        )}
       </form>
     </>
   );

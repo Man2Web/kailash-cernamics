@@ -256,4 +256,101 @@ describe("office: employees and attendance", () => {
     expect((await login("9123456789", SEED_PASSWORD)).status).toBe(401); // unknown number
     expect((await login("12345", SEED_PASSWORD)).status).toBe(401); // too short to be a number
   });
+  it("Tally is Super Admin only by default: other roles cannot open it and the dashboard hides its figures", async () => {
+    const mgr = await loginAs(t.app, "manager@kailashceramics.com");
+    expect((await mgr.get("/api/tally/sync")).status).toBe(403);
+    expect((await mgr.get("/api/dashboard")).body.tally).toBeNull();
+    expect((await owner.get("/api/tally/sync")).status).toBe(200);
+    expect((await owner.get("/api/dashboard")).body.tally).not.toBeNull();
+  });
+
+  it("Super Admin picks exactly what a new employee can see while creating them", async () => {
+    const codes = ["catalogue.read", "stock.read", "tally.read"];
+    const c = await owner.post("/api/employees/with-login", {
+      employeeNo: "KC-070", name: "Custom Access", email: "custom@test.local", roleId: await roleId("SALES"), password: SEED_PASSWORD,
+      access: { useCustomAccess: true, codes },
+    });
+    expect(c.status).toBe(201);
+    const custom = await loginAs(t.app, "custom@test.local");
+    const me = await custom.get("/api/auth/me");
+    expect([...me.body.permissions].sort()).toEqual([...codes].sort());
+    expect((await custom.get("/api/products")).status).toBe(200); // catalogue.read
+    expect((await custom.get("/api/invoices")).status).toBe(403); // a Sales role would allow this; the custom choice does not
+    expect((await custom.get("/api/tally/sync")).status).toBe(200); // Tally given on purpose
+    expect((await custom.get("/api/attendance/today")).status).toBe(403);
+  });
+
+  it("Super Admin can change or take away access later, and put the person back on their role", async () => {
+    const user = await t.prisma.user.findUniqueOrThrow({ where: { email: "custom@test.local" } });
+    const custom = await loginAs(t.app, "custom@test.local");
+    expect((await custom.get("/api/tally/sync")).status).toBe(200);
+
+    const hide = await owner.put(`/api/users/${user.id}/access`, { useCustomAccess: true, codes: ["catalogue.read", "stock.read"] });
+    expect(hide.status).toBe(200);
+    expect(hide.body.effective).toEqual(["catalogue.read", "stock.read"]);
+    expect((await custom.get("/api/tally/sync")).status).toBe(403); // hidden straight away, no re-login needed
+
+    const back = await owner.put(`/api/users/${user.id}/access`, { useCustomAccess: false, codes: [] });
+    expect(back.body.useCustomAccess).toBe(false);
+    expect((await custom.get("/api/invoices")).status).toBe(200); // Sales role defaults apply again
+    expect((await custom.get("/api/tally/sync")).status).toBe(403); // and Tally is not part of any role
+
+    const shape = await owner.get(`/api/users/${user.id}/access`);
+    expect(shape.body).toMatchObject({ roleCode: "SALES", useCustomAccess: false });
+    expect(shape.body.rolePermissions.length).toBeGreaterThan(5);
+    expect(await t.prisma.auditLog.count({ where: { entity: "user", entityId: user.id, action: "set_access" } })).toBe(2);
+  });
+
+  it("access choices are validated, and the Super Admin account cannot be restricted", async () => {
+    const user = await t.prisma.user.findUniqueOrThrow({ where: { email: "custom@test.local" } });
+    expect((await owner.put(`/api/users/${user.id}/access`, { useCustomAccess: true, codes: ["not.a.permission"] })).status).toBe(400);
+    const admin = await t.prisma.user.findUniqueOrThrow({ where: { email: "admin@kailashceramics.com" } });
+    expect((await owner.put(`/api/users/${admin.id}/access`, { useCustomAccess: true, codes: ["stock.read"] })).status).toBe(400);
+    expect((await owner.put("/api/users/00000000-0000-0000-0000-000000000000/access", { useCustomAccess: false, codes: [] })).status).toBe(404);
+    const bad = await owner.post("/api/employees/with-login", {
+      employeeNo: "KC-071", name: "Bad Codes", email: "bad@test.local", roleId: await roleId("SALES"), password: SEED_PASSWORD,
+      access: { useCustomAccess: true, codes: ["nope"] },
+    });
+    expect(bad.status).toBe(400);
+    expect(await t.prisma.employee.count({ where: { employeeNo: "KC-071" } })).toBe(0); // nothing half-created
+  });
+
+  it("only the Super Admin can decide access: even someone allowed to manage users cannot", async () => {
+    // A user-manager who is not the Super Admin: custom access with user + employee write.
+    const c = await owner.post("/api/employees/with-login", {
+      employeeNo: "KC-072", name: "User Manager", email: "usermgr@test.local", roleId: await roleId("SALES"), password: SEED_PASSWORD,
+      access: { useCustomAccess: true, codes: ["user.read", "user.write", "employee.read", "employee.write"] },
+    });
+    expect(c.status).toBe(201);
+    const um = await loginAs(t.app, "usermgr@test.local");
+    const target = await t.prisma.user.findUniqueOrThrow({ where: { email: "custom@test.local" } });
+    expect((await um.get(`/api/users/${target.id}/access`)).status).toBe(403);
+    expect((await um.put(`/api/users/${target.id}/access`, { useCustomAccess: true, codes: ["tally.read"] })).status).toBe(403);
+    const withAccess = await um.post("/api/employees/with-login", {
+      employeeNo: "KC-073", name: "Sneaky", email: "sneaky@test.local", roleId: await roleId("SALES"), password: SEED_PASSWORD,
+      access: { useCustomAccess: true, codes: ["tally.read"] },
+    });
+    expect(withAccess.status).toBe(403);
+    expect(await t.prisma.user.count({ where: { email: "sneaky@test.local" } })).toBe(0);
+    // Roles and the permission matrix are the Super Admin's too.
+    const salesRole = await roleId("SALES");
+    expect((await um.put(`/api/roles/${salesRole}/permissions`, { codes: ["tally.read", "tally.write"] })).status).toBe(403);
+    expect((await um.post("/api/roles", { code: "SNEAKY", name: "Sneaky" })).status).toBe(403);
+    // They can still create an ordinary employee with the role defaults (no access choice).
+    const plain = await um.post("/api/employees/with-login", {
+      employeeNo: "KC-074", name: "Plain Staff", email: "plain@test.local", roleId: salesRole, password: SEED_PASSWORD,
+    });
+    expect(plain.status).toBe(201);
+  });
+
+  it("an employee created for all branches can still open the app: their login gets every active branch", async () => {
+    const c = await owner.post("/api/employees/with-login", {
+      employeeNo: "KC-080", name: "All Branches", email: "allbr@test.local", roleId: await roleId("SALES"), password: SEED_PASSWORD,
+    });
+    expect(c.status).toBe(201);
+    const me = await (await loginAs(t.app, "allbr@test.local")).get("/api/auth/me");
+    const active = await t.prisma.branch.count({ where: { deletedAt: null, isActive: true } });
+    expect(me.body.branches.length).toBe(active);
+    expect(me.body.branches.length).toBeGreaterThan(0);
+  });
 });
