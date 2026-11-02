@@ -13,6 +13,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       const status = exception.getStatus();
       const body = exception.getResponse();
       const payload = typeof body === "string" ? { message: body } : (body as Record<string, unknown>);
+      if (status === HttpStatus.TOO_MANY_REQUESTS) {
+        // The rate limiter's own text ("ThrottlerException: Too Many Requests") is for developers, not for people at a login screen.
+        res.status(status).json({ statusCode: status, message: "Too many attempts. Please wait a minute and try again." });
+        return;
+      }
       res.status(status).json({ statusCode: status, ...payload });
       return;
     }
