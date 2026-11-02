@@ -74,7 +74,7 @@ describe("financial year and numbering", () => {
   });
 
   it("formats document numbers", () => {
-    expect(formatDocNo("GC", "CBE", "26-27", 1)).toBe("KC/CBE/26-27/0001");
+    expect(formatDocNo("KC", "CBE", "26-27", 1)).toBe("KC/CBE/26-27/0001");
   });
 
   it("formats dates in IST and ageing buckets", () => {
