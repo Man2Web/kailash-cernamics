@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from "@nestjs/common";
+import { Controller, ForbiddenException, Get, Param, Query } from "@nestjs/common";
 import { z } from "zod";
 import { BranchId, CurrentUser, Perm } from "../../common/decorators";
 import type { AuthUser } from "../../common/context";
@@ -18,6 +18,8 @@ export class ReportsController {
   /** Owner/manager dashboard. Stock value only for users who can see cost. */
   @Get("dashboard")
   dashboard(@CurrentUser() user: AuthUser, @BranchId() branchId: string) {
+    // The attendance QR-screen login holds no permissions at all; it must not read the company's sales figures.
+    if (user.permissions.size === 0) throw new ForbiddenException("This account cannot open the dashboard");
     return this.reports.dashboard(user, branchId);
   }
 

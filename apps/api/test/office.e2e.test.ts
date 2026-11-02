@@ -40,6 +40,11 @@ describe("office: employees and attendance", () => {
     await t.app.close();
   });
 
+  it("the QR-screen login cannot read the dashboard or employee data", async () => {
+    expect((await screen.get("/api/dashboard")).status).toBe(403);
+    expect((await screen.get("/api/employees")).status).toBe(403);
+  });
+
   it("token: valid fresh token passes; forged, malformed and expired tokens are rejected", () => {
     const { token } = issueAttendanceToken();
     expect(verifyAttendanceToken(token).valid).toBe(true);
