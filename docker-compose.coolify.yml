@@ -15,26 +15,12 @@
 #
 # CPU/memory limits keep the other projects on this VPS (e.g. Geetha Timbers) from being starved.
 
-services:
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: erp
-      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
-      POSTGRES_DB: kailash_erp
-      TZ: UTC
-    volumes:
-      - kailash-ceramics-pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U erp -d kailash_erp"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    cpus: "1.0"
-    mem_limit: 1g
-    shm_size: 128m
+# DATABASE: PostgreSQL is NOT part of this stack. Create it in Coolify as its own "PostgreSQL" resource
+# (so it has its own page, scheduled backups and restore), then set DATABASE_URL in this app's
+# Environment Variables to that resource's INTERNAL connection URL, and turn on
+# Advanced > "Connect To Predefined Network" so api and worker can reach it by its container name.
 
+services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
@@ -61,7 +47,7 @@ services:
       TZ: Asia/Kolkata
       PORT: "4000"
       APP_URL: ${APP_URL:-https://kailash-ceramics.82.29.165.177.sslip.io}
-      DATABASE_URL: postgresql://erp:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/kailash_erp?schema=public
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL to the Coolify PostgreSQL internal URL}
       REDIS_URL: redis://redis:6379
       JWT_ACCESS_SECRET: ${SERVICE_PASSWORD_64_JWTACCESS}
       JWT_REFRESH_SECRET: ${SERVICE_PASSWORD_64_JWTREFRESH}
@@ -84,8 +70,6 @@ services:
     volumes:
       - kailash-ceramics-files:/data/uploads
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     healthcheck:
@@ -105,7 +89,7 @@ services:
     environment:
       NODE_ENV: production
       TZ: Asia/Kolkata
-      DATABASE_URL: postgresql://erp:${SERVICE_PASSWORD_POSTGRES}@postgres:5432/kailash_erp?schema=public
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL to the Coolify PostgreSQL internal URL}
       REDIS_URL: redis://redis:6379
     command: ["node", "dist/worker"]
     depends_on:
@@ -142,6 +126,5 @@ services:
     mem_limit: 768m
 
 volumes:
-  kailash-ceramics-pgdata:
   kailash-ceramics-redis:
   kailash-ceramics-files:
