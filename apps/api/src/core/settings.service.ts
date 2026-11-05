@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
-import { FEATURE_KEYS, type FeatureFlags, type FeatureKey } from "@gc/shared";
+import { ALL_FEATURE_KEYS, type AnyFeatureKey, featureOn, type FeatureFlags } from "@gc/shared";
 import { stampCreate, stampUpdate } from "../common/context";
 
 /** Defaults for settings editable in Settings > General. */
@@ -27,17 +27,18 @@ export class SettingsService {
 
   private flags: { at: number; value: FeatureFlags } | null = null;
 
-  /** Which modules are switched on. Everything is on until the Super Admin turns something off. Cached briefly. */
+  /** The saved switches for modules and their parts. Everything is on until the Super Admin turns something off. Cached briefly. */
   async features(): Promise<FeatureFlags> {
     if (this.flags && Date.now() - this.flags.at < 5_000) return this.flags.value;
     const rows = await this.prisma.setting.findMany({ where: { key: { startsWith: "feature." }, deletedAt: null } });
-    const value = Object.fromEntries(FEATURE_KEYS.map((k) => [k, rows.find((r) => r.key === `feature.${k}`)?.value !== false])) as FeatureFlags;
+    const value = Object.fromEntries(ALL_FEATURE_KEYS.map((k) => [k, rows.find((r) => r.key === `feature.${k}`)?.value !== false])) as FeatureFlags;
     this.flags = { at: Date.now(), value };
     return value;
   }
 
-  async isFeatureOn(key: FeatureKey): Promise<boolean> {
-    return (await this.features())[key];
+  /** Is it really on: its own switch and, for a part, its module's switch too. */
+  async isFeatureOn(key: AnyFeatureKey): Promise<boolean> {
+    return featureOn(await this.features(), key);
   }
 
   async setFeatures(changes: Partial<FeatureFlags>) {

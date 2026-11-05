@@ -19,7 +19,7 @@ export default function QuotationPage({ params }: { params: Promise<{ id: string
   const { id } = use(params);
   const router = useRouter();
   const qc = useQueryClient();
-  const { can } = useSession();
+  const { can, on } = useSession();
   const q = useApi<any>(`/quotations/${id}`);
 
   if (q.isLoading) return <LoadingPage />;
@@ -83,7 +83,7 @@ export default function QuotationPage({ params }: { params: Promise<{ id: string
                 <Copy className="size-4" /> Revise
               </Button>
             )}
-            {can("order.write") && !["CONVERTED", "EXPIRED", "REJECTED"].includes(quote.status) && (
+            {on("sales.orders") && can("order.write") && !["CONVERTED", "EXPIRED", "REJECTED"].includes(quote.status) && (
               <Button size="sm" onClick={() => run(() => api(`/quotations/${id}/convert`, { method: "POST", body: {} }), "Sales order created", (r) => `/sales/orders/${r.id}`)}>
                 <FileOutput className="size-4" /> Convert to order
               </Button>

@@ -21,7 +21,7 @@ export default function OrderPage({ params }: { params: Promise<{ id: string }> 
   const { id } = use(params);
   const router = useRouter();
   const qc = useQueryClient();
-  const { can } = useSession();
+  const { can, on } = useSession();
   const q = useApi<any>(`/sales-orders/${id}`);
   const [split, setSplit] = useState<any | null>(null);
   const av = useAvailability(split?.productId);
@@ -57,7 +57,7 @@ export default function OrderPage({ params }: { params: Promise<{ id: string }> 
               Confirm & reserve
             </Button>
           )}
-          {["APPROVED", "PARTIAL"].includes(o.status) && can("invoice.write") && (
+          {["APPROVED", "PARTIAL"].includes(o.status) && on("sales.invoices") && can("invoice.write") && (
             <Button size="sm" onClick={() => run(() => api(`/sales-orders/${id}/invoice`, { method: "POST", body: {} }), "Draft invoice created", (r) => `/sales/invoices/${r.id}`)}>
               Make invoice
             </Button>

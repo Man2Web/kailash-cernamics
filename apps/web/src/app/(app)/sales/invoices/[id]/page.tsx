@@ -22,7 +22,7 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
   const { id } = use(params);
   const router = useRouter();
   const qc = useQueryClient();
-  const { can } = useSession();
+  const { can, on } = useSession();
   const q = useApi<any>(`/invoices/${id}`);
 
   if (q.isLoading) return <LoadingPage />;
@@ -76,12 +76,12 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
               </a>
             </Button>
           )}
-          {inv.status === "POSTED" && can("dispatch.write") && (
+          {inv.status === "POSTED" && on("sales.challans") && can("dispatch.write") && (
             <Button size="sm" variant="secondary" onClick={() => run(() => api(`/challans`, { method: "POST", body: { invoiceId: id } }), "Challan created", (r) => `/sales/challans/${r.id}`)}>
               <Truck className="size-4" /> Delivery challan
             </Button>
           )}
-          {inv.status === "POSTED" && can("return.write") && (
+          {inv.status === "POSTED" && on("sales.returns") && can("return.write") && (
             <Button asChild size="sm" variant="secondary">
               <Link href={`/sales/returns/new?invoiceId=${id}`}>
                 <Undo2 className="size-4" /> Return

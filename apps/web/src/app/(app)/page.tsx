@@ -60,24 +60,24 @@ export default function DashboardPage() {
 
   const actions = (
     <>
-      {on("sales") && can("quotation.write") && (
+      {on("sales.quotations") && can("quotation.write") && (
         <Button asChild size="sm">
           <Link href="/sales/quotations/new">
             <FilePlus2 className="size-4" /> New quotation
           </Link>
         </Button>
       )}
-      {on("sales") && can("invoice.write") && (
+      {on("sales.invoices") && can("invoice.write") && (
         <Button asChild size="sm" variant="secondary">
           <Link href="/sales/invoices/new">New invoice</Link>
         </Button>
       )}
-      {on("accounts") && can("receipt.write") && (
+      {on("accounts.receipts") && can("receipt.write") && (
         <Button asChild size="sm" variant="secondary">
           <Link href="/accounts/receipts/new">New receipt</Link>
         </Button>
       )}
-      {on("crm") && can("crm.write") && (
+      {on("crm.leads") && can("crm.write") && (
         <Button asChild size="sm" variant="secondary">
           <Link href="/crm/leads/new">
             <UserPlus className="size-4" /> New lead

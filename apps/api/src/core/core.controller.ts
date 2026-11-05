@@ -18,7 +18,7 @@ import { listQuerySchema } from "@gc/shared";
 import { PrismaService } from "../prisma/prisma.service";
 import { CurrentUser, Perm, Public } from "../common/decorators";
 import { assertSuperAdmin } from "../common/super-admin";
-import { FEATURE_KEYS, type FeatureFlags, type FeatureKey } from "@gc/shared";
+import { ALL_FEATURE_KEYS, type AnyFeatureKey, type FeatureFlags } from "@gc/shared";
 import type { AuthUser } from "../common/context";
 import { ZodPipe } from "../common/zod.pipe";
 import { paginate, pickFilters } from "../common/pagination";
@@ -116,16 +116,16 @@ export class CoreController {
   }
 
   // ---- module on/off switches
-  /** Which modules are switched on. Open to every signed-in user so menus and the dashboard can hide what is off. */
+  /** Which modules and parts are switched on (as saved). Open to every signed-in user so menus and the dashboard can hide what is off. */
   @Get("features")
   features() {
     return this.settings.features();
   }
 
-  /** Turn whole modules on or off for the company, including for the Super Admin. Super Admin only. */
+  /** Turn modules, or single parts of a module, on or off for the company, including for the Super Admin. Super Admin only. */
   @Put("features")
   async setFeatures(
-    @Body(new ZodPipe(z.object(Object.fromEntries(FEATURE_KEYS.map((k) => [k, z.boolean().optional()])) as Record<FeatureKey, z.ZodOptional<z.ZodBoolean>>))) body: Partial<FeatureFlags>,
+    @Body(new ZodPipe(z.object(Object.fromEntries(ALL_FEATURE_KEYS.map((k) => [k, z.boolean().optional()])) as Record<AnyFeatureKey, z.ZodOptional<z.ZodBoolean>>))) body: Partial<FeatureFlags>,
     @CurrentUser() me: AuthUser,
   ) {
     assertSuperAdmin(me);

@@ -30,7 +30,7 @@ interface LeadDetail extends Lead {
 export default function LeadPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
-  const { can } = useSession();
+  const { can, on } = useSession();
   const q = useApi<LeadDetail>(`/leads/${id}`);
   const [editing, setEditing] = useState(false);
   const [doneId, setDoneId] = useState<string | null>(null);
@@ -79,7 +79,7 @@ export default function LeadPage() {
             {wa && <Button asChild size="sm" variant="secondary"><a href={wa} target="_blank" rel="noreferrer"><MessageCircle className="size-4" /> WhatsApp</a></Button>}
             {canWrite && <Button size="sm" variant="secondary" onClick={() => setVisit(true)}><MapPin className="size-4" /> Check in</Button>}
             {canWrite && <Button size="sm" variant="secondary" onClick={() => setEditing(true)}><Pencil className="size-4" /> Edit</Button>}
-            {canWrite && can("quotation.write") && (
+            {canWrite && on("sales.quotations") && can("quotation.write") && (
               l.quotation ? (
                 <Button asChild size="sm"><Link href={`/sales/quotations/${l.quotation.id}`}><FileText className="size-4" /> Open {l.quotation.number}</Link></Button>
               ) : (

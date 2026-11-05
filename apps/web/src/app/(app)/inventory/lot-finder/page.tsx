@@ -60,7 +60,7 @@ function useDebounced<T>(v: T, ms = 400) {
 }
 
 export default function LotFinderPage() {
-  const { can } = useSession();
+  const { can, on } = useSession();
   const [productId, setProductId] = useState<string | null>(null);
   const [product, setProduct] = useState<Prod | null>(null);
   const [qty, setQty] = useState("");
@@ -193,7 +193,7 @@ export default function LotFinderPage() {
               }
               actions={
                 <div className="flex gap-2">
-                  {can("quotation.write") && (
+                  {on("sales.quotations") && can("quotation.write") && (
                     <Button asChild size="sm" variant="secondary">
                       <Link href="/sales/quotations/new">
                         <FilePlus2 className="size-4" /> New quotation

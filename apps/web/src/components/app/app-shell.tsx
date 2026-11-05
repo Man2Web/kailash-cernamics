@@ -34,7 +34,7 @@ import { cn } from "@/lib/utils";
 import { api, apiGet } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { CommandMenu, useCommandMenu } from "./command-menu";
-import { FEATURES } from "@gc/shared";
+import { featureLabel } from "@gc/shared";
 import { featureOf, isActive, navGroups, navVisible } from "./nav";
 
 export function BrandMark({ size = 28 }: { size?: number }) {
@@ -215,12 +215,12 @@ function ModuleGate({ children }: { children: React.ReactNode }) {
   const { on, user } = useSession();
   const feature = featureOf(pathname);
   if (!feature || on(feature)) return <>{children}</>;
-  const label = FEATURES.find((f) => f.key === feature)?.label ?? feature;
+  const label = featureLabel(feature);
   return (
     <div className="mx-auto max-w-md py-16 text-center">
       <h1 className="text-[22px] font-bold">{label} is turned off</h1>
       <p className="mt-2 text-[14px] text-muted-foreground">
-        {user.role.code === "OWNER" ? "You switched this module off. Nothing was deleted, and you can turn it back on at any time." : "The Super Admin has switched this module off for the company."}
+        {user.role.code === "OWNER" ? "You switched this off. Nothing was deleted, and you can turn it back on at any time." : "The Super Admin has switched this off for the company."}
       </p>
       <div className="mt-5 flex justify-center gap-3">
         <Link href="/" className="rounded-lg bg-fill px-4 py-2 text-[14px] font-medium hover:bg-fill-strong">Back to dashboard</Link>

@@ -45,7 +45,7 @@ import {
   Wallet,
   Warehouse,
 } from "lucide-react";
-import type { FeatureKey, PermissionCode } from "@gc/shared";
+import { type AnyFeatureKey, featureForPage, type PermissionCode } from "@gc/shared";
 
 export interface NavItem {
   href: string;
@@ -168,15 +168,13 @@ export const navGroups: NavGroup[] = [
   },
 ];
 
-/** Which company module a menu entry belongs to, by its address. The Super Admin can switch each module off. */
-export function featureOf(href: string): FeatureKey | undefined {
-  if (href === "/settings/tally") return "tally";
-  const first = href.split("/")[1];
-  return ({ sales: "sales", purchase: "purchase", inventory: "inventory", accounts: "accounts", crm: "crm", reports: "reports", office: "office" } as Record<string, FeatureKey>)[first];
+/** Which module, or part of a module, a menu entry or page belongs to, by its address. The Super Admin can switch each off. */
+export function featureOf(href: string): AnyFeatureKey | undefined {
+  return featureForPage(href);
 }
 
 /** Shown only if the person may use it and its module is switched on. */
-export function navVisible(i: NavItem, can: (...p: PermissionCode[]) => boolean, on: (f: FeatureKey) => boolean, isOwner: boolean): boolean {
+export function navVisible(i: NavItem, can: (...p: PermissionCode[]) => boolean, on: (f: AnyFeatureKey) => boolean, isOwner: boolean): boolean {
   if (i.ownerOnly && !isOwner) return false;
   const f = featureOf(i.href);
   if (f && !on(f)) return false;

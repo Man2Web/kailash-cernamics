@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import type { FeatureFlags, FeatureKey, PermissionCode, SessionUser } from "@gc/shared";
+import { type AnyFeatureKey, type FeatureFlags, featureOn, type PermissionCode, type SessionUser } from "@gc/shared";
 import { apiGet, getBranchId, setBranchId } from "./api";
 
 interface SessionCtx {
@@ -11,8 +11,8 @@ interface SessionCtx {
   branch: SessionUser["branches"][number] | undefined;
   setBranch: (id: string) => void;
   can: (...perms: PermissionCode[]) => boolean;
-  /** Is this module switched on for the company? (The Super Admin turns modules on and off.) */
-  on: (feature: FeatureKey) => boolean;
+  /** Is this module, or this part of a module (such as "sales.invoices"), switched on for the company? */
+  on: (feature: AnyFeatureKey) => boolean;
 }
 
 const Ctx = createContext<SessionCtx | null>(null);
@@ -49,7 +49,7 @@ export function SessionProvider({ children, fallback }: { children: React.ReactN
         qc.invalidateQueries();
       },
       can: (...p) => p.every((x) => perms.has(x)),
-      on: (f) => flags[f] !== false,
+      on: (f) => featureOn(flags, f),
     };
   }, [me.data, branchId, qc, features.data]);
 
