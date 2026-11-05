@@ -82,13 +82,16 @@ export class TallyService {
   /** Pending items for this agent's branch, masters before vouchers, with XML built now. */
   async pull(agent: TallyAgent, limit: number) {
     const now = new Date();
+    // The database stamps "due at" with its own clock, which can run a few milliseconds ahead of this server's, so an
+    // item queued a moment ago must not look "not due yet". Retries are minutes apart, so 2 seconds of slack is safe.
+    const dueBy = new Date(now.getTime() + 2_000);
     // reclaim items sent but never acknowledged (agent crashed mid-batch)
     await this.prisma.tallySyncQueue.updateMany({
       where: { status: "SENT", updatedAt: { lt: new Date(now.getTime() - 10 * 60_000) } },
       data: { status: "PENDING" },
     });
     const rows = await this.prisma.tallySyncQueue.findMany({
-      where: { status: "PENDING", direction: "TO_TALLY", nextAttemptAt: { lte: now }, deletedAt: null, OR: [{ branchId: agent.branchId }, { branchId: null }] },
+      where: { status: "PENDING", direction: "TO_TALLY", nextAttemptAt: { lte: dueBy }, deletedAt: null, OR: [{ branchId: agent.branchId }, { branchId: null }] },
       orderBy: [{ priority: "asc" }, { createdAt: "asc" }],
       take: limit,
     });
