@@ -26,6 +26,7 @@ import { apiGet, useList, type Query } from "@/lib/api";
 import { exportToExcel } from "@/lib/export";
 import { cn } from "@/lib/utils";
 import { EmptyState, ErrorState, LoadingRows } from "./states";
+import { NativeSelect } from "@/components/common/form-fields";
 
 export interface FilterDef {
   key: string;
@@ -189,7 +190,7 @@ export function DataTable<T extends { id: string }>(props: DataTableProps<T>) {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {props.filters?.map((f) => (
-            <select
+            <NativeSelect wrapperClassName="w-auto"
               key={f.key}
               aria-label={f.label}
               value={filterValues[f.key] ?? ""}
@@ -202,7 +203,7 @@ export function DataTable<T extends { id: string }>(props: DataTableProps<T>) {
                   {o.label}
                 </option>
               ))}
-            </select>
+            </NativeSelect>
           ))}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -300,13 +301,13 @@ export function DataTable<T extends { id: string }>(props: DataTableProps<T>) {
           {total ? `${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, total)} of ${total}` : "0 records"}
         </span>
         <div className="flex items-center gap-1">
-          <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }} className="h-7 rounded bg-fill px-1 text-[12px]" aria-label="Rows per page">
+          <NativeSelect wrapperClassName="w-auto" value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(1); }} className="h-7 rounded bg-fill px-1 text-[12px]" aria-label="Rows per page">
             {[25, 50, 100].map((n) => (
               <option key={n} value={n}>
                 {n} / page
               </option>
             ))}
-          </select>
+          </NativeSelect>
           <Button variant="ghost" size="icon" className="size-7" disabled={page <= 1} onClick={() => setPage((p) => p - 1)} aria-label="Previous page">
             <ChevronLeft className="size-4" />
           </Button>

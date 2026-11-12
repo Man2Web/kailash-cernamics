@@ -1,5 +1,6 @@
 "use client";
 
+import * as React from "react";
 import { Controller, type Control, type FieldValues, type Path } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -167,15 +168,141 @@ export function SelectField<T extends FieldValues>(p: BaseProps<T> & { options: 
   );
 }
 
-export function NativeSelect({ className, ...props }: React.ComponentProps<"select">) {
+/** Collects <option> elements (also inside fragments / arrays / conditionals) from children. */
+function collectOptions(children: React.ReactNode, out: { value: string; label: string; disabled: boolean }[] = []) {
+  React.Children.forEach(children, (c) => {
+    if (!React.isValidElement(c)) return;
+    const el = c as React.ReactElement<any>;
+    if (el.type === "option") {
+      const label = React.Children.toArray(el.props.children).join("");
+      out.push({ value: String(el.props.value ?? label), label, disabled: !!el.props.disabled });
+    } else if (el.props?.children) collectOptions(el.props.children, out);
+  });
+  return out;
+}
+
+/**
+ * Drop-in replacement for <select>: a text box that suggests matching options as you type.
+ * Same props (value, onChange(e.target.value), <option> children).
+ */
+export function NativeSelect({ className, wrapperClassName, children, value, onChange, onBlur, disabled, id, name, title, required, ...rest }: React.ComponentProps<"select"> & { wrapperClassName?: string }) {
+  const options = collectOptions(children);
+  const current = String(value ?? "");
+  const emptyOpt = options.find((o) => o.value === "");
+  const currentOpt = options.find((o) => o.value === current);
+  const shown = current === "" ? "" : (currentOpt?.label ?? current);
+  const [text, setText] = React.useState(shown);
+  const [dirty, setDirty] = React.useState(false);
+  const [open, setOpen] = React.useState(false);
+  const [hi, setHi] = React.useState(-1);
+  React.useEffect(() => {
+    if (!dirty) setText(shown);
+  }, [shown, dirty]);
+
+  const real = options.filter((o) => o.value !== "" && !o.disabled);
+  const q = dirty ? text.trim().toLowerCase() : "";
+  const items = q ? real.filter((o) => o.label.toLowerCase().includes(q)) : real;
+
+  const fire = (v: string) => onChange?.({ target: { value: v, name, id }, currentTarget: { value: v, name, id } } as unknown as React.ChangeEvent<HTMLSelectElement>);
+  const pick = (o: { value: string; label: string }) => {
+    setDirty(false);
+    setText(o.label);
+    setOpen(false);
+    setHi(-1);
+    if (o.value !== current) fire(o.value);
+  };
+  const commit = () => {
+    setOpen(false);
+    setHi(-1);
+    if (!dirty) return;
+    const t = text.trim().toLowerCase();
+    setDirty(false);
+    if (!t) {
+      if (emptyOpt && current !== "") fire("");
+      else setText(shown);
+      return;
+    }
+    const exact = real.find((o) => o.label.trim().toLowerCase() === t);
+    if (exact) pick(exact);
+    else if (items.length === 1) pick(items[0]!);
+    else setText(shown);
+  };
+
   return (
-    <select
-      className={cn(
-        "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-2.5 text-[14px] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 aria-invalid:border-destructive",
-        className,
+    <div className={cn("relative min-w-0", wrapperClassName ?? "w-full")}>
+      <input
+        id={id}
+        name={name}
+        title={title}
+        required={required}
+        role="combobox"
+        aria-expanded={open}
+        aria-invalid={rest["aria-invalid"]}
+        aria-label={rest["aria-label"]}
+        autoComplete="off"
+        disabled={disabled}
+        value={text}
+        placeholder={emptyOpt?.label ?? "Type to search…"}
+        className={cn(
+          "h-9 w-full min-w-0 rounded-md border border-input bg-transparent px-2.5 text-[14px] outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-50 aria-invalid:border-destructive",
+          className,
+        )}
+        onChange={(e) => {
+          setText(e.target.value);
+          setDirty(true);
+          setOpen(true);
+          setHi(-1);
+        }}
+        onFocus={(e) => {
+          setOpen(true);
+          e.currentTarget.select();
+        }}
+        onBlur={(e) => {
+          commit();
+          onBlur?.(e as unknown as React.FocusEvent<HTMLSelectElement>);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setOpen(true);
+            setHi((h) => Math.min(h + 1, items.length - 1));
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setHi((h) => Math.max(h - 1, 0));
+          } else if (e.key === "Escape") {
+            setOpen(false);
+            setDirty(false);
+            setText(shown);
+          } else if (e.key === "Enter" && open) {
+            if (hi >= 0 && items[hi]) {
+              e.preventDefault();
+              pick(items[hi]!);
+            } else if (dirty) {
+              e.preventDefault();
+              commit();
+            }
+          }
+        }}
+      />
+      {open && (
+        <ul className="absolute z-50 mt-1 max-h-56 w-full min-w-40 overflow-auto rounded-md border bg-popover p-1 text-sm shadow-md">
+          {items.length === 0 && <li className="px-2 py-1.5 text-xs text-muted-foreground">No matches</li>}
+          {items.map((o, i) => (
+            <li
+              key={o.value}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                pick(o);
+              }}
+              onMouseEnter={() => setHi(i)}
+              className={cn("cursor-pointer truncate rounded-sm px-2 py-1.5", (i === hi || o.value === current) && "bg-accent text-accent-foreground")}
+            >
+              {o.label}
+            </li>
+          ))}
+        </ul>
       )}
-      {...props}
-    />
+    </div>
   );
 }
 

@@ -18,6 +18,9 @@ export function EntityField<T extends FieldValues, I extends { id: string } = an
   className?: string;
   placeholder?: string;
   onPicked?: (item: I | null) => void;
+  /** Turns the field into a text box with suggestions; typed values that don't exist are saved as new. */
+  buildNew?: (typed: string) => Record<string, unknown> | null;
+  invalidMessage?: string;
 }) {
   return (
     <Controller
@@ -37,6 +40,8 @@ export function EntityField<T extends FieldValues, I extends { id: string } = an
             getLabel={p.getLabel}
             getDescription={p.getDescription}
             clearable={!p.required}
+            buildNew={p.buildNew}
+            invalidMessage={p.invalidMessage}
           />
         </FieldShell>
       )}

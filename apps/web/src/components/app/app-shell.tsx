@@ -36,6 +36,7 @@ import { useSession } from "@/lib/session";
 import { CommandMenu, useCommandMenu } from "./command-menu";
 import { featureLabel } from "@gc/shared";
 import { featureOf, isActive, navGroups, navVisible } from "./nav";
+import { NativeSelect } from "@/components/common/form-fields";
 
 export function BrandMark({ size = 28 }: { size?: number }) {
   // Four-tile mark drawn in CSS so it follows the theme colour; swap for the client logo later.
@@ -71,7 +72,7 @@ function BranchSwitcher() {
     return <span className="hidden truncate text-[13px] text-muted-foreground sm:inline">{user.branches[0]?.name}</span>;
   }
   return (
-    <select
+    <NativeSelect wrapperClassName="w-auto"
       aria-label="Branch"
       value={branchId}
       onChange={(e) => setBranch(e.target.value)}
@@ -82,7 +83,7 @@ function BranchSwitcher() {
           {b.code} · {b.name}
         </option>
       ))}
-    </select>
+    </NativeSelect>
   );
 }
 

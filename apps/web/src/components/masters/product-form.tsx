@@ -125,7 +125,7 @@ export function ProductForm({ product }: { product?: ProductRow }) {
           <FormGrid>
             <TextField control={form.control} name="sku" label="SKU" required autoFocus={!product} placeholder="TL-KJ-6012-CAL" />
             <TextField control={form.control} name="name" label="Name" required />
-            <EntityField control={form.control} name="brandId" label="Brand" endpoint="/brands" getLabel={(b) => b.name} required />
+            <EntityField control={form.control} name="brandId" label="Brand" endpoint="/brands" getLabel={(b) => b.name} required buildNew={(t) => ({ name: t })} />
             <EntityField
               control={form.control}
               name="categoryId"
@@ -142,10 +142,22 @@ export function ProductForm({ product }: { product?: ProductRow }) {
                 form.setValue("unitName", isTile ? "pcs" : "nos");
               }}
             />
-            <EntityField control={form.control} name="seriesId" label="Series" endpoint="/series" params={values.brandId ? { brandId: values.brandId } : undefined} getLabel={(s) => s.name} />
-            <EntityField control={form.control} name="sizeId" label="Size" endpoint="/sizes" getLabel={(s) => s.name} />
-            <EntityField control={form.control} name="finishId" label="Finish" endpoint="/finishes" getLabel={(s) => s.name} />
-            <EntityField control={form.control} name="colorId" label="Colour" endpoint="/colors" getLabel={(s) => s.name} />
+            <EntityField control={form.control} name="seriesId" label="Series" endpoint="/series" params={values.brandId ? { brandId: values.brandId } : undefined} getLabel={(s) => s.name} buildNew={(t) => ({ name: t, brandId: values.brandId || null })} />
+            <EntityField
+              control={form.control}
+              name="sizeId"
+              label="Size"
+              endpoint="/sizes"
+              getLabel={(s) => s.name}
+              invalidMessage="Type the size as length x width in mm, e.g. 600x1200"
+              buildNew={(t) => {
+                // "600x1200" or "600 x 1200 mm" → length/width in mm
+                const m = t.match(/^(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)\s*(?:mm)?$/i);
+                return m ? { name: t, lengthMm: Math.round(+m[1]), widthMm: Math.round(+m[2]) } : null;
+              }}
+            />
+            <EntityField control={form.control} name="finishId" label="Finish" endpoint="/finishes" getLabel={(s) => s.name} buildNew={(t) => ({ name: t })} />
+            <EntityField control={form.control} name="colorId" label="Colour" endpoint="/colors" getLabel={(s) => s.name} buildNew={(t) => ({ name: t })} />
           </FormGrid>
         </Section>
 

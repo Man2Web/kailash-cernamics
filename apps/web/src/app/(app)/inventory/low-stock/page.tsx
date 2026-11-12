@@ -8,6 +8,7 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { useApi } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
+import { NativeSelect } from "@/components/common/form-fields";
 
 type P = { id: string; sku: string; name: string; uomType: string; unitName: string | null; pcsPerBox: number | null; sqftPerBox: number | null; brand?: { name: string } };
 const productCell = (p: P) => (
@@ -47,13 +48,13 @@ function DeadStock() {
       rowHref={(r) => `/inventory/stock/${r.id}`}
       emptyTitle="No dead stock"
       toolbar={
-        <select value={days} onChange={(e) => setDays(Number(e.target.value))} className="h-9 rounded-md bg-fill px-2 text-[13px]" aria-label="Idle days">
+        <NativeSelect wrapperClassName="w-auto" value={days} onChange={(e) => setDays(Number(e.target.value))} className="h-9 rounded-md bg-fill px-2 text-[13px]" aria-label="Idle days">
           {[30, 60, 90, 180, 365].map((d) => (
             <option key={d} value={d}>
               No sale in {d} days
             </option>
           ))}
-        </select>
+        </NativeSelect>
       }
       columns={[
         { id: "product", header: "Product", meta: { exportValue: (r) => `${r.sku} ${r.name}` }, cell: ({ row }) => productCell(row.original) },

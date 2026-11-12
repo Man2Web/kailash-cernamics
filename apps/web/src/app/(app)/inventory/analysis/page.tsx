@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useApi } from "@/lib/api";
 import { exportToExcel } from "@/lib/export";
 import { cn } from "@/lib/utils";
+import { NativeSelect } from "@/components/common/form-fields";
 
 interface Row {
   key: string;
@@ -97,12 +98,12 @@ export default function StockAnalysisPage() {
             </button>
           ))}
         </div>
-        <select aria-label="Category type" value={type} onChange={(e) => setType(e.target.value)} className="h-9 rounded-md bg-fill px-2 text-[13px]">
+        <NativeSelect wrapperClassName="w-auto" aria-label="Category type" value={type} onChange={(e) => setType(e.target.value)} className="h-9 rounded-md bg-fill px-2 text-[13px]">
           <option value="TILE">Tiles</option>
           <option value="SANITARY">Sanitary</option>
           <option value="CP_FITTING">CP fittings</option>
           <option value="">Everything</option>
-        </select>
+        </NativeSelect>
       </div>
 
       <Section>

@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { api, useApi } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { cn } from "@/lib/utils";
+import { NativeSelect } from "@/components/common/form-fields";
 
 interface Item {
   product: { id: string; sku: string; name: string; uomType: string; unitName: string | null; pcsPerBox: number | null; size: { name: string } | null };
@@ -200,12 +201,12 @@ export default function ReorderPage() {
         <div className="md:w-64">
           <EntitySelect endpoint="/brands" value={brandId} onChange={(id) => setBrandId(id)} getLabel={(b: { id: string; name: string }) => b.name} clearable placeholder="All brands" />
         </div>
-        <select aria-label="Sales period" value={windowDays} onChange={(e) => setWindowDays(Number(e.target.value))} className="h-9 rounded-md bg-fill px-2 text-[13px]">
+        <NativeSelect wrapperClassName="w-auto" aria-label="Sales period" value={windowDays} onChange={(e) => setWindowDays(Number(e.target.value))} className="h-9 rounded-md bg-fill px-2 text-[13px]">
           <option value={30}>Sales speed: last 30 days</option>
           <option value={60}>Last 60 days</option>
           <option value={90}>Last 90 days</option>
           <option value={180}>Last 180 days</option>
-        </select>
+        </NativeSelect>
         <label className="flex items-center gap-2 text-[13px]">
           <Checkbox checked={showAll} onCheckedChange={(v) => setShowAll(!!v)} /> Show covered products too
         </label>
