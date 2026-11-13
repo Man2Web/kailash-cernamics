@@ -39,15 +39,9 @@ import { featureOf, isActive, navGroups, navVisible } from "./nav";
 import { NativeSelect } from "@/components/common/form-fields";
 
 export function BrandMark({ size = 28 }: { size?: number }) {
-  // Four-tile mark drawn in CSS so it follows the theme colour; swap for the client logo later.
-  return (
-    <span className="grid shrink-0 grid-cols-2 gap-[2px] rounded-[6px] bg-tint p-[3px]" style={{ height: size, width: size }} aria-hidden>
-      <span className="rounded-[2px] bg-white/95" />
-      <span className="rounded-[2px] bg-white/55" />
-      <span className="rounded-[2px] bg-white/55" />
-      <span className="rounded-[2px] bg-white/95" />
-    </span>
-  );
+  // KAILAS CERAMIX "K" mark (public/logo-mark.png)
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/logo-mark.png" alt="" aria-hidden width={size} height={size} className="shrink-0 object-contain" style={{ height: size, width: size }} />;
 }
 
 export function ThemeToggle() {
@@ -242,7 +236,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Link href="/" className="flex w-fit items-center gap-2.5">
               <BrandMark size={30} />
               <span className="leading-tight">
-                <span className="block text-[15px] font-semibold tracking-tight">Kailash Ceramics</span>
+                <span className="block text-[15px] font-semibold tracking-tight">KAILAS CERAMIX</span>
                 <span className="block text-[11px] text-muted-foreground">Tiles & Sanitaryware ERP</span>
               </span>
             </Link>

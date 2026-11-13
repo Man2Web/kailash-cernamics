@@ -4,7 +4,7 @@
 export async function exportToExcel(fileName: string, columns: { header: string; key: string; width?: number }[], rows: Record<string, unknown>[]) {
   const ExcelJS = (await import("exceljs")).default;
   const wb = new ExcelJS.Workbook();
-  wb.creator = "Kailash Ceramics ERP";
+  wb.creator = "KAILAS CERAMIX ERP";
   const ws = wb.addWorksheet("Data");
   ws.columns = columns.map((c) => ({ header: c.header, key: c.key, width: c.width ?? Math.max(12, c.header.length + 4) }));
   ws.getRow(1).font = { bold: true };

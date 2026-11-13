@@ -61,7 +61,7 @@ export default function LoginPage() {
         <div className="mb-6 flex flex-col items-center gap-3 text-center">
           <BrandMark size={52} />
           <div>
-            <h1 className="text-[24px] font-bold">Kailash Ceramics</h1>
+            <h1 className="text-[24px] font-bold">KAILAS CERAMIX</h1>
             <p className="text-[13px] text-muted-foreground">Tiles & Sanitaryware ERP</p>
           </div>
         </div>

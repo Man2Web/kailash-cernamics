@@ -18,7 +18,7 @@ export async function seedBase(prisma: PrismaClient) {
   const company =
     (await prisma.company.findFirst()) ??
     (await prisma.company.create({
-      data: { name: "Kailash Ceramics", legalName: "Kailash Ceramics", address: "Coimbatore, Tamil Nadu", phone: "", email: "accounts@kailashceramics.com" },
+      data: { name: "KAILAS CERAMIX", legalName: "KAILAS CERAMIX", address: "Coimbatore, Tamil Nadu", phone: "", email: "accounts@kailashceramics.com" },
     }));
 
   const branch = await prisma.branch.upsert({
@@ -26,7 +26,7 @@ export async function seedBase(prisma: PrismaClient) {
     create: {
       companyId: company.id,
       code: "CBE",
-      name: "Kailash Ceramics - Main",
+      name: "KAILAS CERAMIX - Main",
       city: "Coimbatore",
       state: "Tamil Nadu",
       stateCode: "33",

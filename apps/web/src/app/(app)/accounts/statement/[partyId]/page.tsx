@@ -62,7 +62,7 @@ export default function StatementPage() {
       <Section className="print:shadow-none">
         <div className="mb-4 flex flex-col justify-between gap-3 border-b border-border pb-4 md:flex-row">
           <div>
-            <div className="text-[18px] font-bold">Kailash Ceramics</div>
+            <div className="text-[18px] font-bold">KAILAS CERAMIX</div>
             <div className="text-[12px] text-muted-foreground">Statement of account · {formatDate(`${from}T12:00:00+05:30`)} to {formatDate(`${to}T12:00:00+05:30`)}</div>
           </div>
           <div className="text-[13px] md:text-right">

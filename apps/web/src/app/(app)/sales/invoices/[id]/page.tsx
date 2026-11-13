@@ -68,7 +68,7 @@ export default function InvoicePage({ params }: { params: Promise<{ id: string }
           {inv.status === "POSTED" && (
             <Button asChild size="sm" variant="secondary">
               <a
-                href={salesWhatsAppLink(inv.party?.phone, `Dear ${inv.party?.name}, your invoice ${inv.number} for ${formatINR(inv.totalPaise)} from ${inv.branch?.company?.name ?? "Kailash Ceramics"}: ${typeof window !== "undefined" ? window.location.origin : ""}/print/invoice/${id}`)}
+                href={salesWhatsAppLink(inv.party?.phone, `Dear ${inv.party?.name}, your invoice ${inv.number} for ${formatINR(inv.totalPaise)} from ${inv.branch?.company?.name ?? "KAILAS CERAMIX"}: ${typeof window !== "undefined" ? window.location.origin : ""}/print/invoice/${id}`)}
                 target="_blank"
                 rel="noopener"
               >

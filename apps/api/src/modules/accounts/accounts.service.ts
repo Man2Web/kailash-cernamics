@@ -28,7 +28,7 @@ export function waPhone(phone: string | null | undefined): string | null {
 export function reminderUrl(phone: string | null | undefined, name: string, duePaise: number): string | null {
   const p = waPhone(phone);
   if (!p || duePaise <= 0) return null;
-  const text = `Dear ${name}, this is a gentle reminder from Kailash Ceramics that ${formatINR(duePaise)} is outstanding on your account. Kindly arrange payment at the earliest. Thank you.`;
+  const text = `Dear ${name}, this is a gentle reminder from KAILAS CERAMIX that ${formatINR(duePaise)} is outstanding on your account. Kindly arrange payment at the earliest. Thank you.`;
   return `https://wa.me/${p}?text=${encodeURIComponent(text)}`;
 }
 

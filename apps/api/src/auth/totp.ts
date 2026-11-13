@@ -43,6 +43,6 @@ export function verifyTotp(secret: string, code: string): boolean {
   return false;
 }
 
-export function otpauthUrl(secret: string, email: string, issuer = "Kailash Ceramics ERP"): string {
+export function otpauthUrl(secret: string, email: string, issuer = "KAILAS CERAMIX ERP"): string {
   return `otpauth://totp/${encodeURIComponent(issuer)}:${encodeURIComponent(email)}?secret=${secret}&issuer=${encodeURIComponent(issuer)}`;
 }

@@ -51,7 +51,7 @@ function waLink(s: Sample) {
   const digits = (s.phone ?? "").replace(/\D/g, "");
   const to = digits.length === 10 ? `91${digits}` : digits;
   const items = s.lines.filter((l) => outPcs(l) > 0).map((l) => `${l.product.name} (shade ${l.batch.shadeCode}) ${outPcs(l)} pcs`).join(", ");
-  return `https://wa.me/${to}?text=${encodeURIComponent(`Hello ${s.issuedToName}, a gentle reminder to return the tile samples taken from Kailash Ceramics on ${formatDate(s.date)} (${s.number}): ${items}. Thank you!`)}`;
+  return `https://wa.me/${to}?text=${encodeURIComponent(`Hello ${s.issuedToName}, a gentle reminder to return the tile samples taken from KAILAS CERAMIX on ${formatDate(s.date)} (${s.number}): ${items}. Thank you!`)}`;
 }
 
 export default function SamplesPage() {

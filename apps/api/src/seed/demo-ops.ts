@@ -33,7 +33,7 @@ async function post(
 export async function seedDemoOps(prisma: PrismaClient, base: Base) {
   const tpr = await prisma.branch.upsert({
     where: { code: "TPR" },
-    create: { companyId: base.company.id, code: "TPR", name: "Kailash Ceramics - Tiruppur", city: "Tiruppur", state: "Tamil Nadu", stateCode: "33", tallyCompanyName: "Kailash Ceramics" },
+    create: { companyId: base.company.id, code: "TPR", name: "KAILAS CERAMIX - Tiruppur", city: "Tiruppur", state: "Tamil Nadu", stateCode: "33", tallyCompanyName: "Kailash Ceramics" },
     update: {},
   });
   const tprGodown = await prisma.godown.upsert({

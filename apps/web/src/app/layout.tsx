@@ -3,9 +3,10 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: { default: "Kailash Ceramics ERP", template: "%s · Kailash Ceramics" },
-  description: "Tiles & sanitaryware ERP for Kailash Ceramics",
+  title: { default: "KAILAS CERAMIX ERP", template: "%s · KAILAS CERAMIX" },
+  description: "Tiles & sanitaryware ERP for KAILAS CERAMIX",
   manifest: "/manifest.webmanifest",
+  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
   robots: { index: false, follow: false },
 };
 

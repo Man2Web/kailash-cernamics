@@ -22,14 +22,10 @@ export function Letterhead({ branch, docTitle, number, date, extra }: { branch: 
   return (
     <div className="mb-4 flex items-start justify-between gap-4 border-b-2 border-[#1d6a86] pb-3">
       <div className="flex items-start gap-3">
-        <div className="grid size-12 shrink-0 grid-cols-2 gap-[2px] rounded-md bg-[#1d6a86] p-[4px]">
-          <span className="rounded-[2px] bg-white" />
-          <span className="rounded-[2px] bg-white/60" />
-          <span className="rounded-[2px] bg-white/60" />
-          <span className="rounded-[2px] bg-white" />
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo-mark.png" alt="" className="size-12 shrink-0 object-contain" />
         <div>
-          <div className="text-[20px] font-bold text-[#1d6a86]">{company.name ?? "Kailash Ceramics"}</div>
+          <div className="text-[20px] font-bold text-[#1d6a86]">{company.name ?? "KAILAS CERAMIX"}</div>
           <div className="text-[11px] text-neutral-600">Tiles · Sanitaryware · CP fittings</div>
           <div className="mt-1 text-[11px] leading-snug">
             {branch?.address ? `${branch.address}, ` : ""}
@@ -168,7 +164,7 @@ export function Signatures({ company }: { company?: string }) {
     <div className="mt-10 flex justify-between text-[11px]">
       <div>Customer signature</div>
       <div className="text-right">
-        For {company ?? "Kailash Ceramics"}
+        For {company ?? "KAILAS CERAMIX"}
         <div className="mt-8">Authorised signatory</div>
       </div>
     </div>
